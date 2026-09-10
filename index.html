@@ -1,0 +1,2634 @@
+<title>Votona</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg: #fbfaf7;
+    --bg-raised: #ffffff;
+    --ink: #191d2b;
+    --ink-soft: #4d5468;
+    --ink-faint: #8790a3;
+    --line: #e4dfd0;
+    --line-soft: #eee9dc;
+    --accent: #e0483a;
+    --accent-ink: #ffffff;
+    --accent-soft: #fbe0db;
+    --blue: #2f5fb5;
+    --blue-soft: #e3ebfa;
+    --gold: #d98a13;
+    --gold-soft: #fbecd1;
+    --good: #2c9354;
+    --good-soft: #ddf3e4;
+    --bad: #d1453a;
+    --bad-soft: #fbe0dd;
+    --neutral: #8a8170;
+    --neutral-soft: #f1ece0;
+    --plum: #7a4fb0;
+    --plum-soft: #ece3f7;
+    --teal: #1f8f8a;
+    --teal-soft: #ddf1ef;
+    --masthead-bg: #1b2030;
+    --masthead-ink: #f4efe3;
+    --masthead-line: rgba(244,239,227,.18);
+    --shadow: 0 1px 2px rgba(28,34,48,.07), 0 10px 28px -12px rgba(224,72,58,.16);
+    --radius: 20px;
+    --serif: 'Fraunces', ui-serif, Georgia, serif;
+    --sans: 'Work Sans', ui-sans-serif, system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    --brand-gradient: conic-gradient(from 210deg, var(--accent), var(--gold), var(--blue), var(--plum), var(--accent));
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #14171c;
+      --bg-raised: #1c2028;
+      --ink: #f1ede4;
+      --ink-soft: #aab0c0;
+      --ink-faint: #727890;
+      --line: #2d323f;
+      --line-soft: #252a36;
+      --accent: #ff6b57;
+      --accent-ink: #1c1210;
+      --accent-soft: #3d241f;
+      --blue: #7aa6ff;
+      --blue-soft: #1f2a42;
+      --gold: #f0b34d;
+      --gold-soft: #3a2a12;
+      --good: #7ad693;
+      --good-soft: #1a2e20;
+      --bad: #ff6b57;
+      --bad-soft: #3a221e;
+      --neutral: #a8a08f;
+      --neutral-soft: #28241d;
+      --plum: #b98bee;
+      --plum-soft: #2c2140;
+      --teal: #4fd9d1;
+      --teal-soft: #16302e;
+      --shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 30px -12px rgba(255,107,87,.22);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #14171c;
+    --bg-raised: #1c2028;
+    --ink: #f1ede4;
+    --ink-soft: #aab0c0;
+    --ink-faint: #727890;
+    --line: #2d323f;
+    --line-soft: #252a36;
+    --accent: #ff6b57;
+    --accent-ink: #1c1210;
+    --accent-soft: #3d241f;
+    --blue: #7aa6ff;
+    --blue-soft: #1f2a42;
+    --gold: #f0b34d;
+    --gold-soft: #3a2a12;
+    --good: #7ad693;
+    --good-soft: #1a2e20;
+    --bad: #ff6b57;
+    --bad-soft: #3a221e;
+    --neutral: #a8a08f;
+    --neutral-soft: #28241d;
+    --plum: #b98bee;
+    --plum-soft: #2c2140;
+    --teal: #4fd9d1;
+    --teal-soft: #16302e;
+    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 30px -12px rgba(255,107,87,.22);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--accent-soft); }
+  button{ font-family:inherit; }
+  h1,h2,h3{ font-family:var(--serif); font-weight:600; text-wrap:balance; margin:0; }
+  h1{ font-size:clamp(30px,5vw + 14px,46px); font-weight:700; text-align:center; letter-spacing:-.01em; line-height:1.1; }
+  .mono{ font-family:var(--mono); font-variant-numeric:tabular-nums; }
+  a{ color:inherit; }
+  :focus-visible{ outline:2px solid var(--blue); outline-offset:2px; border-radius:4px; }
+
+  #shell{ max-width:1180px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; width:100%; }
+
+  header.topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px clamp(20px,4vw,40px); border-bottom:3px solid var(--gold);
+    position:sticky; top:0; background:var(--masthead-bg); z-index:20;
+  }
+  .brand{ display:flex; align-items:center; gap:9px; }
+  .brand-home{
+    display:flex; align-items:center; gap:9px; background:none; border:none; padding:0;
+    cursor:pointer; font:inherit; color:inherit; -webkit-tap-highlight-color:transparent;
+  }
+  .brand-home:hover .name{ color:var(--gold); }
+  .brand .mark{
+    width:34px; height:34px; flex:none;
+    animation: markSettle .9s cubic-bezier(.22,1,.36,1) both;
+    transition: transform .45s cubic-bezier(.34,1.56,.64,1);
+  }
+  .brand .mark:hover{ transform: rotate(-8deg) scale(1.08); }
+  .brand .mark svg{ display:block; width:100%; height:100%; }
+  .vt-head{ fill:var(--ink); }
+  .vt-visor{ fill:var(--accent); }
+  .vt-antenna{ stroke:var(--gold); }
+  .vt-badge-blue{ fill:var(--blue); }
+  .vt-badge-red{ fill:var(--accent); }
+  .vt-badge-white{ fill:var(--bg); }
+  header.topbar .vt-head{ fill:var(--masthead-ink); }
+  header.topbar .vt-badge-white{ fill:var(--masthead-bg); }
+  .brand .name{ font-family:var(--serif); font-weight:700; font-size:18px; letter-spacing:.2px; color:var(--masthead-ink); white-space:nowrap; transition:color .15s ease; }
+  .brand .year{ font-family:var(--mono); font-size:11px; color:var(--gold); letter-spacing:.06em; white-space:nowrap; }
+  @media (max-width:420px){ .brand .year{ display:none; } }
+  .topbar-actions{ display:flex; align-items:center; gap:6px; }
+  .icon-btn{
+    width:34px; height:34px; border-radius:50%; border:1px solid var(--masthead-line);
+    background:transparent; color:var(--masthead-ink); display:flex; align-items:center;
+    justify-content:center; cursor:pointer; font-size:15px;
+  }
+  .icon-btn:hover{ color:var(--gold); border-color:var(--gold); }
+
+  main{ flex:1; padding:24px clamp(20px,4vw,40px) 48px; max-width:680px; margin:0 auto; width:100%; }
+  main.app-wide{ max-width:100%; }
+
+  .eyebrow{
+    font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--ink-faint); margin-bottom:6px; display:block; text-align:center;
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    appearance:none; border:none; cursor:pointer; border-radius:999px; padding:14px 22px;
+    font-size:15px; font-weight:700; font-family:var(--sans); display:inline-flex; align-items:center;
+    justify-content:center; gap:8px; transition:transform .08s ease;
+  }
+  .btn:active{ transform:scale(.98); }
+  .btn-primary{ background:var(--ink); color:var(--bg); width:100%; }
+  :root[data-theme="dark"] .btn-primary, @media (prefers-color-scheme: dark){ }
+  .btn-accent{ background:var(--accent); color:var(--accent-ink); width:100%; }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:1px solid var(--line); }
+  .btn-ghost:hover{ color:var(--ink); border-color:var(--ink-faint); }
+  .btn-block{ width:100%; }
+  .btn-sm{ padding:8px 14px; font-size:13px; border-radius:999px; }
+  .btn[disabled]{ opacity:.4; cursor:not-allowed; }
+
+  /* ---------- Profile picker ---------- */
+  .profile-grid{ display:grid; gap:12px; margin-top:18px; max-width:760px; margin-left:auto; margin-right:auto; }
+  .profile-card{
+    display:flex; align-items:center; gap:13px; padding:14px 16px; border-radius:var(--radius);
+    background:var(--bg-raised); border:1px solid var(--line-soft); cursor:pointer; text-align:left;
+    box-shadow:var(--shadow); width:100%;
+  }
+  .profile-avatar{
+    width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:var(--serif); font-weight:600; font-size:16px; color:#fff; flex:none;
+  }
+  .profile-meta{ flex:1; min-width:0; }
+  .profile-meta .pname{ font-weight:600; font-size:15px; }
+  .profile-meta .psub{ font-size:12.5px; color:var(--ink-faint); margin-top:2px; }
+  .profile-arrow{ color:var(--ink-faint); }
+  .new-profile-form{
+    margin-top:16px; padding:16px; border:1px dashed var(--line); border-radius:var(--radius);
+    display:none; gap:10px; flex-direction:column; max-width:420px;
+  }
+  .dash-head{ max-width:640px; margin-left:auto; margin-right:auto; }
+  .new-profile-form.open{ display:flex; }
+  input[type="text"], select, textarea{
+    font-family:var(--sans); font-size:14.5px; padding:11px 14px; border-radius:12px;
+    border:1px solid var(--line); background:var(--bg); color:var(--ink); width:100%;
+  }
+  input[type="text"]:focus, select:focus, textarea:focus{ border-color:var(--blue); }
+  label.field-label{ font-size:12px; color:var(--ink-soft); font-weight:600; margin-bottom:5px; display:block; }
+
+  .intro-copy{ color:var(--ink-soft); font-size:14.5px; line-height:1.55; margin-top:8px; max-width:640px; }
+
+  /* ---------- Dashboard ---------- */
+  .banner{
+    display:flex; gap:12px; align-items:flex-start; padding:16px 18px; border-radius:18px;
+    background:var(--gold-soft); border:1px solid color-mix(in srgb, var(--gold) 35%, transparent);
+    margin-bottom:16px;
+  }
+  .banner .dot{ width:8px; height:8px; border-radius:50%; background:var(--gold); margin-top:6px; flex:none; }
+  .banner strong{ font-weight:600; }
+  .banner p{ margin:2px 0 0; font-size:13.5px; color:var(--ink-soft); line-height:1.5; }
+  .banner button{ margin-top:8px; }
+
+  .stat-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:16px 0; }
+  .stat-tile{ background:var(--bg-raised); border:1px solid var(--line-soft); border-radius:16px; padding:16px 17px; }
+  .stat-tile .num{ font-family:var(--mono); font-size:22px; font-weight:600; }
+  .stat-tile .lbl{ font-size:11.5px; color:var(--ink-faint); margin-top:2px; text-transform:uppercase; letter-spacing:.04em; }
+
+  .progress-track{ height:6px; background:var(--line-soft); border-radius:99px; overflow:hidden; margin-top:8px; }
+  .progress-fill{ height:100%; background:var(--accent); border-radius:99px; transition:width .3s ease; }
+
+  .candidate-list{ display:grid; gap:8px; margin-top:10px; }
+  .candidate-row{
+    display:flex; align-items:center; gap:11px; padding:13px 15px; border-radius:16px;
+    background:var(--bg-raised); border:1px solid var(--line-soft);
+  }
+  .cand-dot{ width:10px; height:10px; border-radius:50%; flex:none; }
+  .cand-name{ font-size:13.5px; font-weight:600; flex:1; }
+  .cand-party{ font-size:11.5px; color:var(--ink-faint); }
+  .badge-new{
+    font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.05em;
+    background:var(--accent); color:var(--accent-ink); padding:3px 9px; border-radius:999px;
+    display:inline-block;
+  }
+  .badge-withdrawn{
+    font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.05em;
+    background:var(--line-soft); color:var(--ink-faint); padding:3px 9px; border-radius:999px;
+  }
+  .candidate-row.withdrawn{ opacity:.55; }
+  .candidate-row.withdrawn .cand-dot{ filter:grayscale(1); }
+
+  section.block{ margin-top:32px; }
+  section.block h2{ font-size:19px; margin-bottom:3px; }
+  section.block .sub{ font-size:13px; color:var(--ink-faint); }
+
+  /* ---------- Vote screen ---------- */
+  .vote-progress{ display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+  .vote-progress .progress-track{ flex:1; margin:0; }
+  .vote-progress .count{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); white-space:nowrap; }
+
+  .card-stack{ position:relative; height:auto; }
+  .vote-card{
+    background:var(--bg-raised); border:1px solid var(--line-soft); border-radius:20px; padding:26px 22px;
+    box-shadow:var(--shadow); touch-action:pan-y; user-select:none; cursor:grab;
+  }
+  .vote-card:active{ cursor:grabbing; }
+  .vote-card .cat{
+    font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--blue);
+    background:var(--blue-soft); display:inline-block; padding:4px 9px; border-radius:6px; margin-bottom:14px;
+  }
+  .vote-card .statement{ font-family:var(--serif); font-size:22px; line-height:1.32; font-weight:500; cursor:pointer; }
+  .context-hint{
+    display:inline-flex; align-items:center; justify-content:center; width:17px; height:17px;
+    margin-left:6px; font-family:var(--sans); font-size:11px; font-weight:600; color:var(--ink-faint);
+    border:1px solid var(--line); border-radius:50%; vertical-align:middle; flex:none;
+  }
+  .statement:hover .context-hint{ color:var(--blue); border-color:var(--blue); }
+  .context-panel{
+    display:none; margin-top:12px; padding:10px 12px; background:var(--blue-soft); border-radius:10px;
+    font-size:12.5px; line-height:1.5; color:var(--ink-soft);
+  }
+  .context-panel.open{ display:block; }
+  .swipe-hint{ display:flex; justify-content:space-between; margin-top:20px; font-size:12px; color:var(--ink-faint); }
+
+  .stance-buttons{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:16px; }
+  .stance-btn{
+    border-radius:16px; padding:16px 6px; border:1px solid var(--line); background:var(--bg-raised);
+    display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer; font-size:12.5px; font-weight:600;
+    color:var(--ink-soft);
+  }
+  .stance-btn .ic{ font-size:19px; }
+  .stance-btn.contre:hover{ border-color:var(--bad); color:var(--bad); }
+  .stance-btn.neutre:hover{ border-color:var(--neutral); color:var(--neutral); }
+  .stance-btn.pour:hover{ border-color:var(--good); color:var(--good); }
+
+  .importance-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:18px; }
+  .imp-btn{
+    border-radius:16px; padding:15px 6px; border:1px solid var(--line); background:var(--bg-raised);
+    cursor:pointer; font-size:12.5px; font-weight:600; color:var(--ink-soft); text-align:center; line-height:1.3;
+  }
+  .imp-btn:hover{ border-color:var(--blue); color:var(--blue); }
+  .imp-btn.picked{ border-color:var(--blue); background:var(--blue-soft); color:var(--blue); }
+
+  .reveal-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:18px; }
+  .reveal-chip{
+    display:flex; align-items:center; gap:5px; font-size:11.5px; padding:5px 8px 5px 6px; border-radius:99px;
+    background:var(--line-soft); color:var(--ink-soft);
+  }
+  .reveal-chip .ic{ font-size:12px; }
+
+  .skip-link{ display:block; text-align:center; margin-top:14px; font-size:12.5px; color:var(--ink-faint); background:none; border:none; cursor:pointer; }
+
+  /* ---------- Results ---------- */
+  .podium{ display:flex; align-items:flex-end; gap:10px; margin:22px 0 28px; }
+  .podium-step{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; min-width:0; }
+  .podium-step.rank-1{ order:2; }
+  .podium-step.rank-2{ order:1; }
+  .podium-step.rank-3{ order:3; }
+  .podium-medal{
+    font-family:var(--mono); font-weight:700; font-size:11px; color:var(--ink-soft);
+    background:var(--line-soft); border-radius:99px; padding:2px 8px; margin-bottom:8px;
+  }
+  .podium-step.rank-1 .podium-medal{ background:var(--gold-soft); color:var(--gold); }
+  .podium-avatar{
+    width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    color:#fff; font-family:var(--serif); font-weight:600; font-size:16px; flex:none;
+  }
+  .podium-step.rank-1 .podium-avatar{ width:56px; height:56px; font-size:19px; }
+  .podium-name{ font-weight:600; font-size:12.5px; line-height:1.25; margin-top:8px; }
+  .podium-party{ font-size:10.5px; color:var(--ink-faint); margin-top:1px; }
+  .podium-score{ font-family:var(--mono); font-weight:700; font-size:16px; margin-top:5px; }
+  .podium-block{
+    width:100%; border-radius:10px 10px 4px 4px; margin-top:10px; display:flex; align-items:flex-start;
+    justify-content:center; padding-top:7px; box-sizing:border-box;
+  }
+  .podium-step.rank-1 .podium-block{ height:72px; }
+  .podium-step.rank-2 .podium-block{ height:50px; }
+  .podium-step.rank-3 .podium-block{ height:36px; }
+  .podium-block .rn{ font-family:var(--mono); font-weight:700; color:#fff; font-size:13px; }
+  .results-subhead{ font-size:12px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.05em; font-family:var(--mono); margin:22px 0 10px; }
+
+  .result-row{
+    background:var(--bg-raised); border:1px solid var(--line-soft);
+    border-radius:18px; padding:16px 18px; margin-bottom:12px; cursor:pointer;
+  }
+  .result-top{ display:flex; align-items:center; gap:11px; }
+  .result-rank{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); width:16px; }
+  .result-name{ flex:1; }
+  .result-name .n{ font-weight:600; font-size:14.5px; }
+  .result-name .p{ font-size:11.5px; color:var(--ink-faint); }
+  .result-score{ font-family:var(--mono); font-weight:600; font-size:17px; }
+  .result-bar-track{ height:7px; background:var(--line-soft); border-radius:99px; margin-top:10px; overflow:hidden; }
+  .result-bar-fill{ height:100%; border-radius:99px; }
+  .result-detail{ display:none; margin-top:14px; padding-top:12px; border-top:1px solid var(--line-soft); }
+  .result-row.open .result-detail{ display:block; }
+  .rd-item{ display:flex; gap:8px; padding:6px 0; font-size:12.5px; align-items:flex-start; }
+  .rd-item .ic{ flex:none; margin-top:1px; }
+  .rd-item .txt{ color:var(--ink-soft); }
+  .rd-item .txt b{ color:var(--ink); }
+
+  /* ---------- Admin ---------- */
+  .admin-tabs{ display:flex; gap:6px; margin-bottom:16px; border-bottom:1px solid var(--line-soft); }
+  .admin-tab{ background:none; border:none; padding:10px 4px; margin-right:14px; font-size:13.5px; font-weight:600; color:var(--ink-faint); cursor:pointer; border-bottom:2px solid transparent; }
+  .admin-tab.active{ color:var(--ink); border-color:var(--accent); }
+  .admin-item{ background:var(--bg-raised); border:1px solid var(--line-soft); border-radius:16px; padding:14px 16px; margin-bottom:10px; }
+  .admin-item-head{ display:flex; align-items:center; gap:10px; cursor:pointer; }
+  .admin-item-head .swatch{ width:11px; height:11px; border-radius:50%; flex:none; }
+  .admin-item-head .t{ flex:1; font-weight:600; font-size:13.5px; }
+  .admin-item-head .meta{ font-size:11px; color:var(--ink-faint); font-family:var(--mono); }
+  .admin-form{ display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--line-soft); flex-direction:column; gap:10px; }
+  .admin-item.open .admin-form{ display:flex; }
+  .pos-grid{ display:flex; flex-direction:column; gap:8px; }
+  .pos-row{ display:grid; grid-template-columns:1fr auto; gap:8px; align-items:start; }
+  .pos-row .topic-txt{ font-size:12.5px; color:var(--ink-soft); line-height:1.4; padding-top:8px; }
+  .pos-row select{ width:auto; min-width:100px; }
+  .pos-detail{ grid-column:1 / -1; }
+  .form-actions{ display:flex; gap:8px; margin-top:4px; }
+  .danger-link{ background:none; border:none; color:var(--bad); font-size:12px; cursor:pointer; padding:0; }
+  .disclaimer{ font-size:12px; color:var(--ink-faint); line-height:1.5; background:var(--line-soft); padding:13px 15px; border-radius:14px; margin-bottom:16px; }
+
+  footer.appfoot{ text-align:center; padding:22px clamp(20px,4vw,40px) 30px; font-size:11.5px; color:var(--ink-faint); max-width:680px; margin:0 auto; width:100%; }
+  footer.appfoot a{ text-decoration:underline; cursor:pointer; }
+
+  .sponsor-card{
+    display:block; text-align:left; background:var(--bg-raised); border:1px solid var(--line-soft);
+    border-radius:16px; padding:15px 17px; margin-bottom:16px; text-decoration:none; color:inherit;
+  }
+  a.sponsor-card:hover{ border-color:var(--ink-faint); }
+  .sponsor-label{
+    font-family:var(--mono); font-size:9.5px; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--ink-faint); display:block; margin-bottom:5px;
+  }
+  .sponsor-name{ font-size:13.5px; font-weight:600; color:var(--ink); }
+  .sponsor-tagline{ font-size:12px; color:var(--ink-soft); margin-top:2px; line-height:1.4; }
+
+  .empty-state{ text-align:center; padding:40px 10px; color:var(--ink-faint); font-size:13.5px; }
+
+  /* ---------- Landing sections (page d'accueil) ---------- */
+  .trust-row{
+    display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; justify-content:center;
+    max-width:640px; margin-left:auto; margin-right:auto;
+  }
+  .trust-chip{
+    font-family:var(--mono); font-size:11px; color:var(--ink-soft); background:var(--line-soft);
+    padding:5px 10px; border-radius:99px;
+  }
+  .landing-section{ margin-top:48px; }
+  .landing-section h2{ font-size:24px; margin-bottom:6px; text-align:center; }
+  .landing-section .sub{ font-size:14px; color:var(--ink-faint); margin-bottom:20px; text-align:center; }
+  .axis-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:16px; }
+  .axis-card{
+    background:var(--bg-raised); border:1px solid var(--line-soft);
+    border-radius:18px; padding:20px 18px;
+  }
+  .axis-card .ic{
+    width:44px; height:44px; border-radius:14px; font-size:20px;
+    display:flex; align-items:center; justify-content:center; margin-bottom:12px;
+  }
+  .axis-card .t{ font-size:14.5px; font-weight:700; }
+  .axis-card .d{ font-size:12.5px; color:var(--ink-faint); margin-top:3px; line-height:1.4; }
+  .steps-list{ display:flex; flex-direction:column; gap:14px; margin-top:14px; }
+  .step-item{ display:flex; gap:12px; align-items:flex-start; }
+  .step-num{
+    font-family:var(--mono); font-weight:700; font-size:15px; color:var(--accent);
+    background:var(--accent-soft); width:36px; height:36px; border-radius:12px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .step-item .t{ font-size:14.5px; font-weight:700; }
+  .step-item .d{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; line-height:1.5; }
+  .faq-item{
+    border-bottom:1px solid var(--line-soft); padding:13px 0; cursor:pointer;
+  }
+  .faq-item:first-child{ border-top:1px solid var(--line-soft); }
+  .faq-q{ display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:13.5px; font-weight:600; }
+  .faq-q .chev{ color:var(--ink-faint); transition:transform .15s ease; flex:none; }
+  .faq-item.open .faq-q .chev{ transform:rotate(180deg); }
+  .faq-a{ display:none; font-size:13px; color:var(--ink-soft); line-height:1.55; margin-top:9px; }
+  .faq-item.open .faq-a{ display:block; }
+  .editorial-block{ font-size:13.5px; color:var(--ink-soft); line-height:1.65; max-width:640px; }
+  .editorial-block p{ margin:0 0 12px; }
+  .editorial-block p:last-child{ margin-bottom:0; }
+  .landing-narrow{ max-width:640px; margin-left:auto; margin-right:auto; }
+  .final-cta{ text-align:center; }
+  .final-cta .sub{ margin-bottom:16px; }
+  .final-cta .btn{ max-width:360px; margin:0 auto; }
+
+  /* ---------- Vivant : mouvement, relief, watermark ---------- */
+  @keyframes markSettle{
+    0%{ transform:scale(.6) rotate(-8deg); opacity:0; }
+    60%{ transform:scale(1.06) rotate(3deg); opacity:1; }
+    100%{ transform:scale(1) rotate(0deg); opacity:1; }
+  }
+  @keyframes markSettleFaint{
+    0%{ transform:scale(.6) rotate(-8deg); opacity:0; }
+    60%{ transform:scale(1.06) rotate(3deg); opacity:.08; }
+    100%{ transform:scale(1) rotate(0deg); opacity:.08; }
+  }
+  @keyframes fadeInUp{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes softPulse{
+    0%, 100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); }
+    50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); }
+  }
+  #app{ animation: fadeInUp .4s cubic-bezier(.22,1,.36,1) both; }
+  .btn-accent{ position:relative; }
+  .btn-accent:not([disabled]){ animation: softPulse 2.6s ease-in-out infinite; }
+  .profile-card, .stat-tile, .candidate-row, .axis-card, .result-row, .sponsor-card{
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .profile-card:hover, .axis-card:hover{ transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--line); }
+  .result-row:hover{ transform:translateY(-1px); border-color:var(--ink-faint); }
+  .candidate-row:hover{ border-color:var(--ink-faint); }
+  .hero-watermark{
+    position:absolute; top:-18px; right:-30px; width:200px; height:200px;
+    pointer-events:none; z-index:-1; animation: markSettleFaint 1.3s cubic-bezier(.22,1,.36,1) both;
+  }
+  .hero-wrap{ position:relative; overflow:hidden; isolation:isolate; max-width:640px; margin-left:auto; margin-right:auto; }
+  h1 .hl{ color:var(--accent); }
+
+  /* ---------- Adaptable à tout écran ---------- */
+  @media (min-width:640px){
+    .axis-grid{ grid-template-columns:repeat(3,1fr); }
+    .profile-grid{ grid-template-columns:1fr 1fr; }
+    .candidate-list{ grid-template-columns:1fr 1fr; }
+  }
+  @media (min-width:980px){
+    .axis-grid{ grid-template-columns:repeat(4,1fr); }
+    .candidate-list{ grid-template-columns:1fr 1fr 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; animation:none !important; } }
+</style>
+
+<div id="shell">
+  <header class="topbar">
+    <div class="brand">
+      <button class="brand-home" id="brand-home" type="button">
+        <div class="mark">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <line class="vt-antenna" x1="50" y1="18" x2="50" y2="10" stroke-width="4" stroke-linecap="round"></line>
+            <rect class="vt-badge-blue" x="42" y="3" width="5.33" height="8" rx="1"></rect>
+            <rect class="vt-badge-white" x="47.33" y="3" width="5.33" height="8"></rect>
+            <rect class="vt-badge-red" x="52.66" y="3" width="5.33" height="8" rx="1"></rect>
+            <path class="vt-head" d="M20,42 L7,48 L20,55 Z"></path>
+            <path class="vt-head" d="M80,42 L93,48 L80,55 Z"></path>
+            <path class="vt-head" d="M30,18 L70,18 L80,32 L80,58 L66,80 L34,80 L20,58 L20,32 Z"></path>
+            <path class="vt-visor" d="M27,41 L73,41 L69,54 L31,54 Z"></path>
+            <rect class="vt-head" x="48" y="41" width="4" height="13"></rect>
+            <circle class="vt-badge-blue" cx="64" cy="67" r="6.5"></circle>
+            <circle class="vt-badge-white" cx="64" cy="67" r="4.2"></circle>
+            <circle class="vt-badge-red" cx="64" cy="67" r="2"></circle>
+            <rect class="vt-badge-blue" x="38" y="73" width="8" height="3" rx="0.8"></rect>
+            <rect class="vt-badge-white" x="46" y="73" width="8" height="3"></rect>
+            <rect class="vt-badge-red" x="54" y="73" width="8" height="3" rx="0.8"></rect>
+          </svg>
+        </div>
+        <div><div class="name">Votona</div></div>
+      </button>
+      <div class="year">PRÉSIDENTIELLE 2027</div>
+    </div>
+    <div class="topbar-actions" id="topbar-actions"></div>
+  </header>
+  <main id="app"></main>
+  <footer class="appfoot">
+    <div id="sponsor-slot"></div>
+    Positions simplifiées à titre indicatif, établies à partir des déclarations publiques — ni exhaustives ni officielles.
+    <span id="profile-switch-link"></span>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   BASE DATA — source de vérité, modifiée par la vérification
+   quotidienne automatique ou manuellement par l'auteur du projet.
+   ============================================================ */
+// ==CANDIDATES_DATA_START==
+var CATEGORIES = ["Économie & travail","Protection sociale","Sécurité & immigration","Écologie","Europe & institutions","Société","Défense & numérique"];
+
+var TOPICS = [
+  {id:"t1", cat:"Économie & travail", statement:"Ramener l'âge légal de départ à la retraite à 60 ans", addedDate:"2026-06-01", context:"La réforme de 2023 a porté l'âge légal à 64 ans après des mois de mobilisation sociale. Ce sujet reste l'un des plus clivants de la vie politique française."},
+  {id:"t2", cat:"Économie & travail", statement:"Rétablir un impôt renforcé sur les grandes fortunes", addedDate:"2026-06-01", context:"L'ISF a été remplacé par l'IFI en 2018, limité à l'immobilier. Sa restauration ou son renforcement divise la gauche, favorable, de la majorité présidentielle et la droite, plutôt opposées."},
+  {id:"t3", cat:"Économie & travail", statement:"Réduire la dette publique en priorité par la baisse des dépenses de l'État", addedDate:"2026-06-01", context:"La dette publique française dépasse 110% du PIB. Le débat oppose ceux qui veulent d'abord réduire les dépenses et ceux qui privilégient de nouvelles recettes fiscales."},
+  {id:"t4", cat:"Protection sociale", statement:"Conditionner le RSA à 15 heures d'activité hebdomadaire", addedDate:"2026-06-01", context:"Expérimentée dans plusieurs départements puis généralisée par la loi Plein emploi de 2023, cette mesure est contestée par les associations de lutte contre la pauvreté."},
+  {id:"t5", cat:"Protection sociale", statement:"Augmenter significativement le SMIC", addedDate:"2026-06-01", context:"Le pouvoir d'achat reste une préoccupation majeure des Français ; la hausse légale du salaire minimum s'oppose à la préférence de certains pour la négociation par branche."},
+  {id:"t6", cat:"Protection sociale", statement:"Durcir les conditions d'indemnisation du chômage", addedDate:"2026-06-01", context:"Plusieurs réformes de l'assurance chômage se sont succédé depuis 2019, réduisant la durée et les conditions d'indemnisation selon la conjoncture économique."},
+  {id:"t7", cat:"Sécurité & immigration", statement:"Réduire drastiquement l'immigration par des quotas stricts", addedDate:"2026-06-01", context:"L'immigration est l'un des thèmes les plus structurants de la campagne, entre quotas chiffrés par nationalité ou motif et politiques plus ouvertes."},
+  {id:"t8", cat:"Sécurité & immigration", statement:"Renforcer les moyens de la police et allonger les peines de prison", addedDate:"2026-06-01", context:"La sécurité du quotidien occupe une place croissante dans le débat public, entre approche répressive et approche misant sur la prévention."},
+  {id:"t9", cat:"Sécurité & immigration", statement:"Réserver certaines aides sociales aux seuls citoyens français", addedDate:"2026-06-01", context:"Le concept de \"priorité nationale\", porté historiquement par le RN, s'oppose au principe d'égalité d'accès aux prestations défendu par la gauche et une partie du centre."},
+  {id:"t10", cat:"Écologie", statement:"Relancer massivement la filière nucléaire", addedDate:"2026-06-01", context:"Depuis 2022, la France a amorcé une relance du nucléaire civil (EPR2), un choix qui divise entre soutien massif et priorité donnée aux énergies renouvelables."},
+  {id:"t11", cat:"Écologie", statement:"Renforcer la taxe carbone sur les entreprises polluantes", addedDate:"2026-06-01", context:"La fiscalité écologique reste un outil contesté : efficace pour la transition selon ses défenseurs, pénalisante pour la compétitivité selon ses opposants."},
+  {id:"t12", cat:"Europe & institutions", statement:"Approfondir l'intégration européenne, y compris une dette commune", addedDate:"2026-06-01", context:"Le plan de relance européen de 2020 a ouvert la voie à un emprunt commun inédit ; sa pérennisation divise entre europhiles et souverainistes."},
+  {id:"t13", cat:"Société", statement:"Recruter massivement du personnel soignant et revaloriser les salaires à l'hôpital public", addedDate:"2026-08-28", context:"L'hôpital public traverse une crise structurelle de moyens et d'attractivité depuis plusieurs années, un constat largement partagé mais un financement débattu."},
+  {id:"t14", cat:"Société", statement:"Reconnaître un droit à l'aide active à mourir, comme la loi promulguée en août 2026", addedDate:"2026-08-28", context:"Promulguée le 18 août 2026 après un long débat parlementaire, cette loi a été adoptée par 291 voix contre 241, la droite et l'extrême droite ayant majoritairement voté contre."},
+  {id:"t15", cat:"Société", statement:"Encadrer plus strictement les loyers dans les zones tendues", addedDate:"2026-08-28", context:"Déjà expérimenté dans plusieurs grandes villes, l'encadrement des loyers oppose défenseurs du pouvoir d'achat des locataires et partisans de l'incitation à la construction."},
+  {id:"t16", cat:"Société", statement:"Redonner davantage d'autonomie et de sélection aux établissements scolaires", addedDate:"2026-08-28", context:"Les réformes du \"choc des savoirs\" (groupes de niveau, examens d'entrée) ont relancé le débat entre égalité et exigence à l'école."},
+  {id:"t17", cat:"Défense & numérique", statement:"Augmenter fortement le budget de la défense face aux tensions internationales", addedDate:"2026-08-28", context:"La guerre en Ukraine et les tensions géopolitiques ont conduit la France à relever sa trajectoire budgétaire militaire depuis 2022, un effort que certains veulent accélérer, d'autres freiner."},
+  {id:"t18", cat:"Défense & numérique", statement:"Maintenir un soutien militaire et financier fort à l'Ukraine face à la Russie", addedDate:"2026-08-28", context:"Le soutien à l'Ukraine, dont le prêt européen de 90 milliards d'euros voté en 2026, distingue nettement les candidats atlantistes des lignes souverainistes ou critiques de l'OTAN."},
+  {id:"t19", cat:"Europe & institutions", statement:"Instaurer une dose de proportionnelle aux élections législatives", addedDate:"2026-08-28", context:"Promise à plusieurs reprises sans jamais être mise en œuvre, la proportionnelle profiterait aux partis aujourd'hui sous-représentés à l'Assemblée."},
+  {id:"t20", cat:"Défense & numérique", statement:"Encadrer strictement l'intelligence artificielle par une régulation nationale ou européenne renforcée", addedDate:"2026-08-28", context:"Entre l'AI Act européen et la course mondiale à l'IA, le débat oppose protection des citoyens et de l'emploi à compétitivité industrielle."},
+  {id:"t21", cat:"Écologie", statement:"Interdire rapidement les pesticides de synthèse en agriculture", addedDate:"2026-09-01", context:"Ce sujet a cristallisé la mobilisation agricole de 2024-2026, opposant enjeux de santé publique et préservation des revenus agricoles."},
+  {id:"t22", cat:"Société", statement:"Créer un droit opposable à un mode de garde pour la petite enfance", addedDate:"2026-09-02", context:"Le manque de places en crèche reste un frein majeur à l'emploi des parents, notamment des mères ; plusieurs candidats en ont fait un enjeu de pouvoir d'achat des familles."},
+  {id:"t23", cat:"Société", statement:"Plafonner les effectifs à 19 élèves par classe en recrutant davantage d'enseignants", addedDate:"2026-09-03", context:"La surcharge des classes et la pénurie d'enseignants sont devenues un thème central du débat sur l'école, popularisé notamment par le programme de Mélenchon."},
+  {id:"t24", cat:"Sécurité & immigration", statement:"Rendre imprescriptibles les crimes sexuels et violents commis sur des mineurs", addedDate:"2026-09-04", context:"Ce sujet a été relancé par le meurtre de la jeune Lyhanna en juin 2026, qui a suscité une vive émotion et des appels transpartisans à durcir la loi."},
+  {id:"t25", cat:"Protection sociale", statement:"Allonger le délai de carence non indemnisé pour les arrêts de travail courts", addedDate:"2026-09-05", context:"Porté par plusieurs candidats lors du débat du Medef du 27 août 2026, ce sujet touche à l'équilibre financier de la Sécurité sociale, les arrêts courts étant évalués à 17 milliards d'euros par an."},
+  {id:"t26", cat:"Europe & institutions", statement:"S'opposer à la ratification de l'accord de libre-échange entre l'Union européenne et le Mercosur", addedDate:"2026-09-06", context:"Négocié depuis plus de 20 ans, cet accord commercial avec quatre pays d'Amérique du Sud a suscité une mobilisation agricole massive et une résolution transpartisane de l'Assemblée contre sa ratification."},
+  {id:"t27", cat:"Europe & institutions", statement:"Convoquer une assemblée constituante pour instaurer une VIe République", addedDate:"2026-09-07", context:"Portée historiquement par la gauche radicale, l'idée d'une VIe République vise à limiter les pouvoirs du président et renforcer le Parlement, en rupture avec la Constitution de 1958."},
+  {id:"t28", cat:"Économie & travail", statement:"Alourdir la fiscalité sur les très gros héritages (\"méga-successions\")", addedDate:"2026-09-08", context:"Les inégalités de patrimoine transmises par héritage sont revenues au cœur du débat économique, entre taxation accrue des grandes fortunes et défense de la libre transmission."},
+  {id:"t29", cat:"Sécurité & immigration", statement:"Abaisser la majorité pénale à 15 ans", addedDate:"2026-09-09", context:"Proposée en septembre 2026 par plusieurs candidats de droite, cette mesure s'inscrit dans un débat récurrent sur la réponse pénale face à la délinquance des mineurs."},
+  {id:"t30", cat:"Société", statement:"Instaurer un dépistage obligatoire de l'addiction aux écrans à l'entrée en sixième et en seconde", addedDate:"2026-09-10", context:"L'exposition des jeunes aux écrans et ses effets sur la santé mentale sont devenus une préoccupation croissante, portée notamment par Gabriel Attal en septembre 2026."}
+];
+
+function P(stance, detail){ return {stance:stance, detail:detail}; }
+
+var CANDIDATES = [
+  {
+    id:"bardella", name:"Jordan Bardella", party:"Rassemblement National", color:"#2457A6", addedDate:"2026-06-01",
+    positions:{
+      t1:P("pour","Défend un départ à 60 ans pour les carrières longues à taux plein."),
+      t2:P("contre","Privilégie la baisse des prélèvements plutôt qu'un ISF renforcé."),
+      t3:P("pour","Prône une baisse des dépenses, notamment liées à l'immigration."),
+      t4:P("pour","Aligné sur une conditionnalité stricte des minima sociaux."),
+      t5:P("neutre","Préfère la baisse des charges à une hausse du SMIC par la loi."),
+      t6:P("neutre","N'en fait pas un axe prioritaire de campagne."),
+      t7:P("pour","Axe central : réduction forte de l'immigration légale et illégale."),
+      t8:P("pour","Défend le renforcement des moyens policiers et des peines planchers."),
+      t9:P("pour","La priorité nationale est un marqueur historique du programme RN."),
+      t10:P("pour","Soutient une relance ambitieuse du nucléaire civil."),
+      t11:P("contre","Critique la fiscalité carbone jugée pénalisante pour l'industrie."),
+      t12:P("contre","Ligne souverainiste, opposé à une mutualisation de la dette européenne."),
+      t13:P("neutre","Soutient les moyens de l'hôpital mais conditionne toute hausse à la maîtrise globale des dépenses publiques."),
+      t14:P("contre","La quasi-totalité des députés RN a voté contre la loi sur l'aide à mourir promulguée en août 2026."),
+      t15:P("neutre","Pas d'axe fort affiché sur l'encadrement des loyers, priorité donnée au logement social pour les nationaux."),
+      t16:P("pour","Défend plus d'autonomie et de discipline dans les établissements, y compris via la sélection."),
+      t17:P("neutre","Soutient un effort de défense national mais reste prudent sur les financements liés à l'UE."),
+      t18:P("contre","A voté contre le prêt européen de 90 milliards d'euros à l'Ukraine en février 2026."),
+      t19:P("pour","Le RN plaide de longue date pour une dose de proportionnelle aux législatives."),
+      t20:P("neutre","Pas de ligne forte affichée sur la régulation de l'IA."),
+      t21:P("contre","Aligné sur la ligne du RN consistant à limiter les pesticides au strict nécessaire, là où il n'existe pas d'alternative, plutôt qu'à les interdire rapidement."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Pas de position chiffrée affichée sur un plafond précis d'effectifs par classe."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("pour","Le RN, dont il est président, a porté une proposition de résolution appelant à s'opposer fermement à l'accord UE-Mercosur pour protéger les agriculteurs français."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("contre","Le RN défend une baisse des droits de succession pour les classes moyennes et modestes plutôt qu'un alourdissement sur les grandes successions."),
+      t29:P("pour","Défend de longue date la fin de l'excuse de minorité, ayant déjà proposé d'abaisser la majorité pénale à 16 ans."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"philippe", name:"Édouard Philippe", party:"Horizons", color:"#2FA39A", addedDate:"2026-06-01",
+    positions:{
+      t1:P("contre","A porté la réforme portant l'âge légal à 64 ans."),
+      t2:P("contre","Défend une fiscalité stable pour les entreprises et le capital."),
+      t3:P("pour","Fait de la 'vérité des comptes publics' un axe central."),
+      t4:P("pour","Favorable à une activité conditionnée pour les allocataires du RSA."),
+      t5:P("neutre","Privilégie les négociations de branche à une hausse légale."),
+      t6:P("pour","Soutient un durcissement ciblé des règles d'indemnisation."),
+      t7:P("neutre","Prône une politique migratoire plus stricte sans quotas généralisés."),
+      t8:P("pour","Défend le renforcement des effectifs de sécurité."),
+      t9:P("contre","S'oppose à toute distinction de nationalité dans l'accès aux aides."),
+      t10:P("pour","Ancien porteur de la relance nucléaire lancée en 2022."),
+      t11:P("neutre","Soutient une trajectoire carbone progressive, pas de rupture brutale."),
+      t12:P("pour","Europhile assumé, favorable à une intégration renforcée."),
+      t13:P("pour","Soutient le renforcement des effectifs soignants à l'hôpital public."),
+      t14:P("neutre","Position plus réservée que la majorité présidentielle sur l'aide active à mourir."),
+      t15:P("contre","Privilégie la construction de logements à l'encadrement des loyers."),
+      t16:P("pour","A soutenu des mesures d'autonomie et de groupes de niveau à l'école."),
+      t17:P("pour","Ancien Premier ministre porteur de la trajectoire de hausse du budget des armées."),
+      t18:P("pour","Défend un soutien constant à l'Ukraine face à la Russie."),
+      t19:P("contre","Privilégie la stabilité du mode de scrutin actuel."),
+      t20:P("neutre","Favorable à une régulation européenne proportionnée, sans freiner l'innovation."),
+      t21:P("neutre","Défend une sortie progressive des pesticides de synthèse, sans mettre en danger la production alimentaire."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Priorise une revalorisation salariale des enseignants de 20% sur le quinquennat plutôt qu'un plafond chiffré d'effectifs."),
+      t24:P("pour","A dénoncé le meurtre de Lyhanna en juin 2026 pour réclamer l'imprescriptibilité des crimes sexuels et violents commis sur des mineurs et davantage d'instructions individuelles données aux procureurs."),
+      t25:P("pour","Propose de renforcer le délai de carence non indemnisé des arrêts de travail courts, en s'inspirant du modèle espagnol, jugeant leur prescription actuelle en 'open bar' pour un coût estimé à 17 milliards d'euros par an à la Sécurité sociale, lors du débat du Medef le 27 août 2026."),
+      t26:P("pour","Horizons s'inscrit dans la ligne gouvernementale d'opposition à la signature de l'accord, dans la continuité de la position portée par Gabriel Attal."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("contre","S'inscrit dans sa ligne de stabilité fiscale du capital, plutôt qu'un alourdissement des droits de succession."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"attal", name:"Gabriel Attal", party:"Renaissance", color:"#E3A73B", addedDate:"2026-06-01",
+    positions:{
+      t1:P("contre","Défend le maintien de la réforme des retraites de 2023."),
+      t2:P("contre","Privilégie l'attractivité fiscale à un ISF renforcé."),
+      t3:P("pour","Priorité donnée à la maîtrise de la dépense publique."),
+      t4:P("pour","A porté la conditionnalité du RSA à l'activité en tant que Premier ministre."),
+      t5:P("neutre","Renvoie la hausse du salaire aux négociations sociales."),
+      t6:P("pour","Favorable à un durcissement incitatif du retour à l'emploi."),
+      t7:P("neutre","Défend une ligne ferme sans quotas stricts affichés."),
+      t8:P("pour","Soutient le renforcement des moyens de sécurité."),
+      t9:P("contre","Opposé à une distinction par nationalité dans l'accès aux prestations."),
+      t10:P("pour","S'inscrit dans la continuité de la relance du nucléaire."),
+      t11:P("neutre","Soutient une trajectoire climatique progressive."),
+      t12:P("pour","Favorable à une intégration européenne renforcée."),
+      t13:P("pour","Soutient la revalorisation des métiers soignants à l'hôpital public."),
+      t14:P("pour","La majorité présidentielle a largement soutenu la loi sur l'aide à mourir."),
+      t15:P("contre","Privilégie la relance de la construction à un encadrement strict des loyers."),
+      t16:P("pour","A porté des mesures d'autonomie et de groupes de niveau en tant que ministre puis Premier ministre."),
+      t17:P("pour","S'inscrit dans la trajectoire de hausse du budget des armées engagée depuis 2022."),
+      t18:P("pour","Défend la continuité du soutien militaire et financier à l'Ukraine."),
+      t19:P("neutre","Pas de position tranchée sur une dose de proportionnelle."),
+      t20:P("neutre","Favorable à une régulation européenne de l'IA équilibrée avec l'innovation."),
+      t21:P("neutre","Soutient une sortie progressive des pesticides, sans interdiction brutale qui menacerait la production."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("pour","Ancien ministre de l'Éducation, veut réduire la taille des classes en plus de revaloriser les enseignants et de rétablir un examen d'entrée en sixième."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("pour","En tant que Premier ministre, a déclaré que la France s'oppose 'de manière très claire' à la signature de l'accord UE-Mercosur."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("contre","Aligné sur la ligne de Renaissance favorable à la stabilité fiscale plutôt qu'à un alourdissement des successions."),
+      t29:P("neutre","A proposé de restreindre l'excuse de minorité pour les mineurs de 16 ans et plus auteurs de faits graves, sans avoir formellement proposé d'abaisser l'âge légal de la majorité pénale."),
+      t30:P("pour","Propose un dépistage obligatoire de l'addiction aux écrans à l'entrée en sixième et en seconde, avec un suivi psychologique proposé en cas de besoin, mesure qu'il porte comme ministre puis candidat.")
+    }
+  },
+  {
+    id:"retailleau", name:"Bruno Retailleau", party:"Les Républicains", color:"#7A3B57", addedDate:"2026-06-01",
+    positions:{
+      t1:P("contre","Défend le maintien de l'âge légal à 64 ans."),
+      t2:P("contre","Opposé à un impôt renforcé sur la fortune."),
+      t3:P("pour","Fait de la baisse de la dépense publique un axe fort."),
+      t4:P("pour","A porté un discours ferme sur l'activation des minima sociaux."),
+      t5:P("contre","Privilégie la baisse du coût du travail à la hausse du SMIC."),
+      t6:P("pour","Favorable à un durcissement des règles d'indemnisation."),
+      t7:P("pour","Ligne sécuritaire assumée, ancien ministre de l'Intérieur."),
+      t8:P("pour","Défend fortement le renforcement policier et judiciaire."),
+      t9:P("pour","Proche d'un discours de préférence nationale sur certaines aides."),
+      t10:P("pour","Favorable à une relance forte du nucléaire."),
+      t11:P("contre","Critique une fiscalité carbone jugée punitive pour les entreprises."),
+      t12:P("contre","Ligne souverainiste sur les questions budgétaires européennes."),
+      t13:P("neutre","Soutient les moyens humains à l'hôpital tout en défendant la maîtrise des dépenses publiques."),
+      t14:P("contre","Une large majorité des députés LR a voté contre la loi sur l'aide à mourir."),
+      t15:P("contre","Favorable à la construction plutôt qu'à l'encadrement des loyers."),
+      t16:P("pour","Défend l'autonomie et la sélection dans l'enseignement, ligne classique de la droite républicaine."),
+      t17:P("pour","Défend une hausse du budget de la défense face aux tensions internationales."),
+      t18:P("pour","Soutient l'aide militaire à l'Ukraine face à la Russie."),
+      t19:P("contre","La droite républicaine reste attachée au scrutin majoritaire actuel."),
+      t20:P("neutre","Pas d'axe fort affiché, prudent face à une régulation jugée trop contraignante."),
+      t21:P("contre","Défend une limitation des pesticides au strict nécessaire, là où il n'existe pas d'alternative, plutôt qu'une interdiction rapide."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Priorise la revalorisation salariale et la réorganisation des carrières enseignantes plutôt qu'un plafond chiffré d'effectifs."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("pour","Les députés LR ont voté la résolution transpartisane de l'Assemblée nationale appelant à rejeter l'accord UE-Mercosur pour protéger les agriculteurs."),
+      t27:P("neutre","Veut une profonde réforme constitutionnelle élargissant le champ du référendum, mais dans le cadre d'une refondation de la Ve République plutôt que par une assemblée constituante instaurant une VIe République."),
+      t28:P("contre","A déclaré : 'Je ne serai pas le président qui augmentera les droits de succession mais celui qui les baissera.'"),
+      t29:P("pour","A dévoilé cette proposition le 8 septembre 2026 sur CNEWS, aux côtés de la fin du droit du sol et de peines minimales."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"melenchon", name:"Jean-Luc Mélenchon", party:"La France Insoumise", color:"#C2472E", addedDate:"2026-06-01",
+    positions:{
+      t1:P("pour","Le retour à la retraite à 60 ans est une revendication historique."),
+      t2:P("pour","Défend un impôt renforcé sur les plus hauts patrimoines."),
+      t3:P("contre","S'oppose à la baisse des dépenses sociales pour réduire la dette."),
+      t4:P("contre","Rejette la conditionnalité du RSA, jugée stigmatisante."),
+      t5:P("pour","Défend une hausse significative du salaire minimum."),
+      t6:P("contre","S'oppose au durcissement des droits à l'assurance chômage."),
+      t7:P("contre","S'oppose à une politique de quotas migratoires."),
+      t8:P("contre","Critique une approche jugée trop répressive de la sécurité."),
+      t9:P("contre","Rejette toute distinction de nationalité dans l'accès aux aides."),
+      t10:P("contre","Ligne historiquement favorable à une sortie progressive du nucléaire."),
+      t11:P("pour","Défend un renforcement de la fiscalité carbone des entreprises."),
+      t12:P("neutre","Critique l'UE actuelle sans rejeter toute solidarité budgétaire."),
+      t13:P("pour","Défend un plan massif de recrutement et de revalorisation à l'hôpital public."),
+      t14:P("pour","La majorité des députés LFI a voté pour la loi sur l'aide à mourir."),
+      t15:P("pour","Défend un encadrement strict des loyers dans les zones tendues."),
+      t16:P("contre","S'oppose à la sélection, défend la mixité et l'égalité à l'école."),
+      t17:P("contre","Critique la logique de course aux armements, priorise les dépenses sociales."),
+      t18:P("neutre","Soutient la souveraineté ukrainienne mais critique l'escalade militaire et prône une solution négociée."),
+      t19:P("pour","Défend depuis longtemps une dose de proportionnelle aux législatives."),
+      t20:P("pour","Défend une régulation stricte de l'intelligence artificielle et des grandes plateformes."),
+      t21:P("pour","Veut interdire les pesticides de synthèse et développer une agriculture diversifiée et écologique."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("pour","Propose un plafond de 19 élèves par classe en recrutant 160 000 enseignants supplémentaires, mesure phare de son programme L'Avenir en commun."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("pour","LFI a porté une résolution contre l'accord, votée à l'unanimité à l'Assemblée, dénonçant la concurrence déloyale et la déforestation en Amazonie."),
+      t27:P("pour","Revendication historique de LFI : convoquer une assemblée constituante pour abolir la Ve République et instaurer une VIe République, avec référendum d'initiative citoyenne et référendum révocatoire."),
+      t28:P("pour","LFI, dont la présidente du groupe à l'Assemblée Mathilde Panot est proche, propose une taxation quasi confiscatoire au-delà de 12 millions d'euros d'héritage."),
+      t29:P("contre","LFI s'est opposée en 2026 à un durcissement pénal visant les mineurs, jugé relever du 'populisme pénal'."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"glucksmann", name:"Raphaël Glucksmann", party:"Place Publique", color:"#5C7CD6", addedDate:"2026-06-01",
+    positions:{
+      t1:P("neutre","Privilégie des aménagements ciblés plutôt qu'un retour strict à 60 ans."),
+      t2:P("pour","Favorable à une fiscalité renforcée sur les grands patrimoines."),
+      t3:P("neutre","Ne fait pas de la baisse des dépenses une priorité affichée."),
+      t4:P("contre","Opposé à la conditionnalité du RSA à l'activité."),
+      t5:P("pour","Défend une revalorisation significative du salaire minimum."),
+      t6:P("contre","S'oppose au durcissement des règles de l'assurance chômage."),
+      t7:P("contre","Rejette une politique de quotas migratoires stricts."),
+      t8:P("neutre","Priorise la prévention autant que le renforcement des moyens répressifs."),
+      t9:P("contre","Opposé à une distinction de nationalité dans l'accès aux aides."),
+      t10:P("neutre","Favorable à un mix énergétique incluant le nucléaire existant."),
+      t11:P("pour","Défend un renforcement de la fiscalité carbone."),
+      t12:P("pour","Europhile déclaré, ancien eurodéputé, favorable à une dette commune."),
+      t13:P("pour","Défend l'investissement dans les effectifs et les salaires de l'hôpital public."),
+      t14:P("pour","Soutient le droit à l'aide active à mourir adopté en 2026."),
+      t15:P("pour","Favorable à un encadrement des loyers dans les zones tendues."),
+      t16:P("contre","S'oppose à la sélection précoce, défend l'égalité des chances à l'école."),
+      t17:P("pour","Défend une hausse du budget de défense dans un contexte de tensions en Europe."),
+      t18:P("pour","Figure de proue du soutien à l'Ukraine en France et au Parlement européen."),
+      t19:P("pour","Favorable à une dose de proportionnelle pour mieux représenter le pluralisme politique."),
+      t20:P("pour","Défend une régulation européenne forte de l'intelligence artificielle face aux grandes plateformes."),
+      t21:P("neutre","Défend une sortie progressive des pesticides, sans mettre en danger la production alimentaire."),
+      t22:P("pour","Propose de créer un droit opposable à un mode de garde et un statut spécifique pour les crèches associatives, pour sortir de la marchandisation de la petite enfance."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("pour","A voté au Parlement européen pour saisir la Cour de justice de l'UE sur la légalité de l'accord avant toute ratification."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("pour","Propose de taxer les successions de plus de 2 millions d'euros pour dégager 15 milliards d'euros redistribués aux salaires, l'une de ses mesures phares."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"tondelier", name:"Marine Tondelier", party:"Les Écologistes", color:"#4C9A45", addedDate:"2026-06-01",
+    positions:{
+      t1:P("pour","Soutient un retour à la retraite à 60 ans."),
+      t2:P("pour","Défend un ISF climatique renforcé, marqueur du programme écologiste."),
+      t3:P("contre","S'oppose à une réduction de la dette par la baisse des dépenses sociales."),
+      t4:P("contre","Rejette la conditionnalité du RSA."),
+      t5:P("pour","Défend une hausse significative du SMIC."),
+      t6:P("contre","S'oppose au durcissement de l'assurance chômage."),
+      t7:P("contre","S'oppose à une politique de quotas migratoires."),
+      t8:P("neutre","Priorise la prévention à l'augmentation pure des moyens répressifs."),
+      t9:P("contre","Rejette toute distinction de nationalité dans l'accès aux aides."),
+      t10:P("contre","Ligne historiquement réservée sur le nucléaire, priorité aux renouvelables."),
+      t11:P("pour","Fait de la fiscalité carbone un axe fort du programme."),
+      t12:P("pour","Favorable à une intégration européenne renforcée pour la transition écologique."),
+      t13:P("pour","Défend un investissement massif dans les effectifs de l'hôpital public."),
+      t14:P("pour","Les député·es écologistes ont largement soutenu la loi sur l'aide à mourir."),
+      t15:P("pour","Défend un encadrement strict des loyers dans les zones tendues."),
+      t16:P("contre","S'oppose à la sélection, défend la mixité sociale à l'école."),
+      t17:P("neutre","Priorise les investissements pour la transition écologique face à la hausse des dépenses militaires."),
+      t18:P("pour","Soutient la solidarité européenne avec l'Ukraine face à la Russie."),
+      t19:P("pour","Les Écologistes défendent de longue date une dose de proportionnelle."),
+      t20:P("pour","Défend une régulation stricte de l'intelligence artificielle par principe de précaution."),
+      t21:P("pour","Défend une interdiction rapide des pesticides de synthèse, axe fort de son programme écologiste."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("pour","Les Écologistes s'opposent à l'accord au nom de la protection de l'agriculture et de la lutte contre la déforestation en Amazonie ; mobilisée aux côtés des agriculteurs sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("pour","Met en avant, comme Raphaël Glucksmann, une hausse de la taxation des plus grosses successions."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"bertrand", name:"Xavier Bertrand", party:"Les Républicains (indépendant)", color:"#8A6E4B", addedDate:"2026-08-27",
+    positions:{
+      t1:P("contre","Défend le maintien de l'âge légal à 64 ans."),
+      t2:P("contre","Privilégie la stabilité fiscale à un ISF renforcé."),
+      t3:P("pour","Priorise la réduction des dépenses publiques."),
+      t4:P("pour","Favorable à une activité conditionnée pour les allocataires du RSA."),
+      t5:P("neutre","Renvoie la question aux négociations sociales."),
+      t6:P("pour","Favorable à un durcissement incitatif au retour à l'emploi."),
+      t7:P("pour","Défend une ligne ferme sur la réduction de l'immigration."),
+      t8:P("pour","Ancien porteur de politiques sécuritaires en région, favorable au renforcement policier."),
+      t9:P("neutre","Position nuancée, sans reprendre la formule de 'priorité nationale'."),
+      t10:P("pour","Favorable à la relance du nucléaire."),
+      t11:P("neutre","Pas d'axe fort affiché sur la fiscalité carbone."),
+      t12:P("neutre","Position européenne modérée, sans ligne fédéraliste affirmée."),
+      t13:P("neutre","Soutient les moyens de l'hôpital tout en défendant la maîtrise des dépenses publiques."),
+      t14:P("contre","Une large majorité des députés LR, dont il est proche, a voté contre la loi sur l'aide à mourir."),
+      t15:P("contre","Favorable à la construction plutôt qu'à l'encadrement des loyers."),
+      t16:P("pour","Défend l'autonomie des établissements scolaires, ligne portée en tant que président de région."),
+      t17:P("pour","Favorable à une hausse du budget de la défense face aux tensions internationales."),
+      t18:P("pour","Soutient le maintien de l'aide militaire à l'Ukraine."),
+      t19:P("contre","Reste attaché au scrutin majoritaire actuel."),
+      t20:P("neutre","Pas d'axe fort affiché sur la régulation de l'IA."),
+      t21:P("contre","Défend une limitation des pesticides au strict nécessaire plutôt qu'une interdiction rapide."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("pour","Proche de la ligne des Républicains, qui ont voté la résolution transpartisane de l'Assemblée nationale contre l'accord UE-Mercosur."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("contre","Proche de la ligne des Républicains, favorable à une baisse plutôt qu'une hausse des droits de succession."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"lepen", name:"Marine Le Pen", party:"Rassemblement National", color:"#1D3557", addedDate:"2026-08-31",
+    positions:{
+      t1:P("pour","A porté historiquement la promesse d'un retour à la retraite à 60 ans."),
+      t2:P("contre","Privilégie la baisse des prélèvements plutôt qu'un ISF renforcé."),
+      t3:P("pour","Prône une baisse des dépenses publiques, notamment liées à l'immigration."),
+      t4:P("pour","Aligné sur une conditionnalité stricte des minima sociaux."),
+      t5:P("neutre","Préfère la baisse des charges à une hausse du SMIC par la loi."),
+      t6:P("neutre","N'en fait pas un axe prioritaire de campagne."),
+      t7:P("pour","Axe central de sa candidature : réduction forte de l'immigration légale et illégale."),
+      t8:P("pour","Défend le renforcement des moyens policiers et des peines planchers."),
+      t9:P("pour","Est à l'origine du concept de 'priorité nationale', marqueur historique de ses candidatures."),
+      t10:P("pour","Soutient une relance ambitieuse du nucléaire civil."),
+      t11:P("contre","Critique la fiscalité carbone jugée pénalisante pour l'industrie."),
+      t12:P("contre","Ligne souverainiste, opposée à une mutualisation de la dette européenne."),
+      t13:P("neutre","Pas de position chiffrée rendue publique sur les effectifs et salaires hospitaliers."),
+      t14:P("contre","S'est déclarée personnellement opposée au texte, jugé insuffisamment encadré, tout en laissant ses députés libres de leur vote."),
+      t15:P("neutre","Pas d'axe fort affiché sur l'encadrement des loyers."),
+      t16:P("pour","Défend plus d'autonomie et de discipline dans les établissements, y compris via la sélection."),
+      t17:P("pour","A par le passé proposé de porter le budget de la défense à 55 milliards d'euros, dans la continuité de la ligne portée par le RN."),
+      t18:P("contre","Le RN, qu'elle a longtemps présidé, a voté contre le prêt européen de 90 milliards d'euros à l'Ukraine et critique régulièrement l'ampleur du soutien occidental."),
+      t19:P("pour","Le RN plaide de longue date pour une dose de proportionnelle aux législatives."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("contre","Défend une limitation des pesticides au strict minimum, là où il n'existe pas d'alternative, plutôt qu'une interdiction rapide."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("pour","Propose de réduire les effectifs administratifs pour financer une baisse du nombre d'élèves par classe, sans fermeture d'école."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("pour","A porté une proposition de résolution appelant le gouvernement à s'opposer fermement à l'accord UE-Mercosur pour protéger les agriculteurs français."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("contre","Le RN, qu'elle a longtemps présidé, défend une baisse des droits de succession en ligne directe plutôt qu'un alourdissement sur les grandes successions."),
+      t29:P("pour","Défend de longue date l'abaissement de la majorité pénale, réclamant par le passé de l'abaisser à 16 ans."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"lisnard", name:"David Lisnard", party:"Nouvelle Énergie", color:"#D97B29", addedDate:"2026-08-31",
+    positions:{
+      t1:P("contre","Propose de fixer l'âge légal de départ à 65 ans."),
+      t2:P("contre","Son mouvement propose la suppression de l'ISF et des droits de succession."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("pour","Propose de diviser par huit le flux d'immigration légale et de durcir les conditions d'expulsion."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("pour","Veut faire du nucléaire (EPR2 et petits réacteurs modulaires) le socle de la politique énergétique."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("pour","Défend une réforme scolaire donnant plus d'autonomie de recrutement aux chefs d'établissement."),
+      t17:P("pour","Se dit favorable à un effort de défense accru."),
+      t18:P("pour","Soutient l'aide à l'Ukraine, qu'il conditionne à la stabilisation d'un rapport de force avant toute négociation."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Propose une doctrine sur le développement de l'IA sans préciser à ce stade un cadre de régulation stricte."),
+      t21:P("contre","Défend une limitation des pesticides au strict nécessaire plutôt qu'une interdiction rapide."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("contre","Son mouvement Nouvelle Énergie propose la suppression pure et simple des droits de succession."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"dupont-aignan", name:"Nicolas Dupont-Aignan", party:"Debout la France", color:"#6B4E9C", addedDate:"2026-09-01",
+    positions:{
+      t1:P("contre","Défend un retour à 62 ans plutôt que 60, tout en combattant la réforme portant l'âge à 64 ans."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("pour","Propose une sortie de Schengen et un contrôle renforcé des frontières pour réduire l'immigration."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("pour","Défend une écologie 'pragmatique' fondée sur le nucléaire, contre l'écologie punitive."),
+      t11:P("contre","Rejette l'écologie jugée punitive et une fiscalité carbone pénalisante pour les entreprises françaises."),
+      t12:P("contre","Propose la sortie de la France de l'Union européenne pour bâtir une coopération entre nations libres."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("contre","Défend une limitation des pesticides au strict nécessaire plutôt qu'une interdiction rapide."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("pour","Sa ligne souverainiste s'oppose de longue date aux accords de libre-échange négociés par l'Union européenne, dont le Mercosur."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Défend une ligne dure sur la criminalité des mineurs (y compris un référendum sur la peine de mort pour crimes sur enfants), mais ne s'est pas prononcé sur un abaissement de la majorité pénale."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"guedj", name:"Jérôme Guedj", party:"Parti socialiste", color:"#2E8B7A", addedDate:"2026-09-01",
+    positions:{
+      t1:P("neutre","S'oppose à la réforme portant l'âge légal à 64 ans et veut rouvrir la concertation sociale sur le système par points, sans engagement chiffré sur un retour à 60 ans."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("pour","Le Parti socialiste, dont il est proche, porte une revalorisation du Smic vers 1690 euros nets."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("contre","Se revendique d'une gauche 'universaliste', opposée à toute réservation des aides sociales aux seuls nationaux."),
+      t10:P("pour","Considère que le nucléaire doit rester un pilier de la politique énergétique française."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("pour","Se revendique d'une gauche 'européenne', favorable à l'approfondissement de l'intégration européenne."),
+      t13:P("pour","Propose des rallonges budgétaires pour les hôpitaux et cliniques dans son programme santé."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Défend une sortie progressive des pesticides, sans mettre en danger la production alimentaire."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("pour","Les députés socialistes ont voté la résolution transpartisane de l'Assemblée nationale contre l'accord UE-Mercosur."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"faure", name:"Olivier Faure", party:"Parti socialiste", color:"#D6478C", addedDate:"2026-09-01",
+    positions:{
+      t1:P("neutre","Le PS défend l'abrogation de la réforme Borne et un retour à 62 ans avec 43 annuités réduites selon la pénibilité, pas un retour strict à 60 ans."),
+      t2:P("pour","Souhaite le retour de l'ISF, pour un gain budgétaire estimé à 15 milliards d'euros."),
+      t3:P("contre","Critique la politique économique menée depuis 2017 et privilégie la justice fiscale à la baisse des dépenses sociales."),
+      t4:P("contre","Le PS s'oppose à la conditionnalité du RSA à des heures d'activité obligatoires."),
+      t5:P("pour","Porte une revalorisation du Smic, avec un objectif porté à 1690 euros nets par le PS."),
+      t6:P("contre","Le PS s'oppose au durcissement des règles d'indemnisation du chômage."),
+      t7:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("contre","Le PS s'oppose historiquement à toute forme de préférence nationale dans l'accès aux aides."),
+      t10:P("contre","A voté contre la loi accélérant la relance du nucléaire et la construction de nouveaux EPR2."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("pour","Défend une ligne europhile favorable à des mécanismes de solidarité budgétaire au niveau européen."),
+      t13:P("pour","Le PS porte un investissement massif dans les effectifs et les salaires de l'hôpital public."),
+      t14:P("pour","Le groupe socialiste a largement soutenu la loi sur l'aide à mourir promulguée en 2026."),
+      t15:P("pour","Le PS défend un encadrement strict des loyers dans les zones tendues."),
+      t16:P("contre","Le PS s'oppose à la sélection et défend la mixité sociale à l'école."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("pour","Le groupe socialiste a globalement soutenu les enveloppes d'aide à l'Ukraine votées au Parlement."),
+      t19:P("pour","Le PS plaide de longue date pour une dose de proportionnelle aux élections législatives."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("pour","Le Parti socialiste, qu'il dirige, a voté la résolution transpartisane de l'Assemblée nationale contre l'accord UE-Mercosur."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"arthaud", name:"Nathalie Arthaud", party:"Lutte Ouvrière", color:"#A32020", addedDate:"2026-09-01",
+    positions:{
+      t1:P("pour","Défend une retraite à taux plein dès 60 ans, avec un maximum de 37,5 annuités de cotisation."),
+      t2:P("pour","Défend une taxation forte du capital et des grandes fortunes, ligne communiste révolutionnaire."),
+      t3:P("contre","S'oppose à toute réduction de la dette par la baisse des dépenses sociales."),
+      t4:P("contre","Rejette la conditionnalité du RSA au nom de la solidarité de classe."),
+      t5:P("pour","Revendique un Smic porté à 2 000 euros nets, ainsi qu'une pension minimale équivalente."),
+      t6:P("contre","S'oppose au durcissement des droits à l'assurance chômage."),
+      t7:P("contre","Refuse toute division entre travailleurs français et immigrés, au nom de la solidarité de classe."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("contre","Rejette toute distinction de nationalité dans l'accès aux aides, au nom de la solidarité de classe."),
+      t10:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("pour","Défend l'embauche massive de personnel soignant et la hausse des salaires dans les services publics."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("pour","Défend un contrôle strict des loyers dans l'intérêt des locataires travailleurs."),
+      t16:P("contre","S'oppose à la sélection et défend l'égalité à l'école, ligne communiste traditionnelle."),
+      t17:P("contre","Ligne anti-militariste, s'oppose à la hausse des dépenses d'armement au profit des besoins sociaux."),
+      t18:P("neutre","Dénonce l'invasion russe mais critique aussi l'OTAN et l'escalade militaire occidentale, ligne internationaliste."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("pour","Fait partie des candidats favorables à une interdiction rapide des pesticides de synthèse."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("pour","Ligne communiste révolutionnaire cohérente avec sa défense d'une taxation forte du capital et des grandes fortunes."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"philippot", name:"Florian Philippot", party:"Les Patriotes", color:"#34495E", addedDate:"2026-09-01",
+    positions:{
+      t1:P("pour","Souhaite fixer l'âge légal de départ à la retraite à 60 ans."),
+      t2:P("pour","Propose de rétablir l'ISF pour alléger la fiscalité des classes moyennes et l'augmenter sur les plus fortunés."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("pour","Propose une hausse du SMIC de 15 à 25 % sur le quinquennat."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("pour","Défend une politique migratoire restrictive, incluant la conditionnalité du droit du sol."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("pour","Propose l'abolition de l'aide médicale d'État (AME), dans une logique de restriction des aides aux non-nationaux."),
+      t10:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("contre","Défend la sortie de l'Union européenne, de l'euro et de l'OTAN, ligne souverainiste intégrale."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("contre","Plaide pour l'arrêt de l'aide militaire à l'Ukraine et la sortie de l'OTAN, sur une ligne jugée proche de la Russie."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("pour","Sa ligne souverainiste s'oppose par principe aux accords de libre-échange négociés par l'Union européenne."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"asselineau", name:"François Asselineau", party:"Union Populaire Républicaine", color:"#556B2F", addedDate:"2026-09-01",
+    positions:{
+      t1:P("neutre","Propose de figer la durée de cotisation et d'inscrire la retraite par répartition dans la Constitution, sans position chiffrée sur l'âge légal de départ."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("pour","Propose une hausse du SMIC d'environ 24 % sur le quinquennat."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("pour","Propose la sortie de l'espace Schengen, un contrôle renforcé des frontières et un référendum sur le regroupement familial et le droit du sol."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("contre","Fait du Frexit — sortie de l'Union européenne, de l'euro et de l'OTAN via l'article 50 — l'axe central de son projet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("pour","Son projet de sortie de l'Union européenne (Frexit) s'oppose par principe à tout accord de libre-échange négocié par l'UE, dont le Mercosur."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"egger", name:"Clara Egger", party:"Solution Démocratique", color:"#9FA8DA", addedDate:"2026-09-01",
+    positions:{
+      t1:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("neutre","Défend que les orientations migratoires fondamentales soient validées par référendum d'initiative citoyenne plutôt que décidées par les élites, sans position personnelle tranchée affichée."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"kazib", name:"Anasse Kazib", party:"Révolution Permanente", color:"#B22222", addedDate:"2026-09-01",
+    positions:{
+      t1:P("pour","Défend le retour à la retraite à taux plein dès 60 ans avec 37,5 annuités de cotisation, et à 55 ans pour les métiers pénibles."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("contre","Défend l'ouverture des frontières et la liberté de circulation, à l'opposé de toute politique de quotas migratoires."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("contre","S'oppose à toute suppression de l'aide médicale d'État et à une restriction des aides selon la nationalité, dans une logique de solidarité internationaliste."),
+      t10:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"branco", name:"Juan Branco", party:"Les Ruches", color:"#7C4DFF", addedDate:"2026-09-01",
+    positions:{
+      t1:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("contre","Défend un assouplissement de la politique migratoire et l'ouverture des frontières européennes, jugeant l'immigration comme une richesse à accueillir pleinement."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("contre","Cohérent avec sa défense d'une politique migratoire ouverte, s'oppose à toute réservation des aides sociales aux seuls nationaux."),
+      t10:P("contre","Défend une sortie progressive du nucléaire, misant sur une accélération massive des énergies renouvelables."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("pour","Fait partie des candidats favorables à une interdiction rapide des pesticides de synthèse."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"labib", name:"Selma Labib", party:"NPA-Révolutionnaires", color:"#C0392B", addedDate:"2026-09-01",
+    positions:{
+      t1:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"ruffin", name:"François Ruffin", party:"Debout !", color:"#1ABC9C", addedDate:"2026-09-01",
+    positions:{
+      t1:P("pour","Défend la retraite à 60 ans avec 40 annuités de cotisation et une pension minimale à 1 200 euros, en opposition à la réforme portant l'âge à 64 ans."),
+      t2:P("pour","Propose de taxer les superprofits et de rétablir un ISF renforcé sur les actifs financiers, avec une tranche à 90 % au-delà de 400 000 euros de revenus."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("pour","Propose un Smic à 1 700 euros nets, assorti d'une prime immédiate de 1 000 euros pour les travailleurs essentiels."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("contre","Son mouvement Debout ! défend la régularisation des travailleuses et travailleurs sans-papiers plutôt qu'une politique de quotas stricts."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("contre","Défend la régularisation des sans-papiers exerçant une activité en France, à l'opposé d'une réservation des aides aux seuls nationaux."),
+      t10:P("neutre","Sa position sur la relance de nouveaux réacteurs nucléaires n'est pas clairement établie publiquement."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Défend une sortie progressive des pesticides de synthèse, sans mettre en danger la production alimentaire."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("pour","Défend une VIe République par assemblée constituante, avec référendum d'initiative citoyenne (RIC) et scrutin proportionnel intégral, axe central de son offre institutionnelle."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"mikolajczak", name:"Antoine Mikolajczak", party:"Équinoxe", color:"#00A99D", addedDate:"2026-09-02",
+    positions:{
+      t1:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("neutre","Son mouvement Équinoxe défend une régulation de l'immigration assortie d'un statut de réfugié climatique, sans avoir affiché de position chiffrée sur des quotas stricts."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("pour","Son parti Équinoxe est fondé sur une écologie pro-nucléaire assumée, axe central de son programme énergétique."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"brun", name:"Philippe Brun", party:"Parti socialiste", color:"#FF5722", addedDate:"2026-09-02",
+    positions:{
+      t1:P("neutre","Ne s'est pas prononcé sur l'âge légal de 60 ans ; propose plutôt une bascule partielle vers une capitalisation publique et souveraine plutôt qu'un système uniquement par répartition."),
+      t2:P("pour","Veut le retour de l'impôt sur la fortune (ISF) et une mise à contribution des successions pour financer son programme."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Propose de baisser la CSG sur les salaires de moins de 4 000 euros pour augmenter le net plutôt qu'une hausse du SMIC lui-même."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Propose un investissement massif (1,5 % du PIB) et un laboratoire de 1 700 chercheurs en IA, axé sur la souveraineté industrielle plutôt que sur une régulation stricte."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("pour","Le Parti socialiste, dont il est député, a voté la résolution transpartisane de l'Assemblée nationale contre l'accord UE-Mercosur."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("pour","Propose déjà une mise à contribution des successions, en plus du retour de l'ISF, pour financer son programme."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"royal", name:"Ségolène Royal", party:"Parti socialiste", color:"#8E44AD", addedDate:"2026-09-03",
+    positions:{
+      t1:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"massard", name:"Lydie Massard", party:"Union démocratique bretonne", color:"#D4A017", addedDate:"2026-09-03",
+    positions:{
+      t1:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("pour","Défend une vision fédéraliste d'une Europe des régions, favorable à un approfondissement de l'intégration européenne."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"lalanne", name:"Francis Lalanne", party:"France Libre", color:"#C71585", addedDate:"2026-09-03",
+    positions:{
+      t1:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"mathieu", name:"Benoît Mathieu", party:"Sans étiquette", color:"#4682B4", addedDate:"2026-09-03",
+    positions:{
+      t1:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"cazeneuve", name:"Bernard Cazeneuve", party:"La Convention", color:"#546E7A", addedDate:"2026-09-04",
+    positions:{
+      t1:P("contre","Juge la réforme des retraites de 2023 'très injuste' mais privilégie une réforme fondée sur la durée de cotisation plutôt qu'un retour strict à 60 ans."),
+      t2:P("pour","Appelle à rétablir un impôt sur la fortune ciblant les très grandes fortunes, les hauts revenus du capital et les rentes financières."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("contre","Se dit plutôt opposé à une réduction drastique de l'immigration légale par des quotas stricts."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("pour","Plaide dans sa lettre aux Français pour une Europe qui décide à la majorité plutôt qu'à l'unanimité et pour une politique industrielle, de défense et migratoire communes."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"batho", name:"Delphine Batho", party:"Génération Écologie", color:"#2E7D32", addedDate:"2026-09-04",
+    positions:{
+      t1:P("neutre","Défend l'abrogation de la réforme des retraites de 2023 et un retour à 62 ans ou moins, sans engagement chiffré sur un retour strict à 60 ans."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("contre","S'oppose à la construction d'une nouvelle génération de réacteurs nucléaires."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"bouamrane", name:"Karim Bouamrane", party:"La France Humaine et Forte", color:"#FF8F00", addedDate:"2026-09-04",
+    positions:{
+      t1:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"verdier", name:"Fabien Verdier", party:"Gauche socialiste et démocratique", color:"#6B8F71", addedDate:"2026-09-05",
+    positions:{
+      t1:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"maurel", name:"Emmanuel Maurel", party:"Gauche républicaine et socialiste", color:"#E07A5F", addedDate:"2026-09-05",
+    positions:{
+      t1:P("neutre","Défend un système de retraite par répartition solide et refuse toute incitation fiscale à l'épargne retraite privée, sans engagement chiffré sur un retour à 60 ans."),
+      t2:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t3:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t4:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t5:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t6:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t7:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t10:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t11:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t12:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t13:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t14:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t17:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t18:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t19:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  },
+  {
+    id:"roussel", name:"Fabien Roussel", party:"Parti communiste français", color:"#9B1C31", addedDate:"2026-09-06",
+    positions:{
+      t1:P("pour","Défend un retour à la retraite à 60 ans à taux plein, avec une pension minimale portée à 1 200 euros nets."),
+      t2:P("pour","Défend le rétablissement et le durcissement de l'ISF sur les très hauts patrimoines."),
+      t3:P("contre","Son objectif de 'zéro chômage' et son fonds écologique et social de 140 milliards d'euros financé par les entreprises polluantes excluent toute logique de baisse des dépenses publiques pour réduire la dette."),
+      t4:P("contre","Vise un objectif de 'zéro chômage' en cinq ans plutôt qu'un conditionnement du RSA à des heures d'activité obligatoires."),
+      t5:P("pour","Propose de porter le Smic à 1 500 euros nets et d'instaurer la semaine de 32 heures."),
+      t6:P("contre","Son objectif de 'zéro chômage' passe par la création d'emplois plutôt que par un durcissement des droits des chômeurs."),
+      t7:P("contre","Les députés communistes ont voté contre la loi immigration, dans une logique d'opposition aux mesures restrictives, sans avoir pris de position chiffrée sur des quotas."),
+      t8:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t9:P("contre","Les députés communistes se sont opposés à la suppression de l'aide médicale d'État et rejettent toute distinction de nationalité dans l'accès aux aides."),
+      t10:P("pour","Défend le maintien et le développement de la filière nucléaire."),
+      t11:P("pour","Refuse toute taxe carbone pesant sur les ménages modestes mais propose un fonds écologique et social de 140 milliards d'euros financé par les entreprises polluantes."),
+      t12:P("neutre","Position non encore précisée publiquement sur une éventuelle dette commune européenne."),
+      t13:P("pour","Propose le recrutement de 100 000 agents supplémentaires dans les hôpitaux publics."),
+      t14:P("pour","Le groupe communiste a majoritairement voté pour la loi sur l'aide à mourir promulguée en 2026."),
+      t15:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t16:P("contre","Le PCF défend historiquement la mixité sociale et s'oppose à la sélection à l'école, ligne constante du parti."),
+      t17:P("neutre","Soutient le développement d'une armée européenne commune, sans position chiffrée connue sur la hausse du budget de la défense française."),
+      t18:P("contre","Critique l'aide européenne à l'Ukraine sous forme de prêts et plaide pour une initiative de paix par la négociation plutôt que la poursuite de l'escalade militaire."),
+      t19:P("pour","Se dit favorable à une dose de proportionnelle aux élections législatives, sans en faire une priorité de campagne."),
+      t20:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t21:P("neutre","Défend une sortie progressive des pesticides de synthèse et du glyphosate, plutôt qu'une interdiction rapide."),
+      t22:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t23:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t24:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t25:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t26:P("pour","Le groupe communiste s'inscrit dans la résolution transpartisane votée quasi à l'unanimité par l'Assemblée nationale contre l'accord UE-Mercosur."),
+      t27:P("neutre","Défend la primauté du Parlement et critique l'usage du 49.3, sans avoir formellement porté une VIe République par assemblée constituante."),
+      t28:P("pour","Propose une réforme des droits de succession fusionnant les multiples abattements en un abattement unique de 170 000 euros par héritier et un doublement des tranches visant les grosses successions."),
+      t29:P("neutre","Le PCF s'est historiquement opposé aux durcissements pénaux visant les mineurs, mais sans prise de position directement sourcée sur ce seuil précis."),
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+    }
+  }
+];
+// ==CANDIDATES_DATA_END==
+
+/* ============================================================
+   SPONSORS — encart publicitaire statique, géré MANUELLEMENT
+   par l'auteur du site. La veille automatique quotidienne ne
+   touche jamais à ce bloc.
+
+   Règles impératives pour tout annonceur ajouté ici :
+   - JAMAIS un parti politique, un candidat, une campagne électorale
+     ou un contenu assimilable à de la publicité politique au sens
+     du règlement européen 2024/900 sur la transparence de la
+     publicité politique.
+   - Un seul encart, sans ciblage ni profilage : tous les visiteurs
+     voient la même chose. Pas de cookie, pas de script tiers.
+   - "label" doit toujours rester visible pour une identification
+     claire du contenu comme publicité (transparence commerciale).
+
+   Format : {id, label:"Publicité", name, tagline, url, active}
+   Laisser SPONSORS = [] pour ne rien afficher.
+   ============================================================ */
+var SPONSORS = [
+  {id:"exemple", label:"Publicité", name:"Votre publicité ici", tagline:"Cet emplacement est disponible — remplace ce bloc par un vrai annonceur.", url:"", active:true}
+];
+
+/* ============================================================
+   CONTENU DE LA PAGE D'ACCUEIL — présentation, thèmes, FAQ.
+   Purement éditorial, jamais touché par la veille automatique.
+   ============================================================ */
+var CATEGORY_META = {
+  "Économie & travail": {ic:"💼", d:"Fiscalité, emploi, retraites, pouvoir d'achat.", c:"--gold"},
+  "Protection sociale": {ic:"🤝", d:"Santé, chômage, minima sociaux, solidarité.", c:"--blue"},
+  "Sécurité & immigration": {ic:"🛡️", d:"Police, justice, frontières, droit d'asile.", c:"--accent"},
+  "Écologie": {ic:"🌱", d:"Énergie, agriculture, climat, biodiversité.", c:"--good"},
+  "Europe & institutions": {ic:"🇪🇺", d:"Union européenne, réforme des institutions, scrutin.", c:"--plum"},
+  "Société": {ic:"👥", d:"École, logement, santé, libertés individuelles.", c:"--teal"},
+  "Défense & numérique": {ic:"🔐", d:"Armée, intelligence artificielle, souveraineté technologique.", c:"--ink-soft"}
+};
+
+var HOW_IT_WORKS = [
+  {t:"Prends position", d:"Pour chaque sujet, indique si tu es plutôt pour, plutôt contre, ou neutre — puis précise à quel point ce sujet compte pour toi."},
+  {t:"L'importance pèse dans le calcul", d:"Les sujets que tu juges les plus importants comptent davantage dans le calcul de ton affinité avec chaque candidat."},
+  {t:"Reviens au fil de la campagne", d:"Un nouveau sujet, et parfois un nouveau candidat, s'ajoute chaque jour ; ton classement se met à jour au fur et à mesure."}
+];
+
+var FAQ_ITEMS = [
+  {q:"Qu'est-ce que Votona ?", a:"Un outil pour comparer tes positions à celles des candidats déclarés à la présidentielle 2027, sujet par sujet, avec un classement pondéré par ce qui compte le plus pour toi."},
+  {q:"Comment le classement est-il calculé ?", a:"Pour chaque sujet auquel tu as répondu, ta position (pour / neutre / contre) est comparée à celle du candidat, pondérée par l'importance que tu lui as donnée. Le score final est une moyenne pondérée sur l'ensemble des sujets répondus."},
+  {q:"Combien de candidats sont comparés ?", a:"Tous les candidats officiellement déclarés sont intégrés dès leur déclaration, sans limite de nombre ni tri par notoriété — le total exact est affiché en haut de cette page."},
+  {q:"En quoi ce test diffère-t-il d'un test politique classique ?", a:"Il ne se limite pas à une poignée de grands partis : chaque candidature officiellement déclarée y figure, un nouveau sujet enrichit le questionnaire chaque jour jusqu'au scrutin, et les candidatures retirées restent visibles plutôt que d'être effacées."},
+  {q:"Mes réponses sont-elles envoyées quelque part ?", a:"Non. Tes profils, tes réponses et tes résultats restent stockés dans ton navigateur, sur cet appareil — rien n'est transmis à un serveur."},
+  {q:"Comment supprimer mes données ?", a:"Tout est stocké uniquement dans ton navigateur, dans aucun compte ni serveur. Efface les données de navigation de ce site pour tout supprimer définitivement, à tout moment."},
+  {q:"D'où viennent les positions affichées ?", a:"Chaque position est établie à partir de déclarations, votes ou programmes publics, vérifiés quotidiennement. Un détail sourcé accompagne chaque position dans le détail de tes résultats."},
+  {q:"Que se passe-t-il si un candidat retire sa candidature ?", a:"Il est marqué « Retiré » et sorti du classement, mais ses réponses et son historique restent conservés — rien n'est supprimé, pour garder une trace complète de la campagne."},
+  {q:"Puis-je revenir sur une réponse déjà donnée ?", a:"Oui. Depuis ton tableau de bord, choisis « Revoir mes réponses » : tu repasses sur les sujets déjà répondus et peux changer ta position ou l'importance donnée à tout moment."},
+  {q:"Que se passe-t-il si je passe un sujet ?", a:"Il reste sans réponse et n'entre pas dans le calcul de ton classement. Tu peux y revenir plus tard depuis ton tableau de bord."},
+  {q:"Puis-je créer plusieurs profils sur le même appareil ?", a:"Oui. Chaque profil — un par personne du foyer, par exemple — garde ses propres réponses et ses propres résultats, séparément, sur cet appareil."},
+  {q:"Le site affiche-t-il de la publicité ?", a:"Un encart publicitaire statique peut apparaître, toujours clairement identifié comme tel. Il ne cible jamais un candidat, un parti ni une thématique électorale, conformément au règlement européen sur la transparence de la publicité politique."},
+  {q:"Le site est-il partisan ?", a:"Non. Les positions sont présentées de façon descriptive, jamais jugées, et l'ordre d'affichage des candidats ne reflète aucune préférence."},
+  {q:"Combien de temps ça prend ?", a:"Quelques minutes pour un premier passage. Tu peux répondre à ton rythme, t'arrêter et reprendre plus tard — chaque profil garde sa progression."}
+];
+
+/* ============================================================
+   STORAGE — profils multiples + réponses (par profil) et
+   compléments ajoutés depuis le panneau d'administration
+   (partagés par tous les profils de ce navigateur).
+   ============================================================ */
+var LS_PROFILES = "votona.profiles.v1";
+var LS_OVERRIDES = "votona.overrides.v1";
+var LS_ACTIVE = "votona.active.v1";
+var NEW_WINDOW_DAYS = 3;
+
+function safeGet(key, fallback){
+  try{
+    var raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  }catch(e){ return fallback; }
+}
+function safeSet(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+}
+
+function loadProfiles(){ return safeGet(LS_PROFILES, {}); }
+function saveProfiles(p){ safeSet(LS_PROFILES, p); }
+function loadOverrides(){
+  return safeGet(LS_OVERRIDES, {candidateOverrides:{}, newCandidates:[], newTopics:[]});
+}
+function saveOverrides(o){ safeSet(LS_OVERRIDES, o); }
+
+function uid(prefix){ return prefix + "-" + Math.random().toString(36).slice(2,9); }
+function daysSince(iso){
+  var d = (new Date() - new Date(iso)) / 86400000;
+  return d;
+}
+function escapeHtml(s){
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+
+/* Merge base data with local admin overrides */
+function getTopics(){
+  var ov = loadOverrides();
+  return TOPICS.concat(ov.newTopics || []);
+}
+function getCandidates(){
+  var ov = loadOverrides();
+  var base = CANDIDATES.map(function(c){
+    var o = ov.candidateOverrides && ov.candidateOverrides[c.id];
+    if(!o) return c;
+    var merged = Object.assign({}, c, o);
+    merged.positions = Object.assign({}, c.positions, o.positions || {});
+    return merged;
+  });
+  return base.concat(ov.newCandidates || []);
+}
+
+/* ============================================================
+   STATE
+   ============================================================ */
+var state = {
+  screen: "profiles",
+  activeProfileId: null,
+  voteQueue: [],
+  voteIndex: 0,
+  voteStep: "stance",
+  pendingStance: null,
+  adminTab: "candidates",
+  adminOpenId: null
+};
+
+function activeProfile(){
+  var profiles = loadProfiles();
+  return state.activeProfileId ? profiles[state.activeProfileId] : null;
+}
+function updateActiveProfile(mutator){
+  var profiles = loadProfiles();
+  var p = profiles[state.activeProfileId];
+  if(!p) return;
+  mutator(p);
+  profiles[state.activeProfileId] = p;
+  saveProfiles(profiles);
+}
+
+/* ============================================================
+   SCORING
+   ============================================================ */
+function matchScore(userStance, candStance){
+  if(userStance === candStance) return 1;
+  if(userStance === "neutre" || candStance === "neutre") return 0.5;
+  return 0;
+}
+function computeResults(profile){
+  var candidates = getCandidates().filter(function(c){ return !c.withdrawn; });
+  var answers = profile.answers || {};
+  var answeredIds = Object.keys(answers);
+  return candidates.map(function(c){
+    var wsum = 0, ssum = 0, n = 0;
+    answeredIds.forEach(function(tid){
+      var a = answers[tid];
+      var pos = c.positions[tid];
+      if(!pos) return;
+      var w = a.importance;
+      wsum += w;
+      ssum += w * matchScore(a.stance, pos.stance);
+      n++;
+    });
+    var pct = wsum > 0 ? Math.round((ssum / wsum) * 100) : null;
+    return {candidate:c, pct:pct, answeredCount:n};
+  }).sort(function(a,b){
+    if(a.pct === null) return 1;
+    if(b.pct === null) return -1;
+    return b.pct - a.pct;
+  });
+}
+
+/* ============================================================
+   RENDER — TOPBAR
+   ============================================================ */
+function goToFaq(){
+  state.screen = "faq";
+  render();
+}
+
+function renderTopbar(){
+  var el = document.getElementById("topbar-actions");
+  var html = "";
+  if(state.screen !== "profiles"){
+    html += '<button class="icon-btn" id="btn-home" title="Accueil">⌂</button>';
+  }
+  html += '<button class="icon-btn" id="btn-faq" title="Questions fréquentes">?</button>';
+  html += '<button class="icon-btn" id="btn-admin" title="Gérer candidats et sujets">⚙</button>';
+  el.innerHTML = html;
+  var home = document.getElementById("btn-home");
+  if(home) home.onclick = function(){ state.screen = "dashboard"; render(); };
+  document.getElementById("btn-faq").onclick = goToFaq;
+  document.getElementById("btn-admin").onclick = function(){ state.screen = "admin"; state.adminOpenId=null; render(); };
+
+  var pl = document.getElementById("profile-switch-link");
+  pl.innerHTML = activeProfile() ? ' · <a id="switch-link">changer de profil</a>' : "";
+  var sw = document.getElementById("switch-link");
+  if(sw) sw.onclick = function(){ state.screen = "profiles"; render(); };
+
+  var brandHome = document.getElementById("brand-home");
+  if(brandHome) brandHome.onclick = function(){ state.screen = "profiles"; render(); };
+}
+
+/* ============================================================
+   SCREEN — PROFILES
+   ============================================================ */
+function initials(name){
+  return name.trim().split(/\s+/).slice(0,2).map(function(w){return w[0];}).join("").toUpperCase();
+}
+var AVATAR_COLORS = ["#B6392F","#29538F","#A97A25","#3D7A4A","#7A3B57","#5C7CD6"];
+function avatarColor(seed){
+  var h = 0;
+  for(var i=0;i<seed.length;i++) h = (h*31 + seed.charCodeAt(i)) % AVATAR_COLORS.length;
+  return AVATAR_COLORS[Math.abs(h)];
+}
+
+function axisGridHtml(){
+  return CATEGORIES.map(function(cat){
+    var m = CATEGORY_META[cat] || {ic:"•", d:"", c:"--accent"};
+    return '<div class="axis-card"><div class="ic" style="background:color-mix(in srgb, var(' + m.c + ') 16%, transparent); color:var(' + m.c + ')">' + m.ic + '</div>' +
+      '<div class="t">' + escapeHtml(cat) + '</div>' +
+      '<div class="d">' + escapeHtml(m.d) + '</div></div>';
+  }).join("");
+}
+function howItWorksHtml(){
+  return HOW_IT_WORKS.map(function(s, i){
+    return '<div class="step-item"><div class="step-num">' + (i+1) + '</div>' +
+      '<div><div class="t">' + escapeHtml(s.t) + '</div><div class="d">' + escapeHtml(s.d) + '</div></div></div>';
+  }).join("");
+}
+function faqHtml(){
+  return FAQ_ITEMS.map(function(item, i){
+    return '<div class="faq-item" data-faq="' + i + '">' +
+      '<div class="faq-q"><span>' + escapeHtml(item.q) + '</span><span class="chev">⌄</span></div>' +
+      '<div class="faq-a">' + escapeHtml(item.a) + '</div></div>';
+  }).join("");
+}
+function wireFaqToggles(){
+  document.querySelectorAll("[data-faq]").forEach(function(el){
+    el.onclick = function(){ el.classList.toggle("open"); };
+  });
+}
+
+function renderProfiles(){
+  var profiles = loadProfiles();
+  var ids = Object.keys(profiles).sort(function(a,b){ return (profiles[b].createdAt||"").localeCompare(profiles[a].createdAt||""); });
+  var topics = getTopics();
+  var candidates = getCandidates().filter(function(c){ return !c.withdrawn; });
+
+  var cardsHtml = ids.map(function(id){
+    var p = profiles[id];
+    var answered = Object.keys(p.answers || {}).length;
+    return '<button class="profile-card" data-open="' + id + '">' +
+      '<div class="profile-avatar" style="background:' + avatarColor(p.name) + '">' + escapeHtml(initials(p.name)) + '</div>' +
+      '<div class="profile-meta"><div class="pname">' + escapeHtml(p.name) + '</div>' +
+      '<div class="psub">' + answered + ' / ' + topics.length + ' sujets répondus</div></div>' +
+      '<div class="profile-arrow">›</div></button>';
+  }).join("");
+
+  var html = '<div class="hero-wrap">' +
+      '<svg class="hero-watermark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+        '<line class="vt-antenna" x1="50" y1="18" x2="50" y2="10" stroke-width="4" stroke-linecap="round"></line>' +
+        '<rect class="vt-badge-blue" x="42" y="3" width="5.33" height="8" rx="1"></rect>' +
+        '<rect class="vt-badge-white" x="47.33" y="3" width="5.33" height="8"></rect>' +
+        '<rect class="vt-badge-red" x="52.66" y="3" width="5.33" height="8" rx="1"></rect>' +
+        '<path class="vt-head" d="M20,42 L7,48 L20,55 Z"></path>' +
+        '<path class="vt-head" d="M80,42 L93,48 L80,55 Z"></path>' +
+        '<path class="vt-head" d="M30,18 L70,18 L80,32 L80,58 L66,80 L34,80 L20,58 L20,32 Z"></path>' +
+        '<path class="vt-visor" d="M27,41 L73,41 L69,54 L31,54 Z"></path>' +
+        '<rect class="vt-head" x="48" y="41" width="4" height="13"></rect>' +
+        '<circle class="vt-badge-blue" cx="64" cy="67" r="6.5"></circle>' +
+        '<circle class="vt-badge-white" cx="64" cy="67" r="4.2"></circle>' +
+        '<circle class="vt-badge-red" cx="64" cy="67" r="2"></circle>' +
+        '<rect class="vt-badge-blue" x="38" y="73" width="8" height="3" rx="0.8"></rect>' +
+        '<rect class="vt-badge-white" x="46" y="73" width="8" height="3"></rect>' +
+        '<rect class="vt-badge-red" x="54" y="73" width="8" height="3" rx="0.8"></rect>' +
+      '</svg>' +
+      '<span class="eyebrow">Qui vote aujourd\'hui ?</span>' +
+      '<h1>Vot<span class="hl">ona</span></h1>' +
+      '<p class="intro-copy">Réponds aux prises de position des candidats déclarés à la présidentielle 2027, à ton rythme. Chaque profil garde ses propres réponses et ses propres résultats, sur cet ordinateur.</p>' +
+    '</div>' +
+    '<div class="trust-row">' +
+      '<span class="trust-chip">' + candidates.length + ' candidats suivis</span>' +
+      '<span class="trust-chip">+1 sujet ajouté chaque jour</span>' +
+      '<span class="trust-chip">Aucun compte requis</span>' +
+      '<span class="trust-chip">Données gardées sur cet appareil</span>' +
+    '</div>' +
+    '<div class="profile-grid">' + cardsHtml + '</div>' +
+    (ids.length ? '' : '<p class="empty-state">Aucun profil pour l\'instant — crée le premier ci-dessous.</p>') +
+    '<div style="margin-top:16px; max-width:420px; margin-left:auto; margin-right:auto;">' +
+      '<button class="btn btn-ghost btn-block" id="btn-new-profile">+ Créer un profil</button>' +
+      '<div class="new-profile-form" id="new-profile-form">' +
+        '<div><label class="field-label">Prénom ou pseudo</label>' +
+        '<input type="text" id="new-profile-name" maxlength="30" placeholder="ex. Camille" /></div>' +
+        '<button class="btn btn-accent" id="confirm-new-profile">Commencer</button>' +
+      '</div>' +
+    '</div>' +
+    '<section class="landing-section"><h2>Sept familles de sujets</h2>' +
+      '<div class="sub">Les questions couvrent l\'ensemble de ces thèmes, sans se limiter aux gros titres du moment.</div>' +
+      '<div class="axis-grid">' + axisGridHtml() + '</div></section>' +
+    '<section class="landing-section landing-narrow"><h2>Comment ça marche</h2>' +
+      '<div class="steps-list">' + howItWorksHtml() + '</div></section>' +
+    '<section class="landing-section landing-narrow"><h2>Se repérer dans la présidentielle 2027</h2>' +
+      '<div class="editorial-block">' +
+        '<p>La présidentielle 2027 marque la fin des deux mandats d\'Emmanuel Macron et s\'annonce comme l\'une des plus ouvertes depuis des décennies. Plusieurs dizaines de personnalités ont d\'ores et déjà déclaré leur candidature ou laissé entendre qu\'elles se présenteraient — de figures issues des partis de gouvernement à des candidatures plus marginales, en passant par des profils venus de la société civile.</p>' +
+        '<p>Les lignes de fracture ne suivent plus toujours le clivage gauche-droite classique : le nucléaire et les pesticides recomposent le débat écologique, le soutien à l\'Ukraine et l\'avenir du projet européen divisent jusqu\'au sein des mêmes familles politiques, et des sujets de société comme la fin de vie ou l\'encadrement des écrans s\'invitent au premier plan.</p>' +
+        '<p>Plutôt que de se limiter à une dizaine de candidats jugés « sérieux », Votona intègre chaque candidature officiellement déclarée, avec ses positions sourcées sur chaque sujet — retraits de la course inclus, pour garder une vision complète de la campagne au fil du temps.</p>' +
+      '</div></section>' +
+    '<section class="landing-section landing-narrow"><h2>Une question ?</h2>' +
+      '<div class="sub">Fonctionnement du classement, données, candidats retirés : tout est expliqué dans la FAQ.</div>' +
+      '<button class="btn btn-ghost btn-block" id="btn-open-faq">Consulter la FAQ complète →</button></section>' +
+    '<section class="landing-section landing-narrow final-cta"><h2>Prêt à te lancer ?</h2>' +
+      '<div class="sub">Quelques minutes suffisent pour découvrir tes affinités avec les candidats déclarés.</div>' +
+      '<button class="btn btn-accent btn-block" id="btn-final-cta">' + (ids.length ? "Choisir mon profil" : "Créer mon profil") + '</button></section>';
+
+  document.getElementById("app").innerHTML = html;
+
+  document.querySelectorAll("[data-open]").forEach(function(btn){
+    btn.onclick = function(){
+      state.activeProfileId = btn.getAttribute("data-open");
+      goToDashboardAndCheckNew();
+    };
+  });
+  document.getElementById("btn-new-profile").onclick = function(){
+    document.getElementById("new-profile-form").classList.add("open");
+    document.getElementById("new-profile-name").focus();
+  };
+  document.getElementById("confirm-new-profile").onclick = function(){
+    var input = document.getElementById("new-profile-name");
+    var name = input.value.trim();
+    if(!name){ input.focus(); return; }
+    var profiles = loadProfiles();
+    var id = uid("p");
+    profiles[id] = {
+      name: name, createdAt: new Date().toISOString(), lastSeenAt: new Date().toISOString(),
+      answers: {}, seenNewIds: getCandidates().map(function(c){return c.id;}),
+      seenNewTopics: getTopics().map(function(t){return t.id;})
+    };
+    saveProfiles(profiles);
+    state.activeProfileId = id;
+    state.screen = "dashboard";
+    render();
+  };
+  document.getElementById("btn-open-faq").onclick = goToFaq;
+  var finalCta = document.getElementById("btn-final-cta");
+  if(finalCta) finalCta.onclick = function(){
+    window.scrollTo(0,0);
+    if(!ids.length){
+      document.getElementById("new-profile-form").classList.add("open");
+      document.getElementById("new-profile-name").focus();
+    }
+  };
+}
+
+function goToDashboardAndCheckNew(){
+  state.screen = "dashboard";
+  render();
+}
+
+/* ============================================================
+   SCREEN — DASHBOARD
+   ============================================================ */
+function renderDashboard(){
+  var profile = activeProfile();
+  if(!profile){ state.screen = "profiles"; render(); return; }
+  var topics = getTopics();
+  var candidates = getCandidates();
+  var answered = Object.keys(profile.answers || {}).length;
+  var pct = Math.round((answered / topics.length) * 100);
+
+  var seen = profile.seenNewIds || [];
+  var newCandidates = candidates.filter(function(c){
+    return daysSince(c.addedDate) <= NEW_WINDOW_DAYS && seen.indexOf(c.id) === -1;
+  });
+  var newTopics = topics.filter(function(t){
+    return daysSince(t.addedDate) <= NEW_WINDOW_DAYS && !(profile.answers && profile.answers[t.id]) && (profile.seenNewTopics||[]).indexOf(t.id) === -1;
+  });
+
+  var bannerHtml = "";
+  if(newCandidates.length){
+    var names = newCandidates.map(function(c){return c.name;}).join(", ");
+    bannerHtml += '<div class="banner"><div class="dot"></div><div>' +
+      '<strong>Nouveau' + (newCandidates.length>1?'x':'') + ' candidat' + (newCandidates.length>1?'s':'') + ' : ' + escapeHtml(names) + '</strong>' +
+      '<p>Sa compatibilité avec tes réponses vient d\'être calculée automatiquement.</p>' +
+      '<button class="btn btn-sm btn-ghost" id="dismiss-banner">Vu, merci</button>' +
+      '</div></div>';
+  }
+  if(newTopics.length){
+    bannerHtml += '<div class="banner"><div class="dot"></div><div>' +
+      '<strong>' + newTopics.length + ' nouveau' + (newTopics.length>1?'x':'') + ' sujet' + (newTopics.length>1?'s':'') + ' à répondre</strong>' +
+      '<p>De nouvelles questions ont été ajoutées depuis ta dernière visite.</p>' +
+      '<button class="btn btn-sm btn-ghost" id="dismiss-topics-banner">Répondre maintenant</button>' +
+      '</div></div>';
+  }
+
+  var candRows = candidates.map(function(c){
+    var isNew = daysSince(c.addedDate) <= NEW_WINDOW_DAYS;
+    return '<div class="candidate-row' + (c.withdrawn ? ' withdrawn' : '') + '"><div class="cand-dot" style="background:' + c.color + '"></div>' +
+      '<div class="cand-name">' + escapeHtml(c.name) + '<div class="cand-party">' + escapeHtml(c.party) + '</div></div>' +
+      (c.withdrawn ? '<span class="badge-withdrawn">Retiré</span>' : isNew ? '<span class="badge-new">Nouveau</span>' : '') + '</div>';
+  }).join("");
+
+  var html = '<div class="dash-head"><div id="sponsor-slot-dash" style="margin-bottom:16px;"></div>' +
+    bannerHtml +
+    '<span class="eyebrow">Bonjour ' + escapeHtml(profile.name) + '</span>' +
+    '<h1>Ton tableau de bord</h1>' +
+    '<div class="stat-row">' +
+      '<div class="stat-tile"><div class="num">' + answered + ' / ' + topics.length + '</div><div class="lbl">Sujets répondus</div>' +
+        '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div></div>' +
+      '<div class="stat-tile"><div class="num">' + candidates.length + '</div><div class="lbl">Candidats suivis</div></div>' +
+    '</div>' +
+    '<button class="btn btn-accent btn-block" id="btn-vote">' + (answered === 0 ? "Commencer le questionnaire" : answered < topics.length ? "Continuer (" + (topics.length-answered) + " restants)" : "Revoir mes réponses") + '</button>' +
+    (answered > 0 ? '<div style="margin-top:10px;"><button class="btn btn-ghost btn-block" id="btn-results">Voir mes résultats</button></div>' : '') +
+    '</div>' +
+    '<section class="block" style="margin-top:22px;"><h2>Candidats suivis</h2><div class="sub">Mis à jour automatiquement lorsqu\'une nouvelle candidature est confirmée.</div>' +
+      '<div class="candidate-list">' + candRows + '</div></section>';
+
+  document.getElementById("app").innerHTML = html;
+
+  var dismiss = document.getElementById("dismiss-banner");
+  if(dismiss) dismiss.onclick = function(){
+    updateActiveProfile(function(p){
+      p.seenNewIds = candidates.map(function(c){return c.id;});
+      p.lastSeenAt = new Date().toISOString();
+    });
+    render();
+  };
+  var dismissTopics = document.getElementById("dismiss-topics-banner");
+  if(dismissTopics) dismissTopics.onclick = function(){
+    updateActiveProfile(function(p){
+      p.seenNewTopics = (p.seenNewTopics || []).concat(newTopics.map(function(t){return t.id;}));
+    });
+    startVoteFlow();
+  };
+  document.getElementById("btn-vote").onclick = function(){ startVoteFlow(); };
+  var btnResults = document.getElementById("btn-results");
+  if(btnResults) btnResults.onclick = function(){ state.screen = "results"; render(); };
+}
+
+/* ============================================================
+   SCREEN — VOTE
+   ============================================================ */
+function startVoteFlow(){
+  var profile = activeProfile();
+  var topics = getTopics();
+  var answered = profile.answers || {};
+  var unanswered = topics.filter(function(t){ return !answered[t.id]; }).map(function(t){return t.id;});
+  var answeredIds = topics.filter(function(t){ return answered[t.id]; }).map(function(t){return t.id;});
+  state.voteQueue = unanswered.length ? unanswered : answeredIds;
+  state.voteIndex = 0;
+  state.voteStep = "stance";
+  state.pendingStance = null;
+  state.screen = "vote";
+  render();
+}
+
+var STANCE_LABEL = {pour:"D'accord", contre:"Pas d'accord", neutre:"Neutre"};
+var STANCE_ICON = {pour:"✓", contre:"✕", neutre:"–"};
+var STANCE_COLORVAR = {pour:"--good", contre:"--bad", neutre:"--neutral"};
+var IMPORTANCE_LABEL = {1:"Peu important", 2:"Important", 3:"Très important"};
+
+function topicHeaderHtml(topic){
+  var hint = topic.context ? '<span class="context-hint">ⓘ</span>' : '';
+  var panel = topic.context ? '<div class="context-panel">' + escapeHtml(topic.context) + '</div>' : '';
+  return '<span class="cat">' + escapeHtml(topic.cat) + '</span>' +
+    '<div class="statement">' + escapeHtml(topic.statement) + hint + '</div>' +
+    panel;
+}
+function wireContextToggle(){
+  var stmt = document.querySelector(".statement");
+  var panel = document.querySelector(".context-panel");
+  if(stmt && panel){
+    stmt.onclick = function(e){ e.stopPropagation(); panel.classList.toggle("open"); };
+  }
+}
+
+function renderVote(){
+  var profile = activeProfile();
+  var topics = getTopics();
+  var topicsById = {}; topics.forEach(function(t){ topicsById[t.id]=t; });
+  var total = state.voteQueue.length;
+
+  if(!total || state.voteIndex >= total){
+    state.screen = "results";
+    render();
+    return;
+  }
+
+  var topic = topicsById[state.voteQueue[state.voteIndex]];
+  var existing = (profile.answers || {})[topic.id];
+  var progressPct = Math.round((state.voteIndex / total) * 100);
+
+  var bodyHtml = "";
+  if(state.voteStep === "stance"){
+    bodyHtml =
+      '<div class="vote-card" id="vote-card">' +
+        topicHeaderHtml(topic) +
+        '<div class="swipe-hint"><span>← glisser : pas d\'accord</span><span>glisser : d\'accord →</span></div>' +
+      '</div>' +
+      '<div class="stance-buttons">' +
+        '<button class="stance-btn contre" data-stance="contre"><span class="ic">✕</span>Pas d\'accord</button>' +
+        '<button class="stance-btn neutre" data-stance="neutre"><span class="ic">–</span>Neutre</button>' +
+        '<button class="stance-btn pour" data-stance="pour"><span class="ic">✓</span>D\'accord</button>' +
+      '</div>' +
+      '<button class="skip-link" id="skip-topic">Passer ce sujet</button>';
+  } else if(state.voteStep === "importance"){
+    bodyHtml =
+      '<div class="vote-card">' +
+        topicHeaderHtml(topic) +
+      '</div>' +
+      '<div style="margin-top:16px; font-size:13.5px; color:var(--ink-soft);">Quelle importance ce sujet a-t-il pour toi ?</div>' +
+      '<div class="importance-row">' +
+        [1,2,3].map(function(v){
+          return '<button class="imp-btn" data-imp="' + v + '">' + IMPORTANCE_LABEL[v] + '</button>';
+        }).join("") +
+      '</div>';
+  } else {
+    var stance = state.pendingStance;
+    var candidates = getCandidates().filter(function(c){ return !c.withdrawn; });
+    var chips = candidates.map(function(c){
+      var pos = c.positions[topic.id];
+      if(!pos) return "";
+      return '<div class="reveal-chip"><span class="ic" style="color:var(' + STANCE_COLORVAR[pos.stance] + ')">' + STANCE_ICON[pos.stance] + '</span>' + escapeHtml(c.name.split(" ").slice(-1)[0]) + '</div>';
+    }).join("");
+    bodyHtml =
+      '<div class="vote-card">' +
+        topicHeaderHtml(topic) +
+        '<div style="margin-top:14px; font-size:13px; color:var(--ink-soft);">Ton avis : <strong style="color:var(' + STANCE_COLORVAR[stance] + ')">' + STANCE_LABEL[stance] + '</strong></div>' +
+      '</div>' +
+      '<div style="margin-top:16px; font-size:12px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.05em; font-family:var(--mono);">Position des candidats</div>' +
+      '<div class="reveal-row">' + chips + '</div>' +
+      '<button class="btn btn-primary btn-block" id="next-topic" style="margin-top:20px;">Sujet suivant</button>';
+  }
+
+  var html =
+    '<div class="vote-progress"><div class="progress-track"><div class="progress-fill" style="width:' + progressPct + '%"></div></div>' +
+    '<div class="count mono">' + (state.voteIndex+1) + ' / ' + total + '</div></div>' +
+    '<div class="card-stack">' + bodyHtml + '</div>';
+
+  document.getElementById("app").innerHTML = html;
+  wireContextToggle();
+  wireVoteInteractions(topic, existing);
+}
+
+function wireVoteInteractions(topic, existing){
+  if(state.voteStep === "stance"){
+    document.querySelectorAll(".stance-btn").forEach(function(btn){
+      btn.onclick = function(){
+        state.pendingStance = btn.getAttribute("data-stance");
+        state.voteStep = "importance";
+        render();
+      };
+    });
+    var skip = document.getElementById("skip-topic");
+    if(skip) skip.onclick = function(){ advanceVote(); };
+    wireSwipe();
+  } else if(state.voteStep === "importance"){
+    document.querySelectorAll(".imp-btn").forEach(function(btn){
+      btn.onclick = function(){
+        var imp = parseInt(btn.getAttribute("data-imp"), 10);
+        updateActiveProfile(function(p){
+          p.answers = p.answers || {};
+          p.answers[topic.id] = {stance: state.pendingStance, importance: imp};
+        });
+        state.voteStep = "reveal";
+        render();
+      };
+    });
+  } else if(state.voteStep === "reveal"){
+    var nxt = document.getElementById("next-topic");
+    if(nxt) nxt.onclick = function(){ advanceVote(); };
+  }
+}
+
+function advanceVote(){
+  state.voteIndex++;
+  state.voteStep = "stance";
+  state.pendingStance = null;
+  render();
+}
+
+function wireSwipe(){
+  var card = document.getElementById("vote-card");
+  if(!card) return;
+  var startX=0, startY=0, dx=0, dragging=false;
+  function onDown(e){
+    dragging = true;
+    var p = e.touches ? e.touches[0] : e;
+    startX = p.clientX; startY = p.clientY;
+    card.style.transition = "none";
+  }
+  function onMove(e){
+    if(!dragging) return;
+    var p = e.touches ? e.touches[0] : e;
+    dx = p.clientX - startX;
+    var dy = p.clientY - startY;
+    if(Math.abs(dx) > Math.abs(dy)){ e.preventDefault(); }
+    card.style.transform = "translate(" + dx + "px," + (dy*0.15) + "px) rotate(" + (dx/22) + "deg)";
+  }
+  function onUp(){
+    if(!dragging) return;
+    dragging = false;
+    card.style.transition = "transform .2s ease";
+    if(dx > 90){
+      state.pendingStance = "pour"; card.style.transform = "translate(600px,-40px) rotate(18deg)";
+      setTimeout(function(){ state.voteStep="importance"; render(); }, 140);
+    } else if(dx < -90){
+      state.pendingStance = "contre"; card.style.transform = "translate(-600px,-40px) rotate(-18deg)";
+      setTimeout(function(){ state.voteStep="importance"; render(); }, 140);
+    } else {
+      card.style.transform = "translate(0,0) rotate(0)";
+    }
+    dx = 0;
+  }
+  card.addEventListener("mousedown", onDown);
+  window.addEventListener("mousemove", onMove);
+  window.addEventListener("mouseup", onUp);
+  card.addEventListener("touchstart", onDown, {passive:true});
+  card.addEventListener("touchmove", onMove, {passive:false});
+  card.addEventListener("touchend", onUp);
+}
+
+/* ============================================================
+   SCREEN — RESULTS
+   ============================================================ */
+function renderResults(){
+  var profile = activeProfile();
+  var topics = getTopics();
+  var results = computeResults(profile);
+  var answered = Object.keys(profile.answers || {}).length;
+
+  if(answered === 0){
+    document.getElementById("app").innerHTML =
+      '<h1>Résultats</h1><p class="empty-state">Réponds à au moins un sujet pour voir tes affinités.</p>' +
+      '<button class="btn btn-accent btn-block" id="btn-go-vote" style="margin-top:14px;">Répondre aux sujets</button>';
+    document.getElementById("btn-go-vote").onclick = startVoteFlow;
+    return;
+  }
+
+  var podiumOrder = results.slice(0, 3).filter(function(r){ return r.pct !== null; });
+  var medalLabel = ["1er","2e","3e"];
+  var podiumHtml = "";
+  if(podiumOrder.length){
+    podiumHtml = '<div class="podium">' + podiumOrder.map(function(r, i){
+      return '<div class="podium-step rank-' + (i+1) + '">' +
+        '<span class="podium-medal">' + medalLabel[i] + '</span>' +
+        '<div class="podium-avatar" style="background:' + r.candidate.color + '">' + escapeHtml(initials(r.candidate.name)) + '</div>' +
+        '<div class="podium-name">' + escapeHtml(r.candidate.name) + '</div>' +
+        '<div class="podium-party">' + escapeHtml(r.candidate.party) + '</div>' +
+        '<div class="podium-score">' + r.pct + '%</div>' +
+        '<div class="podium-block" style="background:' + r.candidate.color + '"><span class="rn">' + (i+1) + '</span></div>' +
+      '</div>';
+    }).join("") + '</div>';
+  }
+
+  var rows = results.map(function(r, i){
+    var pct = r.pct === null ? 0 : r.pct;
+    return '<div class="result-row" data-cand="' + r.candidate.id + '">' +
+      '<div class="result-top">' +
+        '<div class="result-rank mono">' + (i+1) + '</div>' +
+        '<div class="result-name"><div class="n">' + escapeHtml(r.candidate.name) + '</div><div class="p">' + escapeHtml(r.candidate.party) + '</div></div>' +
+        '<div class="result-score mono">' + (r.pct===null? "—" : pct + "%") + '</div>' +
+      '</div>' +
+      '<div class="result-bar-track"><div class="result-bar-fill" style="width:' + pct + '%; background:' + r.candidate.color + '"></div></div>' +
+      '<div class="result-detail" id="detail-' + r.candidate.id + '"></div>' +
+    '</div>';
+  }).join("");
+
+  var html = '<div id="sponsor-slot-results" style="margin-bottom:16px;"></div>' +
+    '<span class="eyebrow">' + answered + ' / ' + topics.length + ' sujets pris en compte</span>' +
+    '<h1>Tes affinités</h1>' +
+    '<p class="intro-copy">Classement pondéré par l\'importance que tu as donnée à chaque sujet.</p>' +
+    podiumHtml +
+    (podiumOrder.length ? '<button class="btn btn-ghost btn-block" id="btn-share">Partager mon classement</button>' : '') +
+    '<div class="results-subhead" style="margin-top:22px;">Classement complet — touche un candidat pour le détail</div>' +
+    '<div>' + rows + '</div>' +
+    (answered < topics.length ? '<button class="btn btn-ghost btn-block" id="btn-more" style="margin-top:8px;">Répondre aux ' + (topics.length-answered) + ' sujets restants</button>' : '');
+
+  document.getElementById("app").innerHTML = html;
+
+  document.querySelectorAll(".result-row").forEach(function(row){
+    row.addEventListener("click", function(){
+      var wasOpen = row.classList.contains("open");
+      document.querySelectorAll(".result-row").forEach(function(r){ r.classList.remove("open"); });
+      if(wasOpen) return;
+      row.classList.add("open");
+      var id = row.getAttribute("data-cand");
+      var cand = getCandidates().filter(function(c){return c.id===id;})[0];
+      var det = document.getElementById("detail-" + id);
+      var items = Object.keys(profile.answers).map(function(tid){
+        var t = topics.filter(function(x){return x.id===tid;})[0];
+        var pos = cand.positions[tid];
+        if(!t || !pos) return "";
+        var userA = profile.answers[tid];
+        var agree = matchScore(userA.stance, pos.stance);
+        var ic = agree === 1 ? '<span style="color:var(--good)">✓</span>' : agree === 0 ? '<span style="color:var(--bad)">✕</span>' : '<span style="color:var(--neutral)">–</span>';
+        return '<div class="rd-item"><span class="ic">' + ic + '</span><div class="txt"><b>' + escapeHtml(t.statement) + '</b><br>' + escapeHtml(pos.detail) + '</div></div>';
+      }).join("");
+      det.innerHTML = items;
+    });
+  });
+
+  var more = document.getElementById("btn-more");
+  if(more) more.onclick = startVoteFlow;
+
+  var shareBtn = document.getElementById("btn-share");
+  if(shareBtn) shareBtn.onclick = function(){
+    var lines = podiumOrder.map(function(r, i){
+      return (i+1) + ". " + r.candidate.name + " (" + r.pct + "%)";
+    });
+    var text = "Mon classement sur Votona :\n" + lines.join("\n") + "\n\nFais le test toi aussi : " + location.href;
+    if(navigator.share){
+      navigator.share({text: text}).catch(function(){});
+    } else if(navigator.clipboard){
+      navigator.clipboard.writeText(text).then(function(){
+        shareBtn.textContent = "Copié dans le presse-papiers !";
+        setTimeout(function(){ shareBtn.textContent = "Partager mon classement"; }, 2200);
+      }).catch(function(){});
+    }
+  };
+}
+
+/* ============================================================
+   SCREEN — FAQ
+   ============================================================ */
+function renderFaq(){
+  var html = '<span class="eyebrow">Questions fréquentes</span>' +
+    '<h1>Tout comprendre sur Votona</h1>' +
+    '<p class="intro-copy">Fonctionnement du classement, données, candidats, mises à jour : les réponses aux questions les plus posées.</p>' +
+    '<div style="margin-top:10px;">' + faqHtml() + '</div>' +
+    '<button class="btn btn-ghost btn-block" id="btn-faq-back" style="margin-top:22px;">← Retour</button>';
+  document.getElementById("app").innerHTML = html;
+  wireFaqToggles();
+  document.getElementById("btn-faq-back").onclick = function(){
+    state.screen = activeProfile() ? "dashboard" : "profiles";
+    render();
+  };
+}
+
+/* ============================================================
+   SCREEN — ADMIN
+   ============================================================ */
+function renderAdmin(){
+  var candidates = getCandidates();
+  var topics = getTopics();
+
+  var tabsHtml = '<div class="admin-tabs">' +
+    '<button class="admin-tab' + (state.adminTab==="candidates"?" active":"") + '" data-tab="candidates">Candidats</button>' +
+    '<button class="admin-tab' + (state.adminTab==="topics"?" active":"") + '" data-tab="topics">Sujets</button>' +
+  '</div>';
+
+  var disclaimer = state.adminTab === "candidates"
+    ? '<div class="disclaimer">Seule la veille automatique quotidienne ajoute de nouveaux candidats. Tu peux corriger une position ici si elle te semble erronée ; ces corrections restent propres à ce navigateur.</div>'
+    : '<div class="disclaimer">Seule la veille automatique quotidienne ajoute de nouveaux sujets, lorsqu\'un thème de campagne majeur émerge.</div>';
+
+  var body = "";
+  if(state.adminTab === "candidates"){
+    var ovForList = loadOverrides();
+    body = candidates.map(function(c){
+      var open = state.adminOpenId === c.id;
+      var isCustom = (ovForList.newCandidates||[]).some(function(nc){return nc.id===c.id;});
+      var posRows = topics.map(function(t){
+        var pos = c.positions[t.id] || {stance:"neutre", detail:""};
+        return '<div class="pos-row" data-topic="' + t.id + '">' +
+          '<div class="topic-txt">' + escapeHtml(t.statement) + '</div>' +
+          '<select data-field="stance">' +
+            ["pour","neutre","contre"].map(function(s){ return '<option value="'+s+'"' + (pos.stance===s?" selected":"") + '>' + STANCE_LABEL[s] + '</option>'; }).join("") +
+          '</select>' +
+          '<input type="text" class="pos-detail" data-field="detail" placeholder="Détail (optionnel)" value="' + escapeHtml(pos.detail||"") + '" />' +
+        '</div>';
+      }).join("");
+      return '<div class="admin-item' + (open?" open":"") + '" data-cand="' + c.id + '">' +
+        '<div class="admin-item-head" data-toggle="' + c.id + '"><span class="swatch" style="background:' + c.color + '"></span>' +
+          '<span class="t">' + escapeHtml(c.name) + '</span><span class="meta">' + escapeHtml(c.party) + '</span>' +
+          (c.withdrawn ? '<span class="badge-withdrawn">Retiré</span>' : '') + '</div>' +
+        '<div class="admin-form">' +
+          '<div><label class="field-label">Nom</label><input type="text" data-field="name" value="' + escapeHtml(c.name) + '" /></div>' +
+          '<div><label class="field-label">Parti / étiquette</label><input type="text" data-field="party" value="' + escapeHtml(c.party) + '" /></div>' +
+          '<label class="field-label" style="display:flex; align-items:center; gap:7px; cursor:pointer;">' +
+            '<input type="checkbox" data-field="withdrawn"' + (c.withdrawn ? " checked" : "") + ' style="width:auto;" /> Candidature retirée' +
+          '</label>' +
+          '<div><label class="field-label">Positions par sujet</label><div class="pos-grid">' + posRows + '</div></div>' +
+          '<div class="form-actions"><button class="btn btn-primary btn-sm" data-save="' + c.id + '">Enregistrer</button>' +
+            (isCustom ? '<button class="danger-link" data-delete="' + c.id + '" style="margin-left:auto;">Supprimer ce candidat</button>' : '') +
+          '</div>' +
+        '</div></div>';
+    }).join("");
+  } else {
+    body = topics.map(function(t){
+      return '<div class="admin-item"><div class="admin-item-head"><span class="t">' + escapeHtml(t.statement) + '</span></div>' +
+        '<div class="meta" style="margin-top:4px;">' + escapeHtml(t.cat) + '</div></div>';
+    }).join("");
+  }
+
+  document.getElementById("app").innerHTML =
+    '<h1>Gérer candidats et sujets</h1>' + disclaimer + tabsHtml + '<div>' + body + '</div>';
+
+  document.querySelectorAll(".admin-tab").forEach(function(t){
+    t.onclick = function(){ state.adminTab = t.getAttribute("data-tab"); state.adminOpenId=null; render(); };
+  });
+
+  if(state.adminTab === "candidates"){
+    document.querySelectorAll("[data-toggle]").forEach(function(h){
+      h.onclick = function(){
+        var id = h.getAttribute("data-toggle");
+        state.adminOpenId = state.adminOpenId === id ? null : id;
+        render();
+      };
+    });
+    document.querySelectorAll("[data-save]").forEach(function(btn){
+      btn.onclick = function(){
+        var id = btn.getAttribute("data-save");
+        var item = document.querySelector('.admin-item[data-cand="' + id + '"]');
+        var name = item.querySelector('[data-field="name"]').value.trim();
+        var party = item.querySelector('[data-field="party"]').value.trim();
+        var withdrawn = item.querySelector('[data-field="withdrawn"]').checked;
+        var positions = {};
+        item.querySelectorAll(".pos-row").forEach(function(row){
+          var tid = row.getAttribute("data-topic");
+          positions[tid] = {
+            stance: row.querySelector('[data-field="stance"]').value,
+            detail: row.querySelector('[data-field="detail"]').value.trim()
+          };
+        });
+        var ov = loadOverrides();
+        var isCustom = (ov.newCandidates||[]).some(function(c){return c.id===id;});
+        if(isCustom){
+          ov.newCandidates = ov.newCandidates.map(function(c){
+            if(c.id!==id) return c;
+            return Object.assign({}, c, {name:name, party:party, withdrawn:withdrawn, positions:positions});
+          });
+        } else {
+          ov.candidateOverrides = ov.candidateOverrides || {};
+          ov.candidateOverrides[id] = {name:name, party:party, withdrawn:withdrawn, positions:positions};
+        }
+        saveOverrides(ov);
+        state.adminOpenId = null;
+        render();
+      };
+    });
+    document.querySelectorAll("[data-delete]").forEach(function(btn){
+      btn.onclick = function(){
+        var id = btn.getAttribute("data-delete");
+        var ov = loadOverrides();
+        ov.newCandidates = (ov.newCandidates||[]).filter(function(c){return c.id!==id;});
+        delete (ov.candidateOverrides||{})[id];
+        saveOverrides(ov);
+        state.adminOpenId = null;
+        render();
+      };
+    });
+  }
+}
+
+/* ============================================================
+   ROUTER
+   ============================================================ */
+function fillSponsorEl(el){
+  if(!el) return;
+  var s = SPONSORS.filter(function(x){ return x.active; })[0];
+  if(!s){ el.innerHTML = ""; return; }
+  var inner =
+    '<span class="sponsor-label">' + escapeHtml(s.label || "Publicité") + '</span>' +
+    '<div class="sponsor-name">' + escapeHtml(s.name) + '</div>' +
+    (s.tagline ? '<div class="sponsor-tagline">' + escapeHtml(s.tagline) + '</div>' : '');
+  if(s.url){
+    el.innerHTML = '<a class="sponsor-card" href="' + escapeHtml(s.url) + '" target="_blank" rel="noopener sponsored">' + inner + '</a>';
+  } else {
+    el.innerHTML = '<div class="sponsor-card">' + inner + '</div>';
+  }
+}
+/* Sur dashboard/résultats, la bannière se cale tout en haut de l'écran
+   (avant même le titre / le podium) pour rester visible sans le moindre
+   scroll ; sur les autres écrans elle reste dans le footer partagé. */
+function renderSponsor(){
+  var dash = document.getElementById("sponsor-slot-dash");
+  var results = document.getElementById("sponsor-slot-results");
+  var footer = document.getElementById("sponsor-slot");
+  var inline = dash || results;
+  if(inline){
+    fillSponsorEl(inline);
+    if(footer) footer.innerHTML = "";
+  } else if(footer){
+    fillSponsorEl(footer);
+  }
+}
+
+function render(){
+  renderTopbar();
+  document.getElementById("app").classList.toggle("app-wide", state.screen === "profiles" || state.screen === "dashboard");
+  if(state.screen === "profiles") renderProfiles();
+  else if(state.screen === "dashboard") renderDashboard();
+  else if(state.screen === "vote") renderVote();
+  else if(state.screen === "results") renderResults();
+  else if(state.screen === "faq") renderFaq();
+  else if(state.screen === "admin") renderAdmin();
+  renderSponsor();
+  window.scrollTo(0,0);
+}
+
+render();
+})();
+</script>
