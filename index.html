@@ -13,9 +13,9 @@
     --ink-faint: #8790a3;
     --line: #e4dfd0;
     --line-soft: #eee9dc;
-    --accent: #e0483a;
+    --accent: #7C3AED;
     --accent-ink: #ffffff;
-    --accent-soft: #fbe0db;
+    --accent-soft: #efe4fd;
     --blue: #2f5fb5;
     --blue-soft: #e3ebfa;
     --gold: #d98a13;
@@ -33,8 +33,8 @@
     --masthead-bg: #1b2030;
     --masthead-ink: #f4efe3;
     --masthead-line: rgba(244,239,227,.18);
-    --shadow: 0 1px 2px rgba(28,34,48,.07), 0 10px 28px -12px rgba(224,72,58,.16);
-    --radius: 20px;
+    --shadow: 0 1px 2px rgba(28,34,48,.07), 0 10px 28px -12px rgba(124,58,237,.18);
+    --radius: 26px;
     --serif: 'Fraunces', ui-serif, Georgia, serif;
     --sans: 'Work Sans', ui-sans-serif, system-ui, sans-serif;
     --mono: 'IBM Plex Mono', ui-monospace, monospace;
@@ -49,9 +49,9 @@
       --ink-faint: #727890;
       --line: #2d323f;
       --line-soft: #252a36;
-      --accent: #ff6b57;
-      --accent-ink: #1c1210;
-      --accent-soft: #3d241f;
+      --accent: #A78BFA;
+      --accent-ink: #1c1230;
+      --accent-soft: #2f2350;
       --blue: #7aa6ff;
       --blue-soft: #1f2a42;
       --gold: #f0b34d;
@@ -66,7 +66,7 @@
       --plum-soft: #2c2140;
       --teal: #4fd9d1;
       --teal-soft: #16302e;
-      --shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 30px -12px rgba(255,107,87,.22);
+      --shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 30px -12px rgba(167,139,250,.25);
     }
   }
   :root[data-theme="dark"]{
@@ -77,9 +77,9 @@
     --ink-faint: #727890;
     --line: #2d323f;
     --line-soft: #252a36;
-    --accent: #ff6b57;
-    --accent-ink: #1c1210;
-    --accent-soft: #3d241f;
+    --accent: #A78BFA;
+    --accent-ink: #1c1230;
+    --accent-soft: #2f2350;
     --blue: #7aa6ff;
     --blue-soft: #1f2a42;
     --gold: #f0b34d;
@@ -94,7 +94,7 @@
     --plum-soft: #2c2140;
     --teal: #4fd9d1;
     --teal-soft: #16302e;
-    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 30px -12px rgba(255,107,87,.22);
+    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 30px -12px rgba(167,139,250,.25);
   }
 
   *{box-sizing:border-box;}
@@ -134,7 +134,7 @@
   .vt-visor{ fill:var(--accent); }
   .vt-antenna{ stroke:var(--gold); }
   .vt-badge-blue{ fill:var(--blue); }
-  .vt-badge-red{ fill:var(--accent); }
+  .vt-badge-red{ fill:var(--bad); }
   .vt-badge-white{ fill:var(--bg); }
   header.topbar .vt-head{ fill:var(--masthead-ink); }
   header.topbar .vt-badge-white{ fill:var(--masthead-bg); }
@@ -195,7 +195,7 @@
   .dash-head{ max-width:640px; margin-left:auto; margin-right:auto; }
   .new-profile-form.open{ display:flex; }
   input[type="text"], select, textarea{
-    font-family:var(--sans); font-size:14.5px; padding:11px 14px; border-radius:12px;
+    font-family:var(--sans); font-size:14.5px; padding:11px 14px; border-radius:16px;
     border:1px solid var(--line); background:var(--bg); color:var(--ink); width:100%;
   }
   input[type="text"]:focus, select:focus, textarea:focus{ border-color:var(--blue); }
@@ -205,7 +205,7 @@
 
   /* ---------- Dashboard ---------- */
   .banner{
-    display:flex; gap:12px; align-items:flex-start; padding:16px 18px; border-radius:18px;
+    display:flex; gap:12px; align-items:flex-start; padding:16px 18px; border-radius:22px;
     background:var(--gold-soft); border:1px solid color-mix(in srgb, var(--gold) 35%, transparent);
     margin-bottom:16px;
   }
@@ -215,7 +215,7 @@
   .banner button{ margin-top:8px; }
 
   .stat-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:16px 0; }
-  .stat-tile{ background:var(--bg-raised); border:1px solid var(--line-soft); border-radius:16px; padding:16px 17px; }
+  .stat-tile{ background:var(--bg-raised); border:1px solid var(--line-soft); border-radius:20px; padding:16px 17px; }
   .stat-tile .num{ font-family:var(--mono); font-size:22px; font-weight:600; }
   .stat-tile .lbl{ font-size:11.5px; color:var(--ink-faint); margin-top:2px; text-transform:uppercase; letter-spacing:.04em; }
 
@@ -224,7 +224,7 @@
 
   .candidate-list{ display:grid; gap:8px; margin-top:10px; }
   .candidate-row{
-    display:flex; align-items:center; gap:11px; padding:13px 15px; border-radius:16px;
+    display:flex; align-items:center; gap:11px; padding:13px 15px; border-radius:20px;
     background:var(--bg-raised); border:1px solid var(--line-soft);
   }
   .cand-dot{ width:10px; height:10px; border-radius:50%; flex:none; }
@@ -253,13 +253,13 @@
 
   .card-stack{ position:relative; height:auto; }
   .vote-card{
-    background:var(--bg-raised); border:1px solid var(--line-soft); border-radius:20px; padding:26px 22px;
+    background:var(--bg-raised); border:1px solid var(--line-soft); border-radius:28px; padding:26px 22px;
     box-shadow:var(--shadow); touch-action:pan-y; user-select:none; cursor:grab;
   }
   .vote-card:active{ cursor:grabbing; }
   .vote-card .cat{
     font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--blue);
-    background:var(--blue-soft); display:inline-block; padding:4px 9px; border-radius:6px; margin-bottom:14px;
+    background:var(--blue-soft); display:inline-block; padding:4px 9px; border-radius:10px; margin-bottom:14px;
   }
   .vote-card .statement{ font-family:var(--serif); font-size:22px; line-height:1.32; font-weight:500; cursor:pointer; }
   .context-hint{
@@ -269,7 +269,7 @@
   }
   .statement:hover .context-hint{ color:var(--blue); border-color:var(--blue); }
   .context-panel{
-    display:none; margin-top:12px; padding:10px 12px; background:var(--blue-soft); border-radius:10px;
+    display:none; margin-top:12px; padding:10px 12px; background:var(--blue-soft); border-radius:14px;
     font-size:12.5px; line-height:1.5; color:var(--ink-soft);
   }
   .context-panel.open{ display:block; }
@@ -277,7 +277,7 @@
 
   .stance-buttons{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:16px; }
   .stance-btn{
-    border-radius:16px; padding:16px 6px; border:1px solid var(--line); background:var(--bg-raised);
+    border-radius:20px; padding:16px 6px; border:1px solid var(--line); background:var(--bg-raised);
     display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer; font-size:12.5px; font-weight:600;
     color:var(--ink-soft);
   }
@@ -288,7 +288,7 @@
 
   .importance-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:18px; }
   .imp-btn{
-    border-radius:16px; padding:15px 6px; border:1px solid var(--line); background:var(--bg-raised);
+    border-radius:20px; padding:15px 6px; border:1px solid var(--line); background:var(--bg-raised);
     cursor:pointer; font-size:12.5px; font-weight:600; color:var(--ink-soft); text-align:center; line-height:1.3;
   }
   .imp-btn:hover{ border-color:var(--blue); color:var(--blue); }
@@ -323,7 +323,7 @@
   .podium-party{ font-size:10.5px; color:var(--ink-faint); margin-top:1px; }
   .podium-score{ font-family:var(--mono); font-weight:700; font-size:16px; margin-top:5px; }
   .podium-block{
-    width:100%; border-radius:10px 10px 4px 4px; margin-top:10px; display:flex; align-items:flex-start;
+    width:100%; border-radius:14px 14px 6px 6px; margin-top:10px; display:flex; align-items:flex-start;
     justify-content:center; padding-top:7px; box-sizing:border-box;
   }
   .podium-step.rank-1 .podium-block{ height:72px; }
@@ -334,7 +334,7 @@
 
   .result-row{
     background:var(--bg-raised); border:1px solid var(--line-soft);
-    border-radius:18px; padding:16px 18px; margin-bottom:12px; cursor:pointer;
+    border-radius:22px; padding:16px 18px; margin-bottom:12px; cursor:pointer;
   }
   .result-top{ display:flex; align-items:center; gap:11px; }
   .result-rank{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); width:16px; }
@@ -355,7 +355,7 @@
   .admin-tabs{ display:flex; gap:6px; margin-bottom:16px; border-bottom:1px solid var(--line-soft); }
   .admin-tab{ background:none; border:none; padding:10px 4px; margin-right:14px; font-size:13.5px; font-weight:600; color:var(--ink-faint); cursor:pointer; border-bottom:2px solid transparent; }
   .admin-tab.active{ color:var(--ink); border-color:var(--accent); }
-  .admin-item{ background:var(--bg-raised); border:1px solid var(--line-soft); border-radius:16px; padding:14px 16px; margin-bottom:10px; }
+  .admin-item{ background:var(--bg-raised); border:1px solid var(--line-soft); border-radius:20px; padding:14px 16px; margin-bottom:10px; }
   .admin-item-head{ display:flex; align-items:center; gap:10px; cursor:pointer; }
   .admin-item-head .swatch{ width:11px; height:11px; border-radius:50%; flex:none; }
   .admin-item-head .t{ flex:1; font-weight:600; font-size:13.5px; }
@@ -369,14 +369,14 @@
   .pos-detail{ grid-column:1 / -1; }
   .form-actions{ display:flex; gap:8px; margin-top:4px; }
   .danger-link{ background:none; border:none; color:var(--bad); font-size:12px; cursor:pointer; padding:0; }
-  .disclaimer{ font-size:12px; color:var(--ink-faint); line-height:1.5; background:var(--line-soft); padding:13px 15px; border-radius:14px; margin-bottom:16px; }
+  .disclaimer{ font-size:12px; color:var(--ink-faint); line-height:1.5; background:var(--line-soft); padding:13px 15px; border-radius:18px; margin-bottom:16px; }
 
   footer.appfoot{ text-align:center; padding:22px clamp(20px,4vw,40px) 30px; font-size:11.5px; color:var(--ink-faint); max-width:680px; margin:0 auto; width:100%; }
   footer.appfoot a{ text-decoration:underline; cursor:pointer; }
 
   .sponsor-card{
     display:block; text-align:left; background:var(--bg-raised); border:1px solid var(--line-soft);
-    border-radius:16px; padding:15px 17px; margin-bottom:16px; text-decoration:none; color:inherit;
+    border-radius:20px; padding:15px 17px; margin-bottom:16px; text-decoration:none; color:inherit;
   }
   a.sponsor-card:hover{ border-color:var(--ink-faint); }
   .sponsor-label{
@@ -403,10 +403,10 @@
   .axis-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:16px; }
   .axis-card{
     background:var(--bg-raised); border:1px solid var(--line-soft);
-    border-radius:18px; padding:20px 18px;
+    border-radius:22px; padding:20px 18px;
   }
   .axis-card .ic{
-    width:44px; height:44px; border-radius:14px; font-size:20px;
+    width:44px; height:44px; border-radius:18px; font-size:20px;
     display:flex; align-items:center; justify-content:center; margin-bottom:12px;
   }
   .axis-card .t{ font-size:14.5px; font-weight:700; }
@@ -415,7 +415,7 @@
   .step-item{ display:flex; gap:12px; align-items:flex-start; }
   .step-num{
     font-family:var(--mono); font-weight:700; font-size:15px; color:var(--accent);
-    background:var(--accent-soft); width:36px; height:36px; border-radius:12px; flex:none;
+    background:var(--accent-soft); width:36px; height:36px; border-radius:16px; flex:none;
     display:flex; align-items:center; justify-content:center;
   }
   .step-item .t{ font-size:14.5px; font-weight:700; }
@@ -492,21 +492,20 @@
       <button class="brand-home" id="brand-home" type="button">
         <div class="mark">
           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <line class="vt-antenna" x1="50" y1="18" x2="50" y2="10" stroke-width="4" stroke-linecap="round"></line>
-            <rect class="vt-badge-blue" x="42" y="3" width="5.33" height="8" rx="1"></rect>
-            <rect class="vt-badge-white" x="47.33" y="3" width="5.33" height="8"></rect>
-            <rect class="vt-badge-red" x="52.66" y="3" width="5.33" height="8" rx="1"></rect>
-            <path class="vt-head" d="M20,42 L7,48 L20,55 Z"></path>
-            <path class="vt-head" d="M80,42 L93,48 L80,55 Z"></path>
-            <path class="vt-head" d="M30,18 L70,18 L80,32 L80,58 L66,80 L34,80 L20,58 L20,32 Z"></path>
-            <path class="vt-visor" d="M27,41 L73,41 L69,54 L31,54 Z"></path>
-            <rect class="vt-head" x="48" y="41" width="4" height="13"></rect>
-            <circle class="vt-badge-blue" cx="64" cy="67" r="6.5"></circle>
-            <circle class="vt-badge-white" cx="64" cy="67" r="4.2"></circle>
-            <circle class="vt-badge-red" cx="64" cy="67" r="2"></circle>
-            <rect class="vt-badge-blue" x="38" y="73" width="8" height="3" rx="0.8"></rect>
-            <rect class="vt-badge-white" x="46" y="73" width="8" height="3"></rect>
-            <rect class="vt-badge-red" x="54" y="73" width="8" height="3" rx="0.8"></rect>
+            <line class="vt-antenna" x1="50" y1="14" x2="50" y2="6" stroke-width="4" stroke-linecap="round"></line>
+            <rect class="vt-badge-blue" x="42" y="0" width="5.33" height="7" rx="1"></rect>
+            <rect class="vt-badge-white" x="47.33" y="0" width="5.33" height="7"></rect>
+            <rect class="vt-badge-red" x="52.66" y="0" width="5.33" height="7" rx="1"></rect>
+            <rect class="vt-head" x="4" y="40" width="14" height="20" rx="7"></rect>
+            <rect class="vt-head" x="82" y="40" width="14" height="20" rx="7"></rect>
+            <rect class="vt-head" x="16" y="14" width="68" height="66" rx="26"></rect>
+            <rect class="vt-visor" x="26" y="39" width="48" height="17" rx="8.5"></rect>
+            <circle class="vt-badge-blue" cx="66" cy="64" r="7"></circle>
+            <circle class="vt-badge-white" cx="66" cy="64" r="4.5"></circle>
+            <circle class="vt-badge-red" cx="66" cy="64" r="2"></circle>
+            <rect class="vt-badge-blue" x="38" y="70" width="8" height="3" rx="1.5"></rect>
+            <rect class="vt-badge-white" x="46" y="70" width="8" height="3" rx="1.5"></rect>
+            <rect class="vt-badge-red" x="54" y="70" width="8" height="3" rx="1.5"></rect>
           </svg>
         </div>
         <div><div class="name">Votona</div></div>
@@ -564,7 +563,8 @@ var TOPICS = [
   {id:"t27", cat:"Europe & institutions", statement:"Convoquer une assemblée constituante pour instaurer une VIe République", addedDate:"2026-09-07", context:"Portée historiquement par la gauche radicale, l'idée d'une VIe République vise à limiter les pouvoirs du président et renforcer le Parlement, en rupture avec la Constitution de 1958."},
   {id:"t28", cat:"Économie & travail", statement:"Alourdir la fiscalité sur les très gros héritages (\"méga-successions\")", addedDate:"2026-09-08", context:"Les inégalités de patrimoine transmises par héritage sont revenues au cœur du débat économique, entre taxation accrue des grandes fortunes et défense de la libre transmission."},
   {id:"t29", cat:"Sécurité & immigration", statement:"Abaisser la majorité pénale à 15 ans", addedDate:"2026-09-09", context:"Proposée en septembre 2026 par plusieurs candidats de droite, cette mesure s'inscrit dans un débat récurrent sur la réponse pénale face à la délinquance des mineurs."},
-  {id:"t30", cat:"Société", statement:"Instaurer un dépistage obligatoire de l'addiction aux écrans à l'entrée en sixième et en seconde", addedDate:"2026-09-10", context:"L'exposition des jeunes aux écrans et ses effets sur la santé mentale sont devenus une préoccupation croissante, portée notamment par Gabriel Attal en septembre 2026."}
+  {id:"t30", cat:"Société", statement:"Instaurer un dépistage obligatoire de l'addiction aux écrans à l'entrée en sixième et en seconde", addedDate:"2026-09-10", context:"L'exposition des jeunes aux écrans et ses effets sur la santé mentale sont devenus une préoccupation croissante, portée notamment par Gabriel Attal en septembre 2026."},
+  {id:"t31", cat:"Économie & travail", statement:"Baisser la TVA et la TICPE sur les carburants pour redonner du pouvoir d'achat aux automobilistes", addedDate:"2026-09-12", context:"La hausse persistante des prix à la pompe en 2026 a relancé le débat entre allègement généralisé de la fiscalité sur les carburants et taxation ciblée des superprofits pétroliers."}
 ];
 
 function P(stance, detail){ return {stance:stance, detail:detail}; }
@@ -602,7 +602,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("contre","Le RN défend une baisse des droits de succession pour les classes moyennes et modestes plutôt qu'un alourdissement sur les grandes successions."),
       t29:P("pour","Défend de longue date la fin de l'excuse de minorité, ayant déjà proposé d'abaisser la majorité pénale à 16 ans."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("pour","Propose de baisser la TVA de 20% à 5,5% sur les carburants et de réduire la TICPE, pour rendre 25 euros aux Français sur un plein moyen de 50 litres.")
     }
   },
   {
@@ -637,7 +638,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("contre","S'inscrit dans sa ligne de stabilité fiscale du capital, plutôt qu'un alourdissement des droits de succession."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -672,7 +674,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("contre","Aligné sur la ligne de Renaissance favorable à la stabilité fiscale plutôt qu'à un alourdissement des successions."),
       t29:P("neutre","A proposé de restreindre l'excuse de minorité pour les mineurs de 16 ans et plus auteurs de faits graves, sans avoir formellement proposé d'abaisser l'âge légal de la majorité pénale."),
-      t30:P("pour","Propose un dépistage obligatoire de l'addiction aux écrans à l'entrée en sixième et en seconde, avec un suivi psychologique proposé en cas de besoin, mesure qu'il porte comme ministre puis candidat.")
+      t30:P("pour","Propose un dépistage obligatoire de l'addiction aux écrans à l'entrée en sixième et en seconde, avec un suivi psychologique proposé en cas de besoin, mesure qu'il porte comme ministre puis candidat."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -707,7 +710,8 @@ var CANDIDATES = [
       t27:P("neutre","Veut une profonde réforme constitutionnelle élargissant le champ du référendum, mais dans le cadre d'une refondation de la Ve République plutôt que par une assemblée constituante instaurant une VIe République."),
       t28:P("contre","A déclaré : 'Je ne serai pas le président qui augmentera les droits de succession mais celui qui les baissera.'"),
       t29:P("pour","A dévoilé cette proposition le 8 septembre 2026 sur CNEWS, aux côtés de la fin du droit du sol et de peines minimales."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -742,7 +746,8 @@ var CANDIDATES = [
       t27:P("pour","Revendication historique de LFI : convoquer une assemblée constituante pour abolir la Ve République et instaurer une VIe République, avec référendum d'initiative citoyenne et référendum révocatoire."),
       t28:P("pour","LFI, dont la présidente du groupe à l'Assemblée Mathilde Panot est proche, propose une taxation quasi confiscatoire au-delà de 12 millions d'euros d'héritage."),
       t29:P("contre","LFI s'est opposée en 2026 à un durcissement pénal visant les mineurs, jugé relever du 'populisme pénal'."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("contre","Plaide pour un blocage des prix et une taxation des superprofits de TotalEnergies plutôt qu'une baisse généralisée de la TVA sur les carburants.")
     }
   },
   {
@@ -777,7 +782,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("pour","Propose de taxer les successions de plus de 2 millions d'euros pour dégager 15 milliards d'euros redistribués aux salaires, l'une de ses mesures phares."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -812,7 +818,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("pour","Met en avant, comme Raphaël Glucksmann, une hausse de la taxation des plus grosses successions."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -847,7 +854,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("contre","Proche de la ligne des Républicains, favorable à une baisse plutôt qu'une hausse des droits de succession."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -882,7 +890,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("contre","Le RN, qu'elle a longtemps présidé, défend une baisse des droits de succession en ligne directe plutôt qu'un alourdissement sur les grandes successions."),
       t29:P("pour","Défend de longue date l'abaissement de la majorité pénale, réclamant par le passé de l'abaisser à 16 ans."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("pour","Le RN, dont Jordan Bardella porte la proposition chiffrée, défend de longue date une baisse de la TVA et de la TICPE sur les carburants pour redonner du pouvoir d'achat aux automobilistes.")
     }
   },
   {
@@ -917,7 +926,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("contre","Son mouvement Nouvelle Énergie propose la suppression pure et simple des droits de succession."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -952,7 +962,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Défend une ligne dure sur la criminalité des mineurs (y compris un référendum sur la peine de mort pour crimes sur enfants), mais ne s'est pas prononcé sur un abaissement de la majorité pénale."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -987,7 +998,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1022,7 +1034,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1057,7 +1070,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("pour","Ligne communiste révolutionnaire cohérente avec sa défense d'une taxation forte du capital et des grandes fortunes."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1092,7 +1106,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1127,7 +1142,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1162,7 +1178,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1197,7 +1214,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1232,7 +1250,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1267,7 +1286,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1302,7 +1322,8 @@ var CANDIDATES = [
       t27:P("pour","Défend une VIe République par assemblée constituante, avec référendum d'initiative citoyenne (RIC) et scrutin proportionnel intégral, axe central de son offre institutionnelle."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1337,7 +1358,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1372,7 +1394,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("pour","Propose déjà une mise à contribution des successions, en plus du retour de l'ISF, pour financer son programme."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1407,7 +1430,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1442,7 +1466,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1477,7 +1502,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1512,7 +1538,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1547,7 +1574,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1582,7 +1610,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1617,7 +1646,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1652,7 +1682,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1687,7 +1718,8 @@ var CANDIDATES = [
       t27:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1722,7 +1754,8 @@ var CANDIDATES = [
       t27:P("neutre","Défend la primauté du Parlement et critique l'usage du 49.3, sans avoir formellement porté une VIe République par assemblée constituante."),
       t28:P("pour","Propose une réforme des droits de succession fusionnant les multiples abattements en un abattement unique de 170 000 euros par héritier et un doublement des tranches visant les grosses successions."),
       t29:P("neutre","Le PCF s'est historiquement opposé aux durcissements pénaux visant les mineurs, mais sans prise de position directement sourcée sur ce seuil précis."),
-      t30:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t31:P("contre","Le PCF défend un blocage des prix des carburants et une taxation des superprofits pétroliers plutôt qu'une baisse généralisée de la TVA et de la TICPE.")
     }
   }
 ];
@@ -1990,21 +2023,20 @@ function renderProfiles(){
 
   var html = '<div class="hero-wrap">' +
       '<svg class="hero-watermark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
-        '<line class="vt-antenna" x1="50" y1="18" x2="50" y2="10" stroke-width="4" stroke-linecap="round"></line>' +
-        '<rect class="vt-badge-blue" x="42" y="3" width="5.33" height="8" rx="1"></rect>' +
-        '<rect class="vt-badge-white" x="47.33" y="3" width="5.33" height="8"></rect>' +
-        '<rect class="vt-badge-red" x="52.66" y="3" width="5.33" height="8" rx="1"></rect>' +
-        '<path class="vt-head" d="M20,42 L7,48 L20,55 Z"></path>' +
-        '<path class="vt-head" d="M80,42 L93,48 L80,55 Z"></path>' +
-        '<path class="vt-head" d="M30,18 L70,18 L80,32 L80,58 L66,80 L34,80 L20,58 L20,32 Z"></path>' +
-        '<path class="vt-visor" d="M27,41 L73,41 L69,54 L31,54 Z"></path>' +
-        '<rect class="vt-head" x="48" y="41" width="4" height="13"></rect>' +
-        '<circle class="vt-badge-blue" cx="64" cy="67" r="6.5"></circle>' +
-        '<circle class="vt-badge-white" cx="64" cy="67" r="4.2"></circle>' +
-        '<circle class="vt-badge-red" cx="64" cy="67" r="2"></circle>' +
-        '<rect class="vt-badge-blue" x="38" y="73" width="8" height="3" rx="0.8"></rect>' +
-        '<rect class="vt-badge-white" x="46" y="73" width="8" height="3"></rect>' +
-        '<rect class="vt-badge-red" x="54" y="73" width="8" height="3" rx="0.8"></rect>' +
+        '<line class="vt-antenna" x1="50" y1="14" x2="50" y2="6" stroke-width="4" stroke-linecap="round"></line>' +
+        '<rect class="vt-badge-blue" x="42" y="0" width="5.33" height="7" rx="1"></rect>' +
+        '<rect class="vt-badge-white" x="47.33" y="0" width="5.33" height="7"></rect>' +
+        '<rect class="vt-badge-red" x="52.66" y="0" width="5.33" height="7" rx="1"></rect>' +
+        '<rect class="vt-head" x="4" y="40" width="14" height="20" rx="7"></rect>' +
+        '<rect class="vt-head" x="82" y="40" width="14" height="20" rx="7"></rect>' +
+        '<rect class="vt-head" x="16" y="14" width="68" height="66" rx="26"></rect>' +
+        '<rect class="vt-visor" x="26" y="39" width="48" height="17" rx="8.5"></rect>' +
+        '<circle class="vt-badge-blue" cx="66" cy="64" r="7"></circle>' +
+        '<circle class="vt-badge-white" cx="66" cy="64" r="4.5"></circle>' +
+        '<circle class="vt-badge-red" cx="66" cy="64" r="2"></circle>' +
+        '<rect class="vt-badge-blue" x="38" y="70" width="8" height="3" rx="1.5"></rect>' +
+        '<rect class="vt-badge-white" x="46" y="70" width="8" height="3" rx="1.5"></rect>' +
+        '<rect class="vt-badge-red" x="54" y="70" width="8" height="3" rx="1.5"></rect>' +
       '</svg>' +
       '<span class="eyebrow">Qui vote aujourd\'hui ?</span>' +
       '<h1>Vot<span class="hl">ona</span></h1>' +
