@@ -194,11 +194,11 @@
   }
   .dash-head{ max-width:640px; margin-left:auto; margin-right:auto; }
   .new-profile-form.open{ display:flex; }
-  input[type="text"], select, textarea{
+  input[type="text"], input[type="email"], select, textarea{
     font-family:var(--sans); font-size:14.5px; padding:11px 14px; border-radius:16px;
     border:1px solid var(--line); background:var(--bg); color:var(--ink); width:100%;
   }
-  input[type="text"]:focus, select:focus, textarea:focus{ border-color:var(--blue); }
+  input[type="text"]:focus, input[type="email"]:focus, select:focus, textarea:focus{ border-color:var(--blue); }
   label.field-label{ font-size:12px; color:var(--ink-soft); font-weight:600; margin-bottom:5px; display:block; }
 
   .intro-copy{ color:var(--ink-soft); font-size:14.5px; line-height:1.55; margin-top:8px; max-width:640px; }
@@ -522,6 +522,7 @@
   </footer>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
 "use strict";
@@ -1858,6 +1859,96 @@ function escapeHtml(s){
   });
 }
 
+/* ============================================================
+   COMPTE — connexion par lien magique (Supabase), synchronisation
+   des profils et réponses pour les retrouver sur un autre appareil.
+   Sans connexion, tout continue de fonctionner uniquement en local.
+   ============================================================ */
+var SUPABASE_URL = "https://vvvlhxniiykbdssmadbs.supabase.co";
+var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2dmxoeG5paXlrYmRzc21hZGJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyNjg4NjcsImV4cCI6MjEwNDg0NDg2N30.WGbvZCasqaFVRm6LRVqhCBXwXfinjkbJXBSW1mU15U4";
+var sb = (window.supabase && window.supabase.createClient)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+var authSession = null;
+var authBusy = false;
+var authMessage = null;
+
+function isLoggedIn(){ return !!(authSession && authSession.user); }
+function isValidUUID(s){ return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(s)); }
+function newProfileId(){ return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : uid("p"); }
+
+async function fetchCloudProfiles(){
+  if(!sb || !isLoggedIn()) return {};
+  var userId = authSession.user.id;
+  var profilesRes = await sb.from("profiles").select("*").eq("user_id", userId);
+  if(profilesRes.error || !profilesRes.data) return {};
+  var profiles = {};
+  profilesRes.data.forEach(function(pr){
+    profiles[pr.id] = {
+      name: pr.name, createdAt: pr.created_at, lastSeenAt: pr.last_seen_at,
+      seenNewIds: pr.seen_new_ids || [], seenNewTopics: pr.seen_new_topics || [],
+      answers: {}
+    };
+  });
+  var ids = profilesRes.data.map(function(pr){ return pr.id; });
+  if(ids.length){
+    var answersRes = await sb.from("answers").select("*").in("profile_id", ids);
+    (answersRes.data || []).forEach(function(a){
+      if(profiles[a.profile_id]) profiles[a.profile_id].answers[a.topic_id] = {stance:a.stance, importance:a.importance};
+    });
+  }
+  return profiles;
+}
+
+async function pushProfileToCloud(id, profile){
+  if(!sb || !isLoggedIn() || !isValidUUID(id)) return;
+  var userId = authSession.user.id;
+  await sb.from("profiles").upsert({
+    id: id, user_id: userId, name: profile.name,
+    created_at: profile.createdAt, last_seen_at: profile.lastSeenAt,
+    seen_new_ids: profile.seenNewIds || [], seen_new_topics: profile.seenNewTopics || []
+  });
+  var answers = profile.answers || {};
+  var rows = Object.keys(answers).map(function(tid){
+    return {
+      profile_id: id, topic_id: tid,
+      stance: answers[tid].stance, importance: answers[tid].importance,
+      updated_at: new Date().toISOString()
+    };
+  });
+  if(rows.length){
+    await sb.from("answers").upsert(rows, {onConflict:"profile_id,topic_id"});
+  }
+}
+
+async function syncAfterLogin(){
+  var cloud = await fetchCloudProfiles();
+  if(Object.keys(cloud).length){
+    saveProfiles(cloud);
+    if(!cloud[state.activeProfileId]) state.activeProfileId = null;
+  } else {
+    var local = loadProfiles();
+    var localIds = Object.keys(local);
+    if(localIds.length){
+      var remapped = {};
+      var oldToNew = {};
+      for(var i=0;i<localIds.length;i++){
+        var oldId = localIds[i];
+        var p = local[oldId];
+        var cloudId = isValidUUID(oldId) ? oldId : newProfileId();
+        oldToNew[oldId] = cloudId;
+        remapped[cloudId] = p;
+        await pushProfileToCloud(cloudId, p);
+      }
+      saveProfiles(remapped);
+      if(state.activeProfileId && oldToNew[state.activeProfileId]){
+        state.activeProfileId = oldToNew[state.activeProfileId];
+      }
+    }
+  }
+  render();
+}
+
 /* Merge base data with local admin overrides */
 function getTopics(){
   var ov = loadOverrides();
@@ -1900,6 +1991,7 @@ function updateActiveProfile(mutator){
   mutator(p);
   profiles[state.activeProfileId] = p;
   saveProfiles(profiles);
+  if(isLoggedIn()){ pushProfileToCloud(state.activeProfileId, p).catch(function(){}); }
 }
 
 /* ============================================================
@@ -1948,11 +2040,13 @@ function renderTopbar(){
   if(state.screen !== "profiles"){
     html += '<button class="icon-btn" id="btn-home" title="Accueil">⌂</button>';
   }
+  html += '<button class="icon-btn" id="btn-account" title="' + (isLoggedIn() ? "Mon compte" : "Se connecter") + '">' + (isLoggedIn() ? "✉" : "⊕") + '</button>';
   html += '<button class="icon-btn" id="btn-faq" title="Questions fréquentes">?</button>';
   html += '<button class="icon-btn" id="btn-admin" title="Gérer candidats et sujets">⚙</button>';
   el.innerHTML = html;
   var home = document.getElementById("btn-home");
   if(home) home.onclick = function(){ state.screen = "dashboard"; render(); };
+  document.getElementById("btn-account").onclick = function(){ state.screen = "account"; render(); };
   document.getElementById("btn-faq").onclick = goToFaq;
   document.getElementById("btn-admin").onclick = function(){ state.screen = "admin"; state.adminOpenId=null; render(); };
 
@@ -2093,16 +2187,18 @@ function renderProfiles(){
     var name = input.value.trim();
     if(!name){ input.focus(); return; }
     var profiles = loadProfiles();
-    var id = uid("p");
-    profiles[id] = {
+    var id = newProfileId();
+    var newProfile = {
       name: name, createdAt: new Date().toISOString(), lastSeenAt: new Date().toISOString(),
       answers: {}, seenNewIds: getCandidates().map(function(c){return c.id;}),
       seenNewTopics: getTopics().map(function(t){return t.id;})
     };
+    profiles[id] = newProfile;
     saveProfiles(profiles);
     state.activeProfileId = id;
     state.screen = "dashboard";
     render();
+    if(isLoggedIn()){ pushProfileToCloud(id, newProfile).catch(function(){}); }
   };
   document.getElementById("btn-open-faq").onclick = goToFaq;
   var finalCta = document.getElementById("btn-final-cta");
@@ -2501,6 +2597,59 @@ function renderFaq(){
 }
 
 /* ============================================================
+   SCREEN — COMPTE
+   ============================================================ */
+function renderAccount(){
+  var html;
+  if(!sb){
+    html = '<h1>Mon compte</h1><p class="intro-copy">La connexion par email n\'est pas disponible pour le moment.</p>';
+  } else if(isLoggedIn()){
+    html = '<h1>Mon compte</h1>' +
+      '<p class="intro-copy">Connecté avec <strong>' + escapeHtml(authSession.user.email) + '</strong>. Tes profils et réponses sont synchronisés — reconnecte-toi avec cet email sur n\'importe quel appareil pour les retrouver.</p>' +
+      '<button class="btn btn-ghost btn-block" id="btn-signout" style="margin-top:16px;">Se déconnecter</button>';
+  } else {
+    html = '<h1>Mon compte</h1>' +
+      '<p class="intro-copy">Connecte-toi par email pour retrouver tes profils et réponses sur un autre appareil. Sans connexion, tout continue de fonctionner normalement, gardé uniquement sur cet appareil.</p>' +
+      '<div style="margin-top:16px;"><label class="field-label">Adresse email</label>' +
+      '<input type="email" id="account-email" placeholder="toi@exemple.fr" /></div>' +
+      '<button class="btn btn-accent btn-block" id="btn-send-link" style="margin-top:12px;">Envoyer le lien magique</button>' +
+      (authMessage ? '<p class="intro-copy" style="margin-top:12px;">' + escapeHtml(authMessage) + '</p>' : '');
+  }
+  html += '<button class="btn btn-ghost btn-block" id="btn-account-back" style="margin-top:22px;">← Retour</button>';
+  document.getElementById("app").innerHTML = html;
+
+  var signout = document.getElementById("btn-signout");
+  if(signout) signout.onclick = function(){
+    sb.auth.signOut().then(function(){
+      authSession = null;
+      render();
+    });
+  };
+  var sendLink = document.getElementById("btn-send-link");
+  if(sendLink) sendLink.onclick = function(){
+    if(authBusy) return;
+    var input = document.getElementById("account-email");
+    var email = input.value.trim();
+    if(!email){ input.focus(); return; }
+    authBusy = true;
+    sendLink.disabled = true;
+    sendLink.textContent = "Envoi en cours…";
+    sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.origin } }).then(function(res){
+      authBusy = false;
+      authMessage = res.error
+        ? "Une erreur est survenue, réessaie dans un instant."
+        : "Lien envoyé ! Vérifie ta boîte mail (" + email + ") et clique sur le lien pour te connecter.";
+      render();
+    });
+  };
+  document.getElementById("btn-account-back").onclick = function(){
+    authMessage = null;
+    state.screen = activeProfile() ? "dashboard" : "profiles";
+    render();
+  };
+}
+
+/* ============================================================
    SCREEN — ADMIN
    ============================================================ */
 function renderAdmin(){
@@ -2656,11 +2805,18 @@ function render(){
   else if(state.screen === "vote") renderVote();
   else if(state.screen === "results") renderResults();
   else if(state.screen === "faq") renderFaq();
+  else if(state.screen === "account") renderAccount();
   else if(state.screen === "admin") renderAdmin();
   renderSponsor();
   window.scrollTo(0,0);
 }
 
+if(sb){
+  sb.auth.onAuthStateChange(function(event, session){
+    authSession = session;
+    if(session){ syncAfterLogin(); } else { render(); }
+  });
+}
 render();
 })();
 </script>
