@@ -2362,6 +2362,7 @@ function renderDashboard(){
     '</div>' +
     '<button class="btn btn-accent btn-block" id="btn-vote">' + (answered === 0 ? "Commencer le questionnaire" : answered < topics.length ? "Continuer (" + (topics.length-answered) + " restants)" : "Revoir mes réponses") + '</button>' +
     (answered > 0 ? '<div style="margin-top:10px;"><button class="btn btn-ghost btn-block" id="btn-results">Voir mes résultats</button></div>' : '') +
+    (answered > 0 ? '<div style="margin-top:10px;"><button class="btn btn-ghost btn-block" id="btn-kit">Voir mon kit</button></div>' : '') +
     '</div>' +
     '<section class="block" style="margin-top:22px;"><h2>Candidats suivis</h2><div class="sub">Mis à jour automatiquement lorsqu\'une nouvelle candidature est confirmée.</div>' +
       '<div class="candidate-list">' + candRows + '</div></section>';
@@ -2386,6 +2387,8 @@ function renderDashboard(){
   document.getElementById("btn-vote").onclick = function(){ startVoteFlow(); };
   var btnResults = document.getElementById("btn-results");
   if(btnResults) btnResults.onclick = function(){ state.screen = "results"; render(); };
+  var btnKit = document.getElementById("btn-kit");
+  if(btnKit) btnKit.onclick = function(){ state.screen = "kit"; render(); };
 }
 
 /* ============================================================
