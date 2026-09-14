@@ -411,6 +411,13 @@
   }
   .axis-card .t{ font-size:14.5px; font-weight:700; }
   .axis-card .d{ font-size:12.5px; color:var(--ink-faint); margin-top:3px; line-height:1.4; }
+  a.axis-card{ display:block; text-decoration:none; color:inherit; }
+  .media-group{ margin-top:14px; }
+  .media-group-label{ font-size:12.5px; font-weight:700; color:var(--ink-soft); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+  .media-links{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .media-links .axis-card{ padding:14px 15px; }
+  .media-links .axis-card .t{ font-size:13px; }
+  .media-links .axis-card .d{ font-size:11.5px; }
   .steps-list{ display:flex; flex-direction:column; gap:14px; margin-top:14px; }
   .step-item{ display:flex; gap:12px; align-items:flex-start; }
   .step-num{
@@ -1798,6 +1805,37 @@ var CATEGORY_META = {
   "Défense & numérique": {ic:"🔐", d:"Armée, intelligence artificielle, souveraineté technologique.", c:"--ink-soft"}
 };
 
+var MEDIA_BY_CATEGORY = {
+  "Économie & travail": [
+    {name:"Les Échos", url:"https://www.lesechos.fr", d:"Actualité économique et financière au quotidien."},
+    {name:"Alternatives Économiques", url:"https://www.alternatives-economiques.fr", d:"Décryptages sur l'emploi, la fiscalité et les inégalités."}
+  ],
+  "Protection sociale": [
+    {name:"La Croix", url:"https://www.la-croix.com", d:"Actualité sociale, santé et solidarités."},
+    {name:"Le Monde — Société", url:"https://www.lemonde.fr/societe/", d:"Suivi des politiques sociales et de santé."}
+  ],
+  "Sécurité & immigration": [
+    {name:"Le Figaro", url:"https://www.lefigaro.fr", d:"Couverture approfondie des questions de sécurité et de justice."},
+    {name:"Mediapart", url:"https://www.mediapart.fr", d:"Enquêtes sur les politiques migratoires et sécuritaires."}
+  ],
+  "Écologie": [
+    {name:"Reporterre", url:"https://reporterre.net", d:"Média indépendant dédié à l'écologie."},
+    {name:"Novethic", url:"https://www.novethic.fr", d:"Actualité de la transition énergétique et climatique."}
+  ],
+  "Europe & institutions": [
+    {name:"Toute l'Europe", url:"https://www.touteleurope.eu", d:"Décryptage neutre du fonctionnement de l'UE."},
+    {name:"Contexte", url:"https://www.contexte.com", d:"Coulisses des négociations européennes et institutionnelles."}
+  ],
+  "Société": [
+    {name:"Le Monde", url:"https://www.lemonde.fr", d:"Référence généraliste sur l'actualité de société."},
+    {name:"France Culture", url:"https://www.radiofrance.fr/franceculture", d:"Débats et enquêtes sur l'école, le logement, les libertés."}
+  ],
+  "Défense & numérique": [
+    {name:"Numerama", url:"https://www.numerama.com", d:"Actualité tech, IA et souveraineté numérique."},
+    {name:"Le Grand Continent", url:"https://legrandcontinent.eu", d:"Analyses géopolitiques et de défense."}
+  ]
+};
+
 var HOW_IT_WORKS = [
   {t:"Prends position", d:"Pour chaque sujet, indique si tu es plutôt pour, plutôt contre, ou neutre — puis précise à quel point ce sujet compte pour toi."},
   {t:"L'importance pèse dans le calcul", d:"Les sujets que tu juges les plus importants comptent davantage dans le calcul de ton affinité avec chaque candidat."},
@@ -2711,11 +2749,25 @@ function renderKit(){
       '<div class="d">' + escapeHtml(item.d) + '</div></div>';
   }).join("");
 
+  var mediaHtml = topCats.map(function(cat){
+    var m = CATEGORY_META[cat] || {ic:"•", d:"", c:"--accent"};
+    var sources = MEDIA_BY_CATEGORY[cat] || [];
+    if(!sources.length) return "";
+    var linksHtml = sources.map(function(s){
+      return '<a class="axis-card" href="' + escapeHtml(s.url) + '" target="_blank" rel="noopener">' +
+        '<div class="t">' + escapeHtml(s.name) + '</div>' +
+        '<div class="d">' + escapeHtml(s.d) + '</div></a>';
+    }).join("");
+    return '<div class="media-group"><div class="media-group-label"><span>' + m.ic + '</span>' + escapeHtml(cat) + '</div>' +
+      '<div class="media-links">' + linksHtml + '</div></div>';
+  }).join("");
+
   var html = '<span class="eyebrow">Bienvenue ' + escapeHtml(profile.name) + '</span>' +
     '<h1>Ton kit pour la présidentielle</h1>' +
     '<p class="intro-copy">Un résumé de ton profil politique, et tout ce qu\'il faut savoir pour voter le moment venu.</p>' +
     (candidatesHtml ? '<section class="landing-section"><h2>Tes candidats</h2><div class="sub">D\'après tes réponses au questionnaire.</div><div class="candidate-list">' + candidatesHtml + '</div></section>' : '') +
     (themesHtml ? '<section class="landing-section landing-narrow"><h2>Tes thèmes clés</h2><div class="sub">Les sujets que tu as jugés les plus importants.</div><div class="axis-grid">' + themesHtml + '</div></section>' : '') +
+    (mediaHtml ? '<section class="landing-section landing-narrow"><h2>Pour approfondir tes sujets</h2><div class="sub">Une sélection volontairement plurielle, sans lien avec ton profil politique.</div>' + mediaHtml + '</section>' : '') +
     '<section class="landing-section landing-narrow"><h2>Infos pratiques pour voter</h2><div class="sub">L\'essentiel pour ne rien rater le jour J.</div><div class="axis-grid">' + practicalHtml + '</div></section>' +
     '<div style="margin-top:24px;"><button class="btn btn-accent btn-block" id="kit-continue">Voir mon tableau de bord</button></div>';
 
