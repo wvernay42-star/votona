@@ -471,6 +471,48 @@
   .share-pill{ font-size:12px; font-weight:700; padding:5px 11px; border-radius:99px; background:rgba(255,255,255,.55); }
   .share-footer{ font-family:var(--mono); font-size:10.5px; margin-top:22px; opacity:.6; }
 
+  .kit-character{ position:relative; width:210px; height:190px; margin:12px auto 34px; }
+  .kit-character-mascot{ display:flex; align-items:center; justify-content:center; height:100%; }
+  .kit-badge{
+    position:absolute; width:54px; height:54px; border-radius:50%; border:3px solid var(--bg);
+    display:flex; align-items:center; justify-content:center; font-size:21px; cursor:pointer;
+    box-shadow:0 8px 16px -8px rgba(0,0,0,.4); padding:0;
+  }
+  .kit-badge:hover{ filter:brightness(1.05); }
+  .kit-badge-0{ top:-6px; left:0; }
+  .kit-badge-1{ top:-6px; right:0; }
+  .kit-badge-2{ bottom:-10px; left:50%; transform:translateX(-50%); }
+  .kit-badge-label{
+    position:absolute; top:100%; left:50%; transform:translateX(-50%); margin-top:6px;
+    font-size:10.5px; font-weight:700; white-space:nowrap; color:var(--ink-soft);
+  }
+
+  .kit-modal-overlay{
+    position:fixed; inset:0; background:rgba(20,18,31,.55); z-index:50;
+    display:flex; align-items:flex-end; justify-content:center;
+  }
+  .kit-modal-card{
+    background:var(--bg); width:100%; max-width:480px; max-height:88vh; overflow-y:auto;
+    border-radius:28px 28px 0 0; padding:26px 22px 30px; position:relative;
+  }
+  .kit-modal-close{
+    position:absolute; top:16px; right:16px; width:34px; height:34px; border-radius:50%;
+    border:none; background:var(--line-soft); color:var(--ink); font-size:15px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .kit-modal-header{ display:flex; align-items:center; gap:12px; margin-bottom:4px; padding-right:40px; }
+  .kit-modal-icon{ width:48px; height:48px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:22px; flex:none; }
+  .kit-modal-title{ font-family:var(--serif); font-weight:700; font-size:20px; line-height:1.2; }
+  .kit-modal-desc{ font-size:13.5px; color:var(--ink-faint); margin:10px 0 20px; line-height:1.5; }
+  .kit-modal-section-label{
+    font-size:12px; font-weight:700; color:var(--ink-soft); margin-bottom:8px;
+    text-transform:uppercase; letter-spacing:.04em;
+  }
+  @media (min-width:640px){
+    .kit-modal-overlay{ align-items:center; padding:20px; }
+    .kit-modal-card{ border-radius:28px; }
+  }
+
   .glossary-grid{ display:grid; grid-template-columns:1fr; gap:14px; margin-top:16px; }
   .glossary-card{
     background:var(--bg-raised); border:1px solid var(--line-soft);
@@ -2184,7 +2226,8 @@ var state = {
   pendingStance: null,
   adminTab: "candidates",
   adminOpenId: null,
-  dismissedSignupCta: false
+  dismissedSignupCta: false,
+  kitModalCat: null
 };
 
 function activeProfile(){
@@ -2901,13 +2944,6 @@ function renderKit(){
       '<div class="result-score mono">' + r.pct + '%</div></div>';
   }).join("");
 
-  var themesHtml = topCats.map(function(cat){
-    var m = CATEGORY_META[cat] || {ic:"•", d:"", c:"--accent"};
-    return '<div class="axis-card"><div class="ic" style="background:color-mix(in srgb, var(' + m.c + ') 16%, transparent); color:var(' + m.c + ')">' + m.ic + '</div>' +
-      '<div class="t">' + escapeHtml(cat) + '</div>' +
-      '<div class="d">' + escapeHtml(m.d) + '</div></div>';
-  }).join("");
-
   var practicalInfo = [
     {ic:"🗳️", t:"Vérifie ton inscription", d:"Consulte ou mets à jour ton inscription sur les listes électorales sur service-public.fr, gratuitement et en ligne.", c:"--blue"},
     {ic:"🪪", t:"Pièces d'identité acceptées", d:"Carte nationale d'identité, passeport, permis de conduire ou une autre pièce avec photo listée par le ministère de l'Intérieur.", c:"--gold"},
@@ -2919,36 +2955,19 @@ function renderKit(){
       '<div class="d">' + escapeHtml(item.d) + '</div></div>';
   }).join("");
 
-  var mediaHtml = topCats.map(function(cat){
-    var m = CATEGORY_META[cat] || {ic:"•", d:"", c:"--accent"};
+  var themeDetails = topCats.map(function(cat){
+    var meta = CATEGORY_META[cat] || {};
     var all = MEDIA_BY_CATEGORY[cat] || [];
     var byScore = function(a,b){ return (b.score||0) - (a.score||0); };
     var topAV = all.filter(function(s){ return s.type === "podcast" || s.type === "docu"; }).sort(byScore)[0];
     var topPresse = all.filter(function(s){ return s.type === "presse"; }).sort(byScore)[0];
-    var sources = [topAV, topPresse].filter(Boolean);
-    if(!sources.length) return "";
-    var linksHtml = sources.map(function(s){
-      var tm = MEDIA_TYPE_META[s.type] || {ic:"", label:""};
-      return '<a class="axis-card" href="' + escapeHtml(s.url) + '" target="_blank" rel="noopener">' +
-        '<span class="media-type-tag ' + escapeHtml(s.type) + '">' + tm.ic + ' ' + escapeHtml(tm.label) + '</span>' +
-        '<div class="t">' + escapeHtml(s.name) + '</div>' +
-        '<div class="d">' + escapeHtml(s.d) + '</div></a>';
-    }).join("");
-    return '<div class="media-group"><div class="media-group-label"><span>' + m.ic + '</span>' + escapeHtml(cat) + '</div>' +
-      '<div class="media-links">' + linksHtml + '</div></div>';
-  }).join("");
-
-  var glossaryHtml = topCats.map(function(cat){
-    var m = CATEGORY_META[cat] || {ic:"•", c:"--accent"};
-    var terms = (GLOSSARY_BY_CATEGORY[cat] || []).slice(0,1);
-    if(!terms.length) return "";
-    var termsHtml = terms.map(function(g){
-      return '<div class="glossary-card"><div class="term">' + escapeHtml(g.term) + '</div>' +
-        '<div class="def">' + escapeHtml(g.d) + '</div></div>';
-    }).join("");
-    return '<div class="media-group"><div class="media-group-label"><span>' + m.ic + '</span>' + escapeHtml(cat) + '</div>' +
-      '<div class="glossary-grid">' + termsHtml + '</div></div>';
-  }).join("");
+    return {
+      cat: cat,
+      meta: meta,
+      media: [topAV, topPresse].filter(Boolean),
+      glossary: (GLOSSARY_BY_CATEGORY[cat] || [])[0] || null
+    };
+  });
 
   var topArchetype = topCats.length ? (CATEGORY_META[topCats[0]] || {}) : {};
   var pop = topArchetype.pop || "#7C3AED";
@@ -2974,26 +2993,86 @@ function renderKit(){
     '<button class="btn btn-block pop-share-btn" id="kit-share-btn">📤 Partager mon profil</button>' +
     '</div>' : '';
 
+  var badgesHtml = themeDetails.map(function(d, i){
+    var c = d.meta.pop || pop;
+    return '<button class="kit-badge kit-badge-' + i + '" data-cat="' + escapeHtml(d.cat) + '" style="background:' + c + ';" title="' + escapeHtml(d.cat) + '">' +
+      '<span>' + (d.meta.ic || "") + '</span>' +
+      '<span class="kit-badge-label">' + escapeHtml(d.meta.word || d.cat) + '</span>' +
+      '</button>';
+  }).join("");
+
+  var characterHtml = themeDetails.length ? '<section class="landing-section landing-narrow">' +
+    '<h2>Ton personnage</h2><div class="sub">Chaque badge est un de tes thèmes prioritaires — touche-le pour l\'explorer.</div>' +
+    '<div class="kit-character">' +
+      '<div class="kit-character-mascot">' + mascotSvg(pop, 130) + '</div>' +
+      badgesHtml +
+    '</div>' +
+    '</section>' : '';
+
+  var activeDetail = state.kitModalCat ? themeDetails.filter(function(d){ return d.cat === state.kitModalCat; })[0] : null;
+  var modalHtml = "";
+  if(activeDetail){
+    var dc = activeDetail.meta.pop || pop;
+    var mediaModalHtml = activeDetail.media.map(function(s){
+      var tm = MEDIA_TYPE_META[s.type] || {ic:"", label:""};
+      return '<a class="axis-card" href="' + escapeHtml(s.url) + '" target="_blank" rel="noopener">' +
+        '<span class="media-type-tag ' + escapeHtml(s.type) + '">' + tm.ic + ' ' + escapeHtml(tm.label) + '</span>' +
+        '<div class="t">' + escapeHtml(s.name) + '</div>' +
+        '<div class="d">' + escapeHtml(s.d) + '</div></a>';
+    }).join("");
+    var glossaryModalHtml = activeDetail.glossary
+      ? '<div class="glossary-card"><div class="term">' + escapeHtml(activeDetail.glossary.term) + '</div><div class="def">' + escapeHtml(activeDetail.glossary.d) + '</div></div>'
+      : "";
+    modalHtml = '<div class="kit-modal-overlay" id="kit-modal-overlay">' +
+        '<div class="kit-modal-card">' +
+          '<button class="kit-modal-close" id="kit-modal-close">✕</button>' +
+          '<div class="kit-modal-header">' +
+            '<div class="kit-modal-icon" style="background:color-mix(in srgb, ' + dc + ' 20%, transparent); color:' + dc + ';">' + (activeDetail.meta.ic || "") + '</div>' +
+            '<div class="kit-modal-title">' + escapeHtml(activeDetail.cat) + '</div>' +
+          '</div>' +
+          '<div class="kit-modal-desc">' + escapeHtml(activeDetail.meta.d || "") + '</div>' +
+          (mediaModalHtml ? '<div class="kit-modal-section-label">Pour approfondir</div><div class="media-links" style="margin-bottom:20px;">' + mediaModalHtml + '</div>' : '') +
+          (glossaryModalHtml ? '<div class="kit-modal-section-label">Glossaire</div><div class="glossary-grid">' + glossaryModalHtml + '</div>' : '') +
+        '</div>' +
+      '</div>';
+  }
+
   var html = '<span class="eyebrow">Bienvenue ' + escapeHtml(profile.name) + '</span>' +
     '<h1>Ton kit pour la présidentielle</h1>' +
     '<p class="intro-copy">Un résumé de ton profil politique, et tout ce qu\'il faut savoir pour voter le moment venu.</p>' +
     profileBadgeHtml +
     (candidatesHtml ? '<section class="landing-section"><h2>Tes candidats</h2><div class="sub">D\'après tes réponses au questionnaire.</div><div class="candidate-list">' + candidatesHtml + '</div></section>' : '') +
-    (themesHtml ? '<section class="landing-section landing-narrow"><h2>Tes thèmes clés</h2><div class="sub">Les sujets que tu as jugés les plus importants.</div><div class="axis-grid">' + themesHtml + '</div></section>' : '') +
-    (mediaHtml ? '<section class="landing-section landing-narrow"><h2>Pour approfondir tes sujets</h2><div class="sub">Une sélection volontairement plurielle, sans lien avec ton profil politique.</div>' + mediaHtml + '</section>' : '') +
-    (glossaryHtml ? '<section class="landing-section landing-narrow"><h2>Ton glossaire express</h2><div class="sub">Quelques termes qui reviennent souvent sur tes sujets prioritaires.</div>' + glossaryHtml + '</section>' : '') +
+    characterHtml +
     '<section class="landing-section landing-narrow"><h2>Infos pratiques pour voter</h2><div class="sub">L\'essentiel pour ne rien rater le jour J.</div><div class="axis-grid">' + practicalHtml + '</div></section>' +
-    '<div style="margin-top:24px;"><button class="btn btn-accent btn-block" id="kit-continue">Voir mon tableau de bord</button></div>';
+    '<div style="margin-top:24px;"><button class="btn btn-accent btn-block" id="kit-continue">Voir mon tableau de bord</button></div>' +
+    modalHtml;
 
   document.getElementById("app").innerHTML = html;
   document.getElementById("kit-continue").onclick = function(){
+    state.kitModalCat = null;
     state.screen = "dashboard";
     render();
   };
   var shareBtn = document.getElementById("kit-share-btn");
   if(shareBtn) shareBtn.onclick = function(){
+    state.kitModalCat = null;
     state.screen = "kitShare";
     render();
+  };
+  Array.prototype.forEach.call(document.querySelectorAll(".kit-badge"), function(btn){
+    btn.onclick = function(){
+      state.kitModalCat = btn.getAttribute("data-cat");
+      renderKit();
+    };
+  });
+  var modalOverlay = document.getElementById("kit-modal-overlay");
+  if(modalOverlay) modalOverlay.onclick = function(e){
+    if(e.target === modalOverlay){ state.kitModalCat = null; renderKit(); }
+  };
+  var modalClose = document.getElementById("kit-modal-close");
+  if(modalClose) modalClose.onclick = function(){
+    state.kitModalCat = null;
+    renderKit();
   };
 }
 
