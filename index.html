@@ -431,9 +431,13 @@
     font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em;
     color:var(--ink-faint); margin-bottom:10px;
   }
+  .profile-archetype{
+    font-family:var(--serif); font-weight:700; font-size:clamp(22px,3vw + 12px,30px);
+    color:var(--ink); margin-bottom:12px;
+  }
   .profile-badge-words{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
   .profile-badge-pill{
-    font-size:15px; font-weight:700; padding:8px 16px; border-radius:99px;
+    font-size:13px; font-weight:700; padding:6px 13px; border-radius:99px;
     background:color-mix(in srgb, var(--accent) 14%, transparent); color:var(--accent);
   }
 
@@ -1828,13 +1832,13 @@ var SPONSORS = [
 // Seule la revue périodique du kit a le droit de modifier ce bloc,
 // via une branche + push (jamais un push direct sur main).
 var CATEGORY_META = {
-  "Économie & travail": {ic:"💼", d:"Fiscalité, emploi, retraites, pouvoir d'achat.", c:"--gold", word:"Économique"},
-  "Protection sociale": {ic:"🤝", d:"Santé, chômage, minima sociaux, solidarité.", c:"--blue", word:"Solidaire"},
-  "Sécurité & immigration": {ic:"🛡️", d:"Police, justice, frontières, droit d'asile.", c:"--accent", word:"Sécuritaire"},
-  "Écologie": {ic:"🌱", d:"Énergie, agriculture, climat, biodiversité.", c:"--good", word:"Écologiste"},
-  "Europe & institutions": {ic:"🇪🇺", d:"Union européenne, réforme des institutions, scrutin.", c:"--plum", word:"Européen"},
-  "Société": {ic:"👥", d:"École, logement, santé, libertés individuelles.", c:"--teal", word:"Citoyen"},
-  "Défense & numérique": {ic:"🔐", d:"Armée, intelligence artificielle, souveraineté technologique.", c:"--ink-soft", word:"Régalien"}
+  "Économie & travail": {ic:"💼", d:"Fiscalité, emploi, retraites, pouvoir d'achat.", c:"--gold", word:"Économique", archetype:"Stratège du Pouvoir d'Achat"},
+  "Protection sociale": {ic:"🤝", d:"Santé, chômage, minima sociaux, solidarité.", c:"--blue", word:"Solidaire", archetype:"Pilier Solidaire"},
+  "Sécurité & immigration": {ic:"🛡️", d:"Police, justice, frontières, droit d'asile.", c:"--accent", word:"Sécuritaire", archetype:"Gardien Régalien"},
+  "Écologie": {ic:"🌱", d:"Énergie, agriculture, climat, biodiversité.", c:"--good", word:"Écologiste", archetype:"Sentinelle Verte"},
+  "Europe & institutions": {ic:"🇪🇺", d:"Union européenne, réforme des institutions, scrutin.", c:"--plum", word:"Européen", archetype:"Ambassadeur Européen"},
+  "Société": {ic:"👥", d:"École, logement, santé, libertés individuelles.", c:"--teal", word:"Citoyen", archetype:"Citoyen Engagé"},
+  "Défense & numérique": {ic:"🔐", d:"Armée, intelligence artificielle, souveraineté technologique.", c:"--ink-soft", word:"Régalien", archetype:"Éclaireur Numérique"}
 };
 
 var MEDIA_TYPE_META = {
@@ -2875,8 +2879,10 @@ function renderKit(){
   }).join("");
 
   var profileWords = topCats.map(function(cat){ return (CATEGORY_META[cat] || {}).word; }).filter(Boolean);
+  var topArchetype = topCats.length ? (CATEGORY_META[topCats[0]] || {}) : {};
   var profileBadgeHtml = profileWords.length ? '<div class="profile-badge">' +
-    '<div class="profile-badge-label">Ton profil en 3 mots</div>' +
+    '<div class="profile-badge-label">Ton profil</div>' +
+    (topArchetype.archetype ? '<div class="profile-archetype">' + (topArchetype.ic || "") + ' ' + escapeHtml(topArchetype.archetype) + '</div>' : '') +
     '<div class="profile-badge-words">' + profileWords.map(function(w){ return '<span class="profile-badge-pill">' + escapeHtml(w) + '</span>'; }).join("") + '</div>' +
     '</div>' : '';
 
