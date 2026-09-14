@@ -1829,6 +1829,8 @@ var FAQ_ITEMS = [
 var LS_PROFILES = "votona.profiles.v1";
 var LS_OVERRIDES = "votona.overrides.v1";
 var LS_ACTIVE = "votona.active.v1";
+var LS_PENDING_KIT = "votona.pendingKit.v1";
+var LS_PENDING_OPTIN = "votona.pendingOptIn.v1";
 var NEW_WINDOW_DAYS = 3;
 
 function safeGet(key, fallback){
@@ -1887,6 +1889,7 @@ async function fetchCloudProfiles(){
     profiles[pr.id] = {
       name: pr.name, createdAt: pr.created_at, lastSeenAt: pr.last_seen_at,
       seenNewIds: pr.seen_new_ids || [], seenNewTopics: pr.seen_new_topics || [],
+      newsOptIn: !!pr.news_opt_in,
       answers: {}
     };
   });
@@ -1906,7 +1909,8 @@ async function pushProfileToCloud(id, profile){
   await sb.from("profiles").upsert({
     id: id, user_id: userId, name: profile.name,
     created_at: profile.createdAt, last_seen_at: profile.lastSeenAt,
-    seen_new_ids: profile.seenNewIds || [], seen_new_topics: profile.seenNewTopics || []
+    seen_new_ids: profile.seenNewIds || [], seen_new_topics: profile.seenNewTopics || [],
+    news_opt_in: !!profile.newsOptIn
   });
   var answers = profile.answers || {};
   var rows = Object.keys(answers).map(function(tid){
@@ -1922,30 +1926,56 @@ async function pushProfileToCloud(id, profile){
 }
 
 async function syncAfterLogin(){
+  var pendingProfileId = safeGet(LS_PENDING_KIT, null);
+  var pendingOptIn = safeGet(LS_PENDING_OPTIN, false);
+  safeSet(LS_PENDING_KIT, null);
+  safeSet(LS_PENDING_OPTIN, false);
+
   var cloud = await fetchCloudProfiles();
+  var oldToNew = {};
+  var finalProfiles;
   if(Object.keys(cloud).length){
-    saveProfiles(cloud);
-    if(!cloud[state.activeProfileId]) state.activeProfileId = null;
+    finalProfiles = cloud;
+    saveProfiles(finalProfiles);
   } else {
     var local = loadProfiles();
     var localIds = Object.keys(local);
+    finalProfiles = {};
     if(localIds.length){
-      var remapped = {};
-      var oldToNew = {};
       for(var i=0;i<localIds.length;i++){
         var oldId = localIds[i];
         var p = local[oldId];
         var cloudId = isValidUUID(oldId) ? oldId : newProfileId();
         oldToNew[oldId] = cloudId;
-        remapped[cloudId] = p;
+        finalProfiles[cloudId] = p;
         await pushProfileToCloud(cloudId, p);
       }
-      saveProfiles(remapped);
-      if(state.activeProfileId && oldToNew[state.activeProfileId]){
-        state.activeProfileId = oldToNew[state.activeProfileId];
-      }
+      saveProfiles(finalProfiles);
     }
   }
+
+  var resolvedId = null;
+  if(pendingProfileId){
+    if(oldToNew[pendingProfileId]) resolvedId = oldToNew[pendingProfileId];
+    else if(finalProfiles[pendingProfileId]) resolvedId = pendingProfileId;
+  }
+  if(!resolvedId && state.activeProfileId && finalProfiles[state.activeProfileId]){
+    resolvedId = state.activeProfileId;
+  }
+  if(!resolvedId){
+    var ids = Object.keys(finalProfiles);
+    if(ids.length) resolvedId = ids[0];
+  }
+  state.activeProfileId = resolvedId;
+
+  if(pendingOptIn && resolvedId){
+    updateActiveProfile(function(p){ p.newsOptIn = true; });
+  }
+
+  if(pendingProfileId && resolvedId){
+    state.screen = "kit";
+  }
+
   render();
 }
 
@@ -1977,7 +2007,8 @@ var state = {
   voteStep: "stance",
   pendingStance: null,
   adminTab: "candidates",
-  adminOpenId: null
+  adminOpenId: null,
+  dismissedSignupCta: false
 };
 
 function activeProfile(){
@@ -2024,6 +2055,28 @@ function computeResults(profile){
     if(b.pct === null) return -1;
     return b.pct - a.pct;
   });
+}
+function computeTopCategories(profile){
+  var topics = getTopics();
+  var topicsById = {}; topics.forEach(function(t){ topicsById[t.id] = t; });
+  var answers = profile.answers || {};
+  var counts = {};
+  Object.keys(answers).forEach(function(tid){
+    if(answers[tid].importance !== 3) return;
+    var t = topicsById[tid];
+    if(!t) return;
+    counts[t.cat] = (counts[t.cat] || 0) + 1;
+  });
+  var ranked = Object.keys(counts).sort(function(a,b){ return counts[b] - counts[a]; });
+  if(!ranked.length){
+    Object.keys(answers).forEach(function(tid){
+      var t = topicsById[tid];
+      if(!t) return;
+      counts[t.cat] = (counts[t.cat] || 0) + 1;
+    });
+    ranked = Object.keys(counts).sort(function(a,b){ return counts[b] - counts[a]; });
+  }
+  return ranked.slice(0,3);
 }
 
 /* ============================================================
@@ -2191,7 +2244,8 @@ function renderProfiles(){
     var newProfile = {
       name: name, createdAt: new Date().toISOString(), lastSeenAt: new Date().toISOString(),
       answers: {}, seenNewIds: getCandidates().map(function(c){return c.id;}),
-      seenNewTopics: getTopics().map(function(t){return t.id;})
+      seenNewTopics: getTopics().map(function(t){return t.id;}),
+      newsOptIn: false
     };
     profiles[id] = newProfile;
     saveProfiles(profiles);
@@ -2525,12 +2579,29 @@ function renderResults(){
     '</div>';
   }).join("");
 
+  var signupCta = "";
+  if(!isLoggedIn() && !state.dismissedSignupCta){
+    signupCta = '<div class="sponsor-card" id="signup-cta" style="margin-top:18px;">' +
+      '<div class="sponsor-label">Nouveau</div>' +
+      '<div class="sponsor-name">Garde ce classement à jour</div>' +
+      '<div class="sponsor-tagline">Le questionnaire évolue : de nouveaux sujets et candidats s\'ajoutent régulièrement. Crée un compte gratuit par email pour retrouver tes réponses sur n\'importe quel appareil.</div>' +
+      '<div style="margin-top:12px;"><input type="email" id="signup-email" placeholder="toi@exemple.fr" /></div>' +
+      '<label class="field-label" style="display:flex; align-items:center; gap:7px; cursor:pointer; margin-top:10px; font-weight:400;">' +
+        '<input type="checkbox" id="signup-optin" style="width:auto;" /> Me tenir informé par email des nouveaux sujets' +
+      '</label>' +
+      '<button class="btn btn-accent btn-block" id="signup-submit" style="margin-top:12px;">Créer mon compte gratuit</button>' +
+      '<button class="btn btn-ghost btn-block" id="signup-later" style="margin-top:8px;">Plus tard</button>' +
+      (authMessage ? '<p class="intro-copy" style="margin-top:10px;">' + escapeHtml(authMessage) + '</p>' : '') +
+    '</div>';
+  }
+
   var html = '<div id="sponsor-slot-results" style="margin-bottom:16px;"></div>' +
     '<span class="eyebrow">' + answered + ' / ' + topics.length + ' sujets pris en compte</span>' +
     '<h1>Tes affinités</h1>' +
     '<p class="intro-copy">Classement pondéré par l\'importance que tu as donnée à chaque sujet.</p>' +
     podiumHtml +
     (podiumOrder.length ? '<button class="btn btn-ghost btn-block" id="btn-share">Partager mon classement</button>' : '') +
+    signupCta +
     '<div class="results-subhead" style="margin-top:22px;">Classement complet — touche un candidat pour le détail</div>' +
     '<div>' + rows + '</div>' +
     (answered < topics.length ? '<button class="btn btn-ghost btn-block" id="btn-more" style="margin-top:8px;">Répondre aux ' + (topics.length-answered) + ' sujets restants</button>' : '');
@@ -2562,6 +2633,33 @@ function renderResults(){
   var more = document.getElementById("btn-more");
   if(more) more.onclick = startVoteFlow;
 
+  var signupSubmit = document.getElementById("signup-submit");
+  if(signupSubmit) signupSubmit.onclick = function(){
+    if(!sb || authBusy) return;
+    var emailInput = document.getElementById("signup-email");
+    var email = emailInput.value.trim();
+    if(!email){ emailInput.focus(); return; }
+    var optin = document.getElementById("signup-optin").checked;
+    authBusy = true;
+    signupSubmit.disabled = true;
+    signupSubmit.textContent = "Envoi en cours…";
+    safeSet(LS_PENDING_KIT, state.activeProfileId);
+    safeSet(LS_PENDING_OPTIN, optin);
+    sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.origin } }).then(function(res){
+      authBusy = false;
+      authMessage = res.error
+        ? "Une erreur est survenue, réessaie dans un instant."
+        : "Lien envoyé ! Vérifie ta boîte mail (" + email + ") et clique sur le lien pour continuer.";
+      render();
+    });
+  };
+  var signupLater = document.getElementById("signup-later");
+  if(signupLater) signupLater.onclick = function(){
+    state.dismissedSignupCta = true;
+    authMessage = null;
+    render();
+  };
+
   var shareBtn = document.getElementById("btn-share");
   if(shareBtn) shareBtn.onclick = function(){
     var lines = podiumOrder.map(function(r, i){
@@ -2576,6 +2674,55 @@ function renderResults(){
         setTimeout(function(){ shareBtn.textContent = "Partager mon classement"; }, 2200);
       }).catch(function(){});
     }
+  };
+}
+
+/* ============================================================
+   SCREEN — KIT (après inscription depuis les résultats)
+   ============================================================ */
+function renderKit(){
+  var profile = activeProfile();
+  if(!profile){ state.screen = "profiles"; render(); return; }
+  var results = computeResults(profile);
+  var topCandidates = results.slice(0,3).filter(function(r){ return r.pct !== null; });
+  var topCats = computeTopCategories(profile);
+
+  var candidatesHtml = topCandidates.map(function(r){
+    return '<div class="candidate-row"><div class="cand-dot" style="background:' + r.candidate.color + '"></div>' +
+      '<div class="cand-name">' + escapeHtml(r.candidate.name) + '<div class="cand-party">' + escapeHtml(r.candidate.party) + '</div></div>' +
+      '<div class="result-score mono">' + r.pct + '%</div></div>';
+  }).join("");
+
+  var themesHtml = topCats.map(function(cat){
+    var m = CATEGORY_META[cat] || {ic:"•", d:"", c:"--accent"};
+    return '<div class="axis-card"><div class="ic" style="background:color-mix(in srgb, var(' + m.c + ') 16%, transparent); color:var(' + m.c + ')">' + m.ic + '</div>' +
+      '<div class="t">' + escapeHtml(cat) + '</div>' +
+      '<div class="d">' + escapeHtml(m.d) + '</div></div>';
+  }).join("");
+
+  var practicalInfo = [
+    {ic:"🗳️", t:"Vérifie ton inscription", d:"Consulte ou mets à jour ton inscription sur les listes électorales sur service-public.fr, gratuitement et en ligne.", c:"--blue"},
+    {ic:"🪪", t:"Pièces d'identité acceptées", d:"Carte nationale d'identité, passeport, permis de conduire ou une autre pièce avec photo listée par le ministère de l'Intérieur.", c:"--gold"},
+    {ic:"✍️", t:"Absent le jour du vote ?", d:"Fais une procuration en ligne sur maprocuration.gouv.fr : une personne de confiance vote à ta place, dans le même bureau.", c:"--good"}
+  ];
+  var practicalHtml = practicalInfo.map(function(item){
+    return '<div class="axis-card"><div class="ic" style="background:color-mix(in srgb, var(' + item.c + ') 16%, transparent); color:var(' + item.c + ')">' + item.ic + '</div>' +
+      '<div class="t">' + escapeHtml(item.t) + '</div>' +
+      '<div class="d">' + escapeHtml(item.d) + '</div></div>';
+  }).join("");
+
+  var html = '<span class="eyebrow">Bienvenue ' + escapeHtml(profile.name) + '</span>' +
+    '<h1>Ton kit pour la présidentielle</h1>' +
+    '<p class="intro-copy">Un résumé de ton profil politique, et tout ce qu\'il faut savoir pour voter le moment venu.</p>' +
+    (candidatesHtml ? '<section class="landing-section"><h2>Tes candidats</h2><div class="sub">D\'après tes réponses au questionnaire.</div><div class="candidate-list">' + candidatesHtml + '</div></section>' : '') +
+    (themesHtml ? '<section class="landing-section landing-narrow"><h2>Tes thèmes clés</h2><div class="sub">Les sujets que tu as jugés les plus importants.</div><div class="axis-grid">' + themesHtml + '</div></section>' : '') +
+    '<section class="landing-section landing-narrow"><h2>Infos pratiques pour voter</h2><div class="sub">L\'essentiel pour ne rien rater le jour J.</div><div class="axis-grid">' + practicalHtml + '</div></section>' +
+    '<div style="margin-top:24px;"><button class="btn btn-accent btn-block" id="kit-continue">Voir mon tableau de bord</button></div>';
+
+  document.getElementById("app").innerHTML = html;
+  document.getElementById("kit-continue").onclick = function(){
+    state.screen = "dashboard";
+    render();
   };
 }
 
@@ -2799,11 +2946,12 @@ function renderSponsor(){
 
 function render(){
   renderTopbar();
-  document.getElementById("app").classList.toggle("app-wide", state.screen === "profiles" || state.screen === "dashboard");
+  document.getElementById("app").classList.toggle("app-wide", state.screen === "profiles" || state.screen === "dashboard" || state.screen === "kit");
   if(state.screen === "profiles") renderProfiles();
   else if(state.screen === "dashboard") renderDashboard();
   else if(state.screen === "vote") renderVote();
   else if(state.screen === "results") renderResults();
+  else if(state.screen === "kit") renderKit();
   else if(state.screen === "faq") renderFaq();
   else if(state.screen === "account") renderAccount();
   else if(state.screen === "admin") renderAdmin();
