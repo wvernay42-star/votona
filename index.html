@@ -437,7 +437,7 @@
     background:color-mix(in srgb, var(--accent) 14%, transparent); color:var(--accent);
   }
 
-  .glossary-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:16px; }
+  .glossary-grid{ display:grid; grid-template-columns:1fr; gap:14px; margin-top:16px; }
   .glossary-card{
     background:var(--bg-raised); border:1px solid var(--line-soft);
     border-radius:20px; padding:16px 17px;
@@ -2853,7 +2853,7 @@ function renderKit(){
 
   var glossaryHtml = topCats.map(function(cat){
     var m = CATEGORY_META[cat] || {ic:"•", c:"--accent"};
-    var terms = GLOSSARY_BY_CATEGORY[cat] || [];
+    var terms = (GLOSSARY_BY_CATEGORY[cat] || []).slice(0,1);
     if(!terms.length) return "";
     var termsHtml = terms.map(function(g){
       return '<div class="glossary-card"><div class="term">' + escapeHtml(g.term) + '</div>' +
