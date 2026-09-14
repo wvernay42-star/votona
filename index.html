@@ -418,6 +418,32 @@
   .media-links .axis-card{ padding:14px 15px; }
   .media-links .axis-card .t{ font-size:13px; }
   .media-links .axis-card .d{ font-size:11.5px; }
+  .media-type-tag{
+    display:inline-block; font-family:var(--mono); font-size:9px; text-transform:uppercase;
+    letter-spacing:.06em; padding:3px 8px; border-radius:99px; margin-bottom:8px;
+    background:var(--line-soft); color:var(--ink-faint);
+  }
+  .media-type-tag.podcast{ background:color-mix(in srgb, var(--accent) 18%, transparent); color:var(--accent); }
+  .media-type-tag.docu{ background:color-mix(in srgb, var(--gold) 22%, transparent); color:var(--gold); }
+
+  .profile-badge{ text-align:center; margin:26px 0 6px; }
+  .profile-badge-label{
+    font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--ink-faint); margin-bottom:10px;
+  }
+  .profile-badge-words{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+  .profile-badge-pill{
+    font-size:15px; font-weight:700; padding:8px 16px; border-radius:99px;
+    background:color-mix(in srgb, var(--accent) 14%, transparent); color:var(--accent);
+  }
+
+  .glossary-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:16px; }
+  .glossary-card{
+    background:var(--bg-raised); border:1px solid var(--line-soft);
+    border-radius:20px; padding:16px 17px;
+  }
+  .glossary-card .term{ font-size:13.5px; font-weight:700; font-family:var(--mono); color:var(--accent); }
+  .glossary-card .def{ font-size:12.5px; color:var(--ink-faint); margin-top:4px; line-height:1.4; }
   .steps-list{ display:flex; flex-direction:column; gap:14px; margin-top:14px; }
   .step-item{ display:flex; gap:12px; align-items:flex-start; }
   .step-num{
@@ -1796,43 +1822,101 @@ var SPONSORS = [
    Purement éditorial, jamais touché par la veille automatique.
    ============================================================ */
 var CATEGORY_META = {
-  "Économie & travail": {ic:"💼", d:"Fiscalité, emploi, retraites, pouvoir d'achat.", c:"--gold"},
-  "Protection sociale": {ic:"🤝", d:"Santé, chômage, minima sociaux, solidarité.", c:"--blue"},
-  "Sécurité & immigration": {ic:"🛡️", d:"Police, justice, frontières, droit d'asile.", c:"--accent"},
-  "Écologie": {ic:"🌱", d:"Énergie, agriculture, climat, biodiversité.", c:"--good"},
-  "Europe & institutions": {ic:"🇪🇺", d:"Union européenne, réforme des institutions, scrutin.", c:"--plum"},
-  "Société": {ic:"👥", d:"École, logement, santé, libertés individuelles.", c:"--teal"},
-  "Défense & numérique": {ic:"🔐", d:"Armée, intelligence artificielle, souveraineté technologique.", c:"--ink-soft"}
+  "Économie & travail": {ic:"💼", d:"Fiscalité, emploi, retraites, pouvoir d'achat.", c:"--gold", word:"Économique"},
+  "Protection sociale": {ic:"🤝", d:"Santé, chômage, minima sociaux, solidarité.", c:"--blue", word:"Solidaire"},
+  "Sécurité & immigration": {ic:"🛡️", d:"Police, justice, frontières, droit d'asile.", c:"--accent", word:"Sécuritaire"},
+  "Écologie": {ic:"🌱", d:"Énergie, agriculture, climat, biodiversité.", c:"--good", word:"Écologiste"},
+  "Europe & institutions": {ic:"🇪🇺", d:"Union européenne, réforme des institutions, scrutin.", c:"--plum", word:"Européen"},
+  "Société": {ic:"👥", d:"École, logement, santé, libertés individuelles.", c:"--teal", word:"Citoyen"},
+  "Défense & numérique": {ic:"🔐", d:"Armée, intelligence artificielle, souveraineté technologique.", c:"--ink-soft", word:"Régalien"}
+};
+
+var MEDIA_TYPE_META = {
+  podcast: {ic:"🎙️", label:"Podcast"},
+  docu: {ic:"🎬", label:"Documentaire"},
+  presse: {ic:"📰", label:"Presse"}
 };
 
 var MEDIA_BY_CATEGORY = {
   "Économie & travail": [
-    {name:"Les Échos", url:"https://www.lesechos.fr", d:"Actualité économique et financière au quotidien."},
-    {name:"Alternatives Économiques", url:"https://www.alternatives-economiques.fr", d:"Décryptages sur l'emploi, la fiscalité et les inégalités."}
+    {type:"podcast", name:"Entendez-vous l'éco ?", url:"https://www.radiofrance.fr/franceculture", d:"Le rendez-vous quotidien de France Culture sur l'actualité économique."},
+    {type:"docu", name:"Cash Investigation", url:"https://www.france.tv/documentaires/", d:"Enquêtes de France 2 sur les coulisses de l'économie."},
+    {type:"presse", name:"Les Échos", url:"https://www.lesechos.fr", d:"Actualité économique et financière au quotidien."},
+    {type:"presse", name:"Alternatives Économiques", url:"https://www.alternatives-economiques.fr", d:"Décryptages sur l'emploi, la fiscalité et les inégalités."}
   ],
   "Protection sociale": [
-    {name:"La Croix", url:"https://www.la-croix.com", d:"Actualité sociale, santé et solidarités."},
-    {name:"Le Monde — Société", url:"https://www.lemonde.fr/societe/", d:"Suivi des politiques sociales et de santé."}
+    {type:"podcast", name:"Les Pieds sur terre", url:"https://www.radiofrance.fr/franceculture", d:"France Culture donne la parole à des vies traversées par les politiques sociales."},
+    {type:"docu", name:"Complément d'enquête", url:"https://www.france.tv/documentaires/", d:"Magazine d'enquête de France 2 sur la santé et les solidarités."},
+    {type:"presse", name:"La Croix", url:"https://www.la-croix.com", d:"Actualité sociale, santé et solidarités."},
+    {type:"presse", name:"Le Monde — Société", url:"https://www.lemonde.fr/societe/", d:"Suivi des politiques sociales et de santé."}
   ],
   "Sécurité & immigration": [
-    {name:"Le Figaro", url:"https://www.lefigaro.fr", d:"Couverture approfondie des questions de sécurité et de justice."},
-    {name:"Mediapart", url:"https://www.mediapart.fr", d:"Enquêtes sur les politiques migratoires et sécuritaires."}
+    {type:"podcast", name:"Affaires sensibles", url:"https://www.radiofrance.fr/franceinter", d:"France Inter revient chaque jour sur une grande affaire de justice ou de sécurité."},
+    {type:"docu", name:"Envoyé spécial", url:"https://www.france.tv/documentaires/", d:"Grand format d'enquête de France 2, souvent sur sécurité et immigration."},
+    {type:"presse", name:"Le Figaro", url:"https://www.lefigaro.fr", d:"Couverture approfondie des questions de sécurité et de justice."},
+    {type:"presse", name:"Mediapart", url:"https://www.mediapart.fr", d:"Enquêtes sur les politiques migratoires et sécuritaires."}
   ],
   "Écologie": [
-    {name:"Reporterre", url:"https://reporterre.net", d:"Média indépendant dédié à l'écologie."},
-    {name:"Novethic", url:"https://www.novethic.fr", d:"Actualité de la transition énergétique et climatique."}
+    {type:"podcast", name:"La Terre au carré", url:"https://www.radiofrance.fr/franceinter", d:"L'émission quotidienne de France Inter dédiée à l'écologie."},
+    {type:"docu", name:"Vert de Rage", url:"https://www.france.tv/documentaires/", d:"Série documentaire d'enquête de France 5 sur les scandales environnementaux."},
+    {type:"presse", name:"Reporterre", url:"https://reporterre.net", d:"Média indépendant dédié à l'écologie."},
+    {type:"presse", name:"Novethic", url:"https://www.novethic.fr", d:"Actualité de la transition énergétique et climatique."}
   ],
   "Europe & institutions": [
-    {name:"Toute l'Europe", url:"https://www.touteleurope.eu", d:"Décryptage neutre du fonctionnement de l'UE."},
-    {name:"Contexte", url:"https://www.contexte.com", d:"Coulisses des négociations européennes et institutionnelles."}
+    {type:"podcast", name:"Affaires étrangères", url:"https://www.radiofrance.fr/franceculture", d:"France Culture décrypte chaque semaine un grand dossier international ou européen."},
+    {type:"docu", name:"Le Dessous des cartes", url:"https://www.arte.tv/fr/", d:"Le magazine géopolitique d'Arte, très pédagogique sur l'Europe et le monde."},
+    {type:"presse", name:"Toute l'Europe", url:"https://www.touteleurope.eu", d:"Décryptage neutre du fonctionnement de l'UE."},
+    {type:"presse", name:"Contexte", url:"https://www.contexte.com", d:"Coulisses des négociations européennes et institutionnelles."}
   ],
   "Société": [
-    {name:"Le Monde", url:"https://www.lemonde.fr", d:"Référence généraliste sur l'actualité de société."},
-    {name:"France Culture", url:"https://www.radiofrance.fr/franceculture", d:"Débats et enquêtes sur l'école, le logement, les libertés."}
+    {type:"podcast", name:"LSD, la série documentaire", url:"https://www.radiofrance.fr/franceculture", d:"La grande série documentaire audio de France Culture sur les mutations de la société."},
+    {type:"docu", name:"Infrarouge", url:"https://www.france.tv/documentaires/", d:"Collection documentaire de France 2 sur les grands sujets de société."},
+    {type:"presse", name:"Le Monde", url:"https://www.lemonde.fr", d:"Référence généraliste sur l'actualité de société."},
+    {type:"presse", name:"France Culture", url:"https://www.radiofrance.fr/franceculture", d:"Débats et enquêtes sur l'école, le logement, les libertés."}
   ],
   "Défense & numérique": [
-    {name:"Numerama", url:"https://www.numerama.com", d:"Actualité tech, IA et souveraineté numérique."},
-    {name:"Le Grand Continent", url:"https://legrandcontinent.eu", d:"Analyses géopolitiques et de défense."}
+    {type:"podcast", name:"Le Collimateur", url:"https://www.irsem.fr", d:"Le podcast de l'IRSEM consacré aux questions de défense et de stratégie."},
+    {type:"docu", name:"Le Dessous des cartes", url:"https://www.arte.tv/fr/", d:"Le magazine géopolitique d'Arte, utile pour situer les enjeux de défense."},
+    {type:"presse", name:"Numerama", url:"https://www.numerama.com", d:"Actualité tech, IA et souveraineté numérique."},
+    {type:"presse", name:"Le Grand Continent", url:"https://legrandcontinent.eu", d:"Analyses géopolitiques et de défense."}
+  ]
+};
+
+var GLOSSARY_BY_CATEGORY = {
+  "Économie & travail": [
+    {term:"TICPE", d:"La taxe sur les carburants (essence, diesel) — au cœur des débats sur le prix à la pompe."},
+    {term:"RSA", d:"Le revenu de solidarité active, une aide versée aux foyers aux ressources modestes."},
+    {term:"Flat tax", d:"Un taux d'imposition unique sur les revenus du capital, plutôt qu'un barème progressif."}
+  ],
+  "Protection sociale": [
+    {term:"ONDAM", d:"Le budget annuel voté par le Parlement pour encadrer les dépenses de santé remboursées."},
+    {term:"AME", d:"L'aide médicale d'État, qui couvre les soins des étrangers en situation irrégulière."},
+    {term:"ASPA", d:"Le minimum vieillesse, un complément de revenu pour les retraités les plus modestes."}
+  ],
+  "Sécurité & immigration": [
+    {term:"OQTF", d:"L'obligation de quitter le territoire français, une décision administrative d'éloignement."},
+    {term:"Droit d'asile", d:"Le droit de demander la protection de la France en cas de persécution dans son pays."},
+    {term:"Récidive légale", d:"Le fait de commettre à nouveau une infraction après une première condamnation."}
+  ],
+  "Écologie": [
+    {term:"ZFE", d:"Une zone à faibles émissions, où la circulation des véhicules les plus polluants est restreinte."},
+    {term:"ZAN", d:"L'objectif de zéro artificialisation nette des sols d'ici 2050."},
+    {term:"Puits de carbone", d:"Un milieu naturel (forêt, sol...) qui absorbe plus de CO2 qu'il n'en émet."}
+  ],
+  "Europe & institutions": [
+    {term:"Article 49.3", d:"L'article de la Constitution qui permet d'adopter un texte sans vote de l'Assemblée."},
+    {term:"Pacte de stabilité", d:"Les règles européennes encadrant le déficit et la dette des États membres."},
+    {term:"Frontex", d:"L'agence européenne chargée de la surveillance des frontières extérieures de l'UE."}
+  ],
+  "Société": [
+    {term:"REP/REP+", d:"Le réseau d'éducation prioritaire, qui concentre des moyens sur les écoles les plus fragiles."},
+    {term:"Fin de vie", d:"Le débat sur l'encadrement légal de l'aide à mourir en France."},
+    {term:"Laïcité", d:"Le principe de séparation entre les institutions publiques et les religions."}
+  ],
+  "Défense & numérique": [
+    {term:"LPM", d:"La loi de programmation militaire, qui fixe le budget des armées sur plusieurs années."},
+    {term:"AI Act", d:"Le règlement européen encadrant l'usage de l'intelligence artificielle."},
+    {term:"Cyberdéfense", d:"L'ensemble des moyens dédiés à la protection contre les attaques informatiques."}
   ]
 };
 
@@ -2757,7 +2841,9 @@ function renderKit(){
     var sources = MEDIA_BY_CATEGORY[cat] || [];
     if(!sources.length) return "";
     var linksHtml = sources.map(function(s){
+      var tm = MEDIA_TYPE_META[s.type] || {ic:"", label:""};
       return '<a class="axis-card" href="' + escapeHtml(s.url) + '" target="_blank" rel="noopener">' +
+        '<span class="media-type-tag ' + escapeHtml(s.type) + '">' + tm.ic + ' ' + escapeHtml(tm.label) + '</span>' +
         '<div class="t">' + escapeHtml(s.name) + '</div>' +
         '<div class="d">' + escapeHtml(s.d) + '</div></a>';
     }).join("");
@@ -2765,12 +2851,32 @@ function renderKit(){
       '<div class="media-links">' + linksHtml + '</div></div>';
   }).join("");
 
+  var glossaryHtml = topCats.map(function(cat){
+    var m = CATEGORY_META[cat] || {ic:"•", c:"--accent"};
+    var terms = GLOSSARY_BY_CATEGORY[cat] || [];
+    if(!terms.length) return "";
+    var termsHtml = terms.map(function(g){
+      return '<div class="glossary-card"><div class="term">' + escapeHtml(g.term) + '</div>' +
+        '<div class="def">' + escapeHtml(g.d) + '</div></div>';
+    }).join("");
+    return '<div class="media-group"><div class="media-group-label"><span>' + m.ic + '</span>' + escapeHtml(cat) + '</div>' +
+      '<div class="glossary-grid">' + termsHtml + '</div></div>';
+  }).join("");
+
+  var profileWords = topCats.map(function(cat){ return (CATEGORY_META[cat] || {}).word; }).filter(Boolean);
+  var profileBadgeHtml = profileWords.length ? '<div class="profile-badge">' +
+    '<div class="profile-badge-label">Ton profil en 3 mots</div>' +
+    '<div class="profile-badge-words">' + profileWords.map(function(w){ return '<span class="profile-badge-pill">' + escapeHtml(w) + '</span>'; }).join("") + '</div>' +
+    '</div>' : '';
+
   var html = '<span class="eyebrow">Bienvenue ' + escapeHtml(profile.name) + '</span>' +
     '<h1>Ton kit pour la présidentielle</h1>' +
     '<p class="intro-copy">Un résumé de ton profil politique, et tout ce qu\'il faut savoir pour voter le moment venu.</p>' +
+    profileBadgeHtml +
     (candidatesHtml ? '<section class="landing-section"><h2>Tes candidats</h2><div class="sub">D\'après tes réponses au questionnaire.</div><div class="candidate-list">' + candidatesHtml + '</div></section>' : '') +
     (themesHtml ? '<section class="landing-section landing-narrow"><h2>Tes thèmes clés</h2><div class="sub">Les sujets que tu as jugés les plus importants.</div><div class="axis-grid">' + themesHtml + '</div></section>' : '') +
     (mediaHtml ? '<section class="landing-section landing-narrow"><h2>Pour approfondir tes sujets</h2><div class="sub">Une sélection volontairement plurielle, sans lien avec ton profil politique.</div>' + mediaHtml + '</section>' : '') +
+    (glossaryHtml ? '<section class="landing-section landing-narrow"><h2>Ton glossaire express</h2><div class="sub">Quelques termes qui reviennent souvent sur tes sujets prioritaires.</div>' + glossaryHtml + '</section>' : '') +
     '<section class="landing-section landing-narrow"><h2>Infos pratiques pour voter</h2><div class="sub">L\'essentiel pour ne rien rater le jour J.</div><div class="axis-grid">' + practicalHtml + '</div></section>' +
     '<div style="margin-top:24px;"><button class="btn btn-accent btn-block" id="kit-continue">Voir mon tableau de bord</button></div>';
 
