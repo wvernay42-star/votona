@@ -2838,7 +2838,11 @@ function renderKit(){
 
   var mediaHtml = topCats.map(function(cat){
     var m = CATEGORY_META[cat] || {ic:"•", d:"", c:"--accent"};
-    var sources = (MEDIA_BY_CATEGORY[cat] || []).slice().sort(function(a,b){ return (b.score||0) - (a.score||0); }).slice(0,2);
+    var all = MEDIA_BY_CATEGORY[cat] || [];
+    var byScore = function(a,b){ return (b.score||0) - (a.score||0); };
+    var topAV = all.filter(function(s){ return s.type === "podcast" || s.type === "docu"; }).sort(byScore)[0];
+    var topPresse = all.filter(function(s){ return s.type === "presse"; }).sort(byScore)[0];
+    var sources = [topAV, topPresse].filter(Boolean);
     if(!sources.length) return "";
     var linksHtml = sources.map(function(s){
       var tm = MEDIA_TYPE_META[s.type] || {ic:"", label:""};
