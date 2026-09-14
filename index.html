@@ -1819,8 +1819,14 @@ var SPONSORS = [
 
 /* ============================================================
    CONTENU DE LA PAGE D'ACCUEIL — présentation, thèmes, FAQ.
-   Purement éditorial, jamais touché par la veille automatique.
+   Purement éditorial, jamais touché par la veille quotidienne.
    ============================================================ */
+
+// ==KIT_CONTENT_START==
+// Contenu éditorial du "kit" post-inscription : familles de thèmes,
+// médias recommandés (presse/podcast/docu), glossaire express.
+// Seule la revue périodique du kit a le droit de modifier ce bloc,
+// via une branche + push (jamais un push direct sur main).
 var CATEGORY_META = {
   "Économie & travail": {ic:"💼", d:"Fiscalité, emploi, retraites, pouvoir d'achat.", c:"--gold", word:"Économique"},
   "Protection sociale": {ic:"🤝", d:"Santé, chômage, minima sociaux, solidarité.", c:"--blue", word:"Solidaire"},
@@ -1919,6 +1925,7 @@ var GLOSSARY_BY_CATEGORY = {
     {term:"Cyberdéfense", d:"L'ensemble des moyens dédiés à la protection contre les attaques informatiques."}
   ]
 };
+// ==KIT_CONTENT_END==
 
 var HOW_IT_WORKS = [
   {t:"Prends position", d:"Pour chaque sujet, indique si tu es plutôt pour, plutôt contre, ou neutre — puis précise à quel point ce sujet compte pour toi."},
