@@ -426,20 +426,50 @@
   .media-type-tag.podcast{ background:color-mix(in srgb, var(--accent) 18%, transparent); color:var(--accent); }
   .media-type-tag.docu{ background:color-mix(in srgb, var(--gold) 22%, transparent); color:var(--gold); }
 
-  .profile-badge{ text-align:center; margin:26px 0 6px; }
-  .profile-badge-label{
+  .pop-hero{
+    text-align:center; margin:26px 0 6px; padding:30px 20px 26px; border-radius:32px;
+    background:color-mix(in srgb, var(--pop, var(--accent)) 14%, var(--bg-raised));
+    border:2px solid color-mix(in srgb, var(--pop, var(--accent)) 40%, transparent);
+  }
+  .pop-hero-mascot{ display:flex; justify-content:center; margin-bottom:10px; }
+  .pop-hero-label{
     font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em;
-    color:var(--ink-faint); margin-bottom:10px;
+    color:var(--ink-faint); margin-bottom:6px;
   }
-  .profile-archetype{
-    font-family:var(--serif); font-weight:700; font-size:clamp(22px,3vw + 12px,30px);
-    color:var(--ink); margin-bottom:12px;
+  .pop-hero-name{
+    font-family:var(--serif); font-weight:800; font-size:clamp(22px,3vw + 12px,30px);
+    color:var(--ink); margin-bottom:14px; line-height:1.15;
   }
-  .profile-badge-words{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
-  .profile-badge-pill{
-    font-size:13px; font-weight:700; padding:6px 13px; border-radius:99px;
-    background:color-mix(in srgb, var(--accent) 14%, transparent); color:var(--accent);
+  .pop-level{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+  .pop-level-badge{
+    font-family:var(--mono); font-weight:700; font-size:11.5px; padding:5px 11px; border-radius:99px;
+    background:var(--pop, var(--accent)); color:#14121F;
   }
+  .pop-level-name{ font-size:13.5px; font-weight:700; color:var(--ink-soft); }
+  .pop-progress{
+    height:14px; border-radius:99px; background:var(--line-soft); overflow:hidden;
+    max-width:280px; margin:0 auto; border:2px solid var(--bg-raised);
+  }
+  .pop-progress-fill{ height:100%; border-radius:99px; background:var(--pop, var(--accent)); transition:width .3s ease; }
+  .pop-progress-caption{ font-size:11.5px; color:var(--ink-faint); margin-top:6px; margin-bottom:16px; }
+  .pop-hero-words{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:18px; }
+  .pop-pill{ font-size:13px; font-weight:700; padding:6px 13px; border-radius:99px; border:1.5px solid; }
+  .pop-share-btn{ background:#14121F; color:#fff; border-radius:16px; font-weight:700; }
+
+  .share-card{
+    max-width:340px; margin:20px auto 0; padding:40px 24px 32px; border-radius:36px;
+    text-align:center; color:#14121F; box-shadow:0 20px 50px -20px rgba(0,0,0,.35);
+  }
+  .share-brand{ font-family:var(--mono); font-weight:700; font-size:13px; letter-spacing:.06em; margin-bottom:18px; }
+  .share-mascot{ display:flex; justify-content:center; margin-bottom:16px; }
+  .share-level{
+    font-family:var(--mono); font-weight:700; font-size:12px; text-transform:uppercase;
+    letter-spacing:.06em; margin-bottom:6px; opacity:.75;
+  }
+  .share-name{ font-family:var(--serif); font-weight:800; font-size:26px; margin-bottom:16px; line-height:1.15; }
+  .share-words{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:6px; }
+  .share-pill{ font-size:12px; font-weight:700; padding:5px 11px; border-radius:99px; background:rgba(255,255,255,.55); }
+  .share-footer{ font-family:var(--mono); font-size:10.5px; margin-top:22px; opacity:.6; }
 
   .glossary-grid{ display:grid; grid-template-columns:1fr; gap:14px; margin-top:16px; }
   .glossary-card{
@@ -1832,13 +1862,13 @@ var SPONSORS = [
 // Seule la revue périodique du kit a le droit de modifier ce bloc,
 // via une branche + push (jamais un push direct sur main).
 var CATEGORY_META = {
-  "Économie & travail": {ic:"💼", d:"Fiscalité, emploi, retraites, pouvoir d'achat.", c:"--gold", word:"Économique", archetype:"Stratège du Pouvoir d'Achat"},
-  "Protection sociale": {ic:"🤝", d:"Santé, chômage, minima sociaux, solidarité.", c:"--blue", word:"Solidaire", archetype:"Pilier Solidaire"},
-  "Sécurité & immigration": {ic:"🛡️", d:"Police, justice, frontières, droit d'asile.", c:"--accent", word:"Sécuritaire", archetype:"Gardien Régalien"},
-  "Écologie": {ic:"🌱", d:"Énergie, agriculture, climat, biodiversité.", c:"--good", word:"Écologiste", archetype:"Sentinelle Verte"},
-  "Europe & institutions": {ic:"🇪🇺", d:"Union européenne, réforme des institutions, scrutin.", c:"--plum", word:"Européen", archetype:"Ambassadeur Européen"},
-  "Société": {ic:"👥", d:"École, logement, santé, libertés individuelles.", c:"--teal", word:"Citoyen", archetype:"Citoyen Engagé"},
-  "Défense & numérique": {ic:"🔐", d:"Armée, intelligence artificielle, souveraineté technologique.", c:"--ink-soft", word:"Régalien", archetype:"Éclaireur Numérique"}
+  "Économie & travail": {ic:"💼", d:"Fiscalité, emploi, retraites, pouvoir d'achat.", c:"--gold", word:"Économique", archetype:"Stratège du Pouvoir d'Achat", pop:"#FFB703"},
+  "Protection sociale": {ic:"🤝", d:"Santé, chômage, minima sociaux, solidarité.", c:"--blue", word:"Solidaire", archetype:"Pilier Solidaire", pop:"#3A86FF"},
+  "Sécurité & immigration": {ic:"🛡️", d:"Police, justice, frontières, droit d'asile.", c:"--accent", word:"Sécuritaire", archetype:"Gardien Régalien", pop:"#FF6B6B"},
+  "Écologie": {ic:"🌱", d:"Énergie, agriculture, climat, biodiversité.", c:"--good", word:"Écologiste", archetype:"Sentinelle Verte", pop:"#06D6A0"},
+  "Europe & institutions": {ic:"🇪🇺", d:"Union européenne, réforme des institutions, scrutin.", c:"--plum", word:"Européen", archetype:"Ambassadeur Européen", pop:"#6C5CE7"},
+  "Société": {ic:"👥", d:"École, logement, santé, libertés individuelles.", c:"--teal", word:"Citoyen", archetype:"Citoyen Engagé", pop:"#FF5DA2"},
+  "Défense & numérique": {ic:"🔐", d:"Armée, intelligence artificielle, souveraineté technologique.", c:"--ink-soft", word:"Régalien", archetype:"Éclaireur Numérique", pop:"#00B4D8"}
 };
 
 var MEDIA_TYPE_META = {
@@ -1992,6 +2022,19 @@ function escapeHtml(s){
   return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
     return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
   });
+}
+
+function mascotSvg(color, size){
+  size = size || 96;
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<rect x="6" y="6" width="108" height="108" rx="38" fill="' + color + '" stroke="#14121F" stroke-width="6"/>' +
+    '<circle cx="44" cy="56" r="8" fill="#14121F"/>' +
+    '<circle cx="76" cy="56" r="8" fill="#14121F"/>' +
+    '<circle cx="41" cy="53" r="2.5" fill="#fff"/>' +
+    '<circle cx="73" cy="53" r="2.5" fill="#fff"/>' +
+    '<path d="M42 76c6 8 30 8 36 0" stroke="#14121F" stroke-width="6" stroke-linecap="round" fill="none"/>' +
+    '<path d="M92 18l4.5 9.5L106 32l-9.5 4.5L92 46l-4.5-9.5L78 32l9.5-4.5z" fill="#FFD166" stroke="#14121F" stroke-width="4" stroke-linejoin="round"/>' +
+    '</svg>';
 }
 
 /* ============================================================
@@ -2210,6 +2253,35 @@ function computeTopCategories(profile){
     ranked = Object.keys(counts).sort(function(a,b){ return counts[b] - counts[a]; });
   }
   return ranked.slice(0,3);
+}
+
+var ENGAGEMENT_LEVELS = [
+  {min:0, name:"Citoyen en éveil"},
+  {min:0.2, name:"Citoyen informé"},
+  {min:0.5, name:"Citoyen engagé"},
+  {min:0.8, name:"Citoyen expert"},
+  {min:1, name:"Citoyen complet"}
+];
+
+function computeEngagementLevel(profile){
+  var topics = getTopics();
+  var answered = Object.keys(profile.answers || {}).length;
+  var ratio = topics.length ? answered / topics.length : 0;
+  var idx = 0;
+  for(var i=0;i<ENGAGEMENT_LEVELS.length;i++){
+    if(ratio >= ENGAGEMENT_LEVELS[i].min) idx = i;
+  }
+  var next = ENGAGEMENT_LEVELS[idx+1];
+  var nextAt = next ? Math.ceil(next.min * topics.length) : null;
+  return {
+    level: idx + 1,
+    name: ENGAGEMENT_LEVELS[idx].name,
+    answered: answered,
+    total: topics.length,
+    pct: topics.length ? Math.round((answered / topics.length) * 100) : 0,
+    nextAt: nextAt,
+    nextName: next ? next.name : null
+  };
 }
 
 /* ============================================================
@@ -2878,12 +2950,28 @@ function renderKit(){
       '<div class="glossary-grid">' + termsHtml + '</div></div>';
   }).join("");
 
-  var profileWords = topCats.map(function(cat){ return (CATEGORY_META[cat] || {}).word; }).filter(Boolean);
   var topArchetype = topCats.length ? (CATEGORY_META[topCats[0]] || {}) : {};
-  var profileBadgeHtml = profileWords.length ? '<div class="profile-badge">' +
-    '<div class="profile-badge-label">Ton profil</div>' +
-    (topArchetype.archetype ? '<div class="profile-archetype">' + (topArchetype.ic || "") + ' ' + escapeHtml(topArchetype.archetype) + '</div>' : '') +
-    '<div class="profile-badge-words">' + profileWords.map(function(w){ return '<span class="profile-badge-pill">' + escapeHtml(w) + '</span>'; }).join("") + '</div>' +
+  var pop = topArchetype.pop || "#7C3AED";
+  var level = computeEngagementLevel(profile);
+  var profileCatsData = topCats.map(function(cat){
+    var m = CATEGORY_META[cat] || {};
+    return m.word ? {word:m.word, ic:m.ic, pop:m.pop || pop} : null;
+  }).filter(Boolean);
+  var pillsHtml = profileCatsData.map(function(d){
+    return '<span class="pop-pill" style="background:' + d.pop + '22; color:' + d.pop + '; border-color:' + d.pop + '55;">' + d.ic + ' ' + escapeHtml(d.word) + '</span>';
+  }).join("");
+  var nextCaption = level.nextAt
+    ? ' · encore ' + (level.nextAt - level.answered) + ' pour « ' + escapeHtml(level.nextName) + ' »'
+    : '';
+  var profileBadgeHtml = profileCatsData.length ? '<div class="pop-hero" style="--pop:' + pop + ';">' +
+    '<div class="pop-hero-mascot">' + mascotSvg(pop, 84) + '</div>' +
+    '<div class="pop-hero-label">Ton profil</div>' +
+    (topArchetype.archetype ? '<div class="pop-hero-name">' + escapeHtml(topArchetype.archetype) + '</div>' : '') +
+    '<div class="pop-level"><span class="pop-level-badge">Niveau ' + level.level + '</span><span class="pop-level-name">' + escapeHtml(level.name) + '</span></div>' +
+    '<div class="pop-progress"><div class="pop-progress-fill" style="width:' + level.pct + '%"></div></div>' +
+    '<div class="pop-progress-caption">' + level.answered + '/' + level.total + ' sujets répondus' + nextCaption + '</div>' +
+    '<div class="pop-hero-words">' + pillsHtml + '</div>' +
+    '<button class="btn btn-block pop-share-btn" id="kit-share-btn">📤 Partager mon profil</button>' +
     '</div>' : '';
 
   var html = '<span class="eyebrow">Bienvenue ' + escapeHtml(profile.name) + '</span>' +
@@ -2900,6 +2988,45 @@ function renderKit(){
   document.getElementById("app").innerHTML = html;
   document.getElementById("kit-continue").onclick = function(){
     state.screen = "dashboard";
+    render();
+  };
+  var shareBtn = document.getElementById("kit-share-btn");
+  if(shareBtn) shareBtn.onclick = function(){
+    state.screen = "kitShare";
+    render();
+  };
+}
+
+/* ============================================================
+   SCREEN — KIT SHARE (carte de profil façon "starter pack" à
+   capturer et partager sur les réseaux sociaux)
+   ============================================================ */
+function renderKitShare(){
+  var profile = activeProfile();
+  if(!profile){ state.screen = "profiles"; render(); return; }
+  var topCats = computeTopCategories(profile);
+  var topArchetype = topCats.length ? (CATEGORY_META[topCats[0]] || {}) : {};
+  var pop = topArchetype.pop || "#7C3AED";
+  var level = computeEngagementLevel(profile);
+  var wordsHtml = topCats.map(function(cat){
+    var m = CATEGORY_META[cat] || {};
+    return m.word ? '<span class="share-pill">' + (m.ic || "") + ' ' + escapeHtml(m.word) + '</span>' : "";
+  }).join("");
+
+  var html = '<div class="share-card" style="background:' + pop + ';">' +
+      '<div class="share-brand">🗳️ Votona</div>' +
+      '<div class="share-mascot">' + mascotSvg("#ffffff", 120) + '</div>' +
+      '<div class="share-level">Niveau ' + level.level + ' · ' + escapeHtml(level.name) + '</div>' +
+      '<div class="share-name">' + escapeHtml(topArchetype.archetype || "Citoyen Engagé") + '</div>' +
+      '<div class="share-words">' + wordsHtml + '</div>' +
+      '<div class="share-footer">votona.vercel.app</div>' +
+    '</div>' +
+    '<p class="intro-copy" style="text-align:center;margin-top:18px;">Fais une capture d\'écran pour partager ton profil sur les réseaux.</p>' +
+    '<button class="btn btn-ghost btn-block" id="share-back" style="margin-top:14px;">← Retour au kit</button>';
+
+  document.getElementById("app").innerHTML = html;
+  document.getElementById("share-back").onclick = function(){
+    state.screen = "kit";
     render();
   };
 }
@@ -3130,6 +3257,7 @@ function render(){
   else if(state.screen === "vote") renderVote();
   else if(state.screen === "results") renderResults();
   else if(state.screen === "kit") renderKit();
+  else if(state.screen === "kitShare") renderKitShare();
   else if(state.screen === "faq") renderFaq();
   else if(state.screen === "account") renderAccount();
   else if(state.screen === "admin") renderAdmin();
