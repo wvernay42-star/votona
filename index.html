@@ -449,7 +449,7 @@
     box-shadow:inset 0 3px 8px rgba(255,255,255,.8), inset 0 -6px 14px rgba(0,0,0,.08), 0 6px 14px -6px rgba(0,0,0,.35);
     display:flex; align-items:center; justify-content:center; padding:0; cursor:default;
   }
-  .blister-bubble-main{ width:160px; height:160px; flex:none; }
+  .blister-bubble-main{ width:150px; height:250px; border-radius:28px; flex:none; }
   .blister-accessories{ display:flex; flex-direction:column; gap:12px; }
   .blister-bubble-sm{ width:56px; height:56px; }
   .blister-item{ cursor:pointer; transition:transform .12s ease; }
@@ -2068,13 +2068,15 @@ function mascotSvg(color, size){
     '</svg>';
 }
 
-function mascotImgHtml(cat, level, size, fallbackColor){
+function mascotImgHtml(cat, level, width, height, fallbackColor){
   var meta = CATEGORY_META[cat] || {};
-  size = size || 96;
-  if(!meta.slug) return mascotSvg(fallbackColor || meta.pop || "#7C3AED", size);
+  width = width || 96;
+  height = height || width;
+  var fallbackSize = Math.min(width, height);
+  if(!meta.slug) return mascotSvg(fallbackColor || meta.pop || "#7C3AED", fallbackSize);
   var src = "assets/characters/" + meta.slug + "-n" + (level || 1) + ".png";
-  return '<img class="mascot-img" data-cat="' + escapeHtml(cat) + '" data-size="' + size + '" data-fallback="' + escapeHtml(fallbackColor || "") + '" ' +
-    'src="' + src + '" width="' + size + '" height="' + size + '" alt="" style="width:' + size + 'px;height:' + size + 'px;object-fit:contain;" />';
+  return '<img class="mascot-img" data-cat="' + escapeHtml(cat) + '" data-size="' + fallbackSize + '" data-fallback="' + escapeHtml(fallbackColor || "") + '" ' +
+    'src="' + src + '" width="' + width + '" height="' + height + '" alt="" style="width:' + width + 'px;height:' + height + 'px;object-fit:contain;" />';
 }
 
 function wireMascotFallbacks(root){
@@ -3032,7 +3034,7 @@ function renderKit(){
   var blisterCardHtml = themeDetails.length ? '<div class="blister-card" style="--pop:' + pop + ';">' +
     '<div class="blister-header">✦ Starter Pack ✦</div>' +
     '<div class="blister-window">' +
-      '<div class="blister-bubble blister-bubble-main">' + mascotImgHtml(topCats[0], level.level, 140, pop) + '</div>' +
+      '<div class="blister-bubble blister-bubble-main">' + mascotImgHtml(topCats[0], level.level, 118, 250, pop) + '</div>' +
       '<div class="blister-accessories">' + accessoryBubbles + medalBubble + '</div>' +
     '</div>' +
     (topArchetype.archetype ? '<div class="blister-nameplate">' + escapeHtml(topArchetype.archetype) + '</div>' : '') +
@@ -3126,7 +3128,7 @@ function renderKitShare(){
 
   var html = '<div class="share-card" style="background:' + pop + ';">' +
       '<div class="share-brand">🗳️ Votona</div>' +
-      '<div class="share-mascot">' + mascotImgHtml(topCats[0], level.level, 120, "#ffffff") + '</div>' +
+      '<div class="share-mascot">' + mascotImgHtml(topCats[0], level.level, 90, 190, "#ffffff") + '</div>' +
       '<div class="share-level">Niveau ' + level.level + ' · ' + escapeHtml(level.name) + '</div>' +
       '<div class="share-name">' + escapeHtml(topArchetype.archetype || "Citoyen Engagé") + '</div>' +
       '<div class="share-words">' + wordsHtml + '</div>' +
