@@ -430,35 +430,36 @@
   .media-type-tag.podcast{ background:color-mix(in srgb, var(--accent) 18%, transparent); color:var(--accent); }
   .media-type-tag.docu{ background:color-mix(in srgb, var(--gold) 22%, transparent); color:var(--gold); }
 
-  .pop-hero{
-    text-align:center; margin:26px 0 6px; padding:30px 20px 26px; border-radius:32px;
-    background:color-mix(in srgb, var(--pop, var(--accent)) 14%, var(--bg-raised));
-    border:2px solid color-mix(in srgb, var(--pop, var(--accent)) 40%, transparent);
+  .pop-share-btn{ background:#14121F; color:#fff; border-radius:16px; font-weight:700; margin-top:18px; }
+
+  .blister-card{
+    margin:26px 0 6px; padding:22px 20px 26px; border-radius:32px; text-align:center;
+    background:linear-gradient(160deg, color-mix(in srgb, var(--pop, var(--accent)) 55%, white), color-mix(in srgb, var(--pop, var(--accent)) 80%, white));
+    border:2px solid color-mix(in srgb, var(--pop, var(--accent)) 60%, black 10%);
+    box-shadow:0 16px 40px -18px color-mix(in srgb, var(--pop, var(--accent)) 60%, transparent);
   }
-  .pop-hero-mascot{ display:flex; justify-content:center; margin-bottom:10px; }
-  .pop-hero-label{
-    font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em;
-    color:var(--ink-faint); margin-bottom:6px;
+  .blister-header{
+    font-family:var(--mono); font-weight:700; font-size:12px; letter-spacing:.1em; text-transform:uppercase;
+    color:#14121F; opacity:.7; margin-bottom:16px;
   }
-  .pop-hero-name{
-    font-family:var(--display); font-weight:800; font-size:clamp(22px,3vw + 12px,30px);
-    color:var(--ink); margin-bottom:14px; line-height:1.15;
+  .blister-window{ display:flex; align-items:center; justify-content:center; gap:14px; }
+  .blister-bubble{
+    background:radial-gradient(circle at 32% 28%, #ffffff, #f2f2f2 70%);
+    border-radius:50%; border:3px solid rgba(20,18,31,.15);
+    box-shadow:inset 0 3px 8px rgba(255,255,255,.8), inset 0 -6px 14px rgba(0,0,0,.08), 0 6px 14px -6px rgba(0,0,0,.35);
+    display:flex; align-items:center; justify-content:center; padding:0; cursor:default;
   }
-  .pop-level{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
-  .pop-level-badge{
-    font-family:var(--mono); font-weight:700; font-size:11.5px; padding:5px 11px; border-radius:99px;
-    background:var(--pop, var(--accent)); color:#14121F;
+  .blister-bubble-main{ width:160px; height:160px; flex:none; }
+  .blister-accessories{ display:flex; flex-direction:column; gap:12px; }
+  .blister-bubble-sm{ width:56px; height:56px; }
+  .blister-item{ cursor:pointer; transition:transform .12s ease; }
+  .blister-item:hover{ transform:scale(1.08); }
+  .blister-item-ic{ font-size:24px; }
+  .blister-nameplate{
+    font-family:var(--display); font-weight:800; font-size:clamp(19px,2.6vw + 10px,25px);
+    color:#14121F; margin-top:18px; line-height:1.15;
   }
-  .pop-level-name{ font-size:13.5px; font-weight:700; color:var(--ink-soft); }
-  .pop-progress{
-    height:14px; border-radius:99px; background:var(--line-soft); overflow:hidden;
-    max-width:280px; margin:0 auto; border:2px solid var(--bg-raised);
-  }
-  .pop-progress-fill{ height:100%; border-radius:99px; background:var(--pop, var(--accent)); transition:width .3s ease; }
-  .pop-progress-caption{ font-size:11.5px; color:var(--ink-faint); margin-top:6px; margin-bottom:16px; }
-  .pop-hero-words{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:18px; }
-  .pop-pill{ font-size:13px; font-weight:700; padding:6px 13px; border-radius:99px; border:1.5px solid; }
-  .pop-share-btn{ background:#14121F; color:#fff; border-radius:16px; font-weight:700; }
+  .blister-sub{ font-size:12px; color:#14121F; opacity:.75; margin-top:6px; }
 
   .share-card{
     max-width:340px; margin:20px auto 0; padding:40px 24px 32px; border-radius:36px;
@@ -474,22 +475,6 @@
   .share-words{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:6px; }
   .share-pill{ font-size:12px; font-weight:700; padding:5px 11px; border-radius:99px; background:rgba(255,255,255,.55); }
   .share-footer{ font-family:var(--mono); font-size:10.5px; margin-top:22px; opacity:.6; }
-
-  .kit-character{ position:relative; width:210px; height:190px; margin:12px auto 34px; }
-  .kit-character-mascot{ display:flex; align-items:center; justify-content:center; height:100%; }
-  .kit-badge{
-    position:absolute; width:54px; height:54px; border-radius:50%; border:3px solid var(--bg);
-    display:flex; align-items:center; justify-content:center; font-size:21px; cursor:pointer;
-    box-shadow:0 8px 16px -8px rgba(0,0,0,.4); padding:0;
-  }
-  .kit-badge:hover{ filter:brightness(1.05); }
-  .kit-badge-0{ top:-6px; left:0; }
-  .kit-badge-1{ top:-6px; right:0; }
-  .kit-badge-2{ bottom:-10px; left:50%; transform:translateX(-50%); }
-  .kit-badge-label{
-    position:absolute; top:100%; left:50%; transform:translateX(-50%); margin-top:6px;
-    font-size:10.5px; font-weight:700; white-space:nowrap; color:var(--ink-soft);
-  }
 
   .kit-modal-overlay{
     position:fixed; inset:0; background:rgba(20,18,31,.55); z-index:50;
@@ -2106,6 +2091,15 @@ function wireMascotFallbacks(root){
   });
 }
 
+function levelMedalSvg(level, color, size){
+  size = size || 56;
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<circle cx="50" cy="50" r="41" fill="' + color + '" stroke="#14121F" stroke-width="7"/>' +
+    '<circle cx="50" cy="50" r="41" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-width="2"/>' +
+    '<text x="50" y="66" text-anchor="middle" font-family="\'Baloo 2\', ui-rounded, sans-serif" font-weight="800" font-size="46" fill="#14121F">' + level + '</text>' +
+    '</svg>';
+}
+
 /* ============================================================
    COMPTE — connexion par lien magique (Supabase), synchronisation
    des profils et réponses pour les retrouver sur un autre appareil.
@@ -2999,42 +2993,31 @@ function renderKit(){
   var topArchetype = topCats.length ? (CATEGORY_META[topCats[0]] || {}) : {};
   var pop = topArchetype.pop || "#7C3AED";
   var level = computeEngagementLevel(profile);
-  var profileCatsData = topCats.map(function(cat){
-    var m = CATEGORY_META[cat] || {};
-    return m.word ? {word:m.word, ic:m.ic, pop:m.pop || pop} : null;
-  }).filter(Boolean);
-  var pillsHtml = profileCatsData.map(function(d){
-    return '<span class="pop-pill" style="background:' + d.pop + '22; color:' + d.pop + '; border-color:' + d.pop + '55;">' + d.ic + ' ' + escapeHtml(d.word) + '</span>';
-  }).join("");
   var nextCaption = level.nextAt
     ? ' · encore ' + (level.nextAt - level.answered) + ' pour « ' + escapeHtml(level.nextName) + ' »'
     : '';
-  var profileBadgeHtml = profileCatsData.length ? '<div class="pop-hero" style="--pop:' + pop + ';">' +
-    '<div class="pop-hero-mascot">' + mascotImgHtml(topCats[0], level.level, 84, pop) + '</div>' +
-    '<div class="pop-hero-label">Ton profil</div>' +
-    (topArchetype.archetype ? '<div class="pop-hero-name">' + escapeHtml(topArchetype.archetype) + '</div>' : '') +
-    '<div class="pop-level"><span class="pop-level-badge">Niveau ' + level.level + '</span><span class="pop-level-name">' + escapeHtml(level.name) + '</span></div>' +
-    '<div class="pop-progress"><div class="pop-progress-fill" style="width:' + level.pct + '%"></div></div>' +
-    '<div class="pop-progress-caption">' + level.answered + '/' + level.total + ' sujets répondus' + nextCaption + '</div>' +
-    '<div class="pop-hero-words">' + pillsHtml + '</div>' +
-    '<button class="btn btn-block pop-share-btn" id="kit-share-btn">📤 Partager mon profil</button>' +
-    '</div>' : '';
 
-  var badgesHtml = themeDetails.map(function(d, i){
+  var accessoryThemes = themeDetails.slice(1, 3);
+  var accessoryBubbles = accessoryThemes.map(function(d){
     var c = d.meta.pop || pop;
-    return '<button class="kit-badge kit-badge-' + i + '" data-cat="' + escapeHtml(d.cat) + '" style="background:' + c + ';" title="' + escapeHtml(d.cat) + '">' +
-      '<span>' + (d.meta.ic || "") + '</span>' +
-      '<span class="kit-badge-label">' + escapeHtml(d.meta.word || d.cat) + '</span>' +
+    return '<button class="blister-bubble blister-bubble-sm blister-item" data-cat="' + escapeHtml(d.cat) + '" title="' + escapeHtml(d.cat) + '">' +
+      '<span class="blister-item-ic" style="color:' + c + ';">' + (d.meta.ic || "") + '</span>' +
       '</button>';
   }).join("");
+  var medalBubble = '<div class="blister-bubble blister-bubble-sm blister-medal" title="Niveau ' + level.level + '">' +
+    levelMedalSvg(level.level, pop, 48) +
+    '</div>';
 
-  var characterHtml = themeDetails.length ? '<section class="landing-section landing-narrow">' +
-    '<h2>Ton personnage</h2><div class="sub">Chaque badge est un de tes thèmes prioritaires — touche-le pour l\'explorer.</div>' +
-    '<div class="kit-character">' +
-      '<div class="kit-character-mascot">' + mascotImgHtml(topCats[0], level.level, 130, pop) + '</div>' +
-      badgesHtml +
+  var blisterCardHtml = themeDetails.length ? '<div class="blister-card" style="--pop:' + pop + ';">' +
+    '<div class="blister-header">✦ Starter Pack ✦</div>' +
+    '<div class="blister-window">' +
+      '<div class="blister-bubble blister-bubble-main">' + mascotImgHtml(topCats[0], level.level, 140, pop) + '</div>' +
+      '<div class="blister-accessories">' + accessoryBubbles + medalBubble + '</div>' +
     '</div>' +
-    '</section>' : '';
+    (topArchetype.archetype ? '<div class="blister-nameplate">' + escapeHtml(topArchetype.archetype) + '</div>' : '') +
+    '<div class="blister-sub">Niveau ' + level.level + ' · ' + escapeHtml(level.name) + ' · ' + level.answered + '/' + level.total + ' sujets' + nextCaption + '</div>' +
+    '<button class="btn btn-block pop-share-btn" id="kit-share-btn">📤 Partager mon profil</button>' +
+    '</div>' : '';
 
   var activeDetail = state.kitModalCat ? themeDetails.filter(function(d){ return d.cat === state.kitModalCat; })[0] : null;
   var modalHtml = "";
@@ -3067,9 +3050,8 @@ function renderKit(){
   var html = '<span class="eyebrow">Bienvenue ' + escapeHtml(profile.name) + '</span>' +
     '<h1>Ton kit pour la présidentielle</h1>' +
     '<p class="intro-copy">Un résumé de ton profil politique, et tout ce qu\'il faut savoir pour voter le moment venu.</p>' +
-    profileBadgeHtml +
+    blisterCardHtml +
     (candidatesHtml ? '<section class="landing-section"><h2>Tes candidats</h2><div class="sub">D\'après tes réponses au questionnaire.</div><div class="candidate-list">' + candidatesHtml + '</div></section>' : '') +
-    characterHtml +
     '<section class="landing-section landing-narrow"><h2>Infos pratiques pour voter</h2><div class="sub">L\'essentiel pour ne rien rater le jour J.</div><div class="axis-grid">' + practicalHtml + '</div></section>' +
     '<div style="margin-top:24px;"><button class="btn btn-accent btn-block" id="kit-continue">Voir mon tableau de bord</button></div>' +
     modalHtml;
@@ -3087,7 +3069,7 @@ function renderKit(){
     state.screen = "kitShare";
     render();
   };
-  Array.prototype.forEach.call(document.querySelectorAll(".kit-badge"), function(btn){
+  Array.prototype.forEach.call(document.querySelectorAll(".blister-item"), function(btn){
     btn.onclick = function(){
       state.kitModalCat = btn.getAttribute("data-cat");
       renderKit();
