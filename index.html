@@ -2091,6 +2091,28 @@ function wireMascotFallbacks(root){
   });
 }
 
+function propImgHtml(cat, size, fallbackEmoji){
+  var meta = CATEGORY_META[cat] || {};
+  size = size || 28;
+  var fallback = fallbackEmoji || meta.ic || "";
+  if(!meta.slug) return '<span class="blister-item-ic">' + fallback + '</span>';
+  var src = "assets/props/" + meta.slug + ".png";
+  return '<img class="prop-img" data-fallback="' + escapeHtml(fallback) + '" ' +
+    'src="' + src + '" width="' + size + '" height="' + size + '" alt="" style="width:' + size + 'px;height:' + size + 'px;object-fit:contain;" />';
+}
+
+function wirePropFallbacks(root){
+  var scope = root || document;
+  Array.prototype.forEach.call(scope.querySelectorAll(".prop-img"), function(img){
+    img.onerror = function(){
+      var span = document.createElement("span");
+      span.className = "blister-item-ic";
+      span.textContent = img.getAttribute("data-fallback") || "";
+      img.replaceWith(span);
+    };
+  });
+}
+
 function levelMedalSvg(level, color, size){
   size = size || 56;
   return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
@@ -2999,9 +3021,8 @@ function renderKit(){
 
   var accessoryThemes = themeDetails.slice(1, 3);
   var accessoryBubbles = accessoryThemes.map(function(d){
-    var c = d.meta.pop || pop;
     return '<button class="blister-bubble blister-bubble-sm blister-item" data-cat="' + escapeHtml(d.cat) + '" title="' + escapeHtml(d.cat) + '">' +
-      '<span class="blister-item-ic" style="color:' + c + ';">' + (d.meta.ic || "") + '</span>' +
+      propImgHtml(d.cat, 32, d.meta.ic) +
       '</button>';
   }).join("");
   var medalBubble = '<div class="blister-bubble blister-bubble-sm blister-medal" title="Niveau ' + level.level + '">' +
@@ -3058,6 +3079,7 @@ function renderKit(){
 
   document.getElementById("app").innerHTML = html;
   wireMascotFallbacks();
+  wirePropFallbacks();
   document.getElementById("kit-continue").onclick = function(){
     state.kitModalCat = null;
     state.screen = "dashboard";
