@@ -432,8 +432,17 @@
 
   .pop-share-btn{ background:#14121F; color:#fff; border-radius:16px; font-weight:700; margin-top:18px; }
 
+  .blister-outer{ margin:34px 0 6px; }
+  .blister-tab{
+    width:100px; height:38px; margin:0 auto; border-radius:20px 20px 6px 6px;
+    background:linear-gradient(160deg, color-mix(in srgb, var(--pop, var(--accent)) 55%, white), color-mix(in srgb, var(--pop, var(--accent)) 80%, white));
+    border:2px solid color-mix(in srgb, var(--pop, var(--accent)) 60%, black 10%);
+    border-bottom:none; position:relative; z-index:1;
+    display:flex; align-items:flex-start; justify-content:center; padding-top:6px;
+  }
+  .blister-tab-hole{ width:16px; height:16px; border-radius:50%; background:var(--bg); }
   .blister-card{
-    margin:26px 0 6px; padding:22px 20px 26px; border-radius:32px; text-align:center;
+    margin-top:-4px; padding:26px 20px 26px; border-radius:28px; text-align:center; position:relative;
     background-image:url('assets/ui/blister-card.png'), linear-gradient(160deg, color-mix(in srgb, var(--pop, var(--accent)) 55%, white), color-mix(in srgb, var(--pop, var(--accent)) 80%, white));
     background-size:280px 280px, cover;
     background-repeat:repeat, no-repeat;
@@ -442,8 +451,16 @@
     box-shadow:0 16px 40px -18px color-mix(in srgb, var(--pop, var(--accent)) 60%, transparent);
   }
   .blister-header{
-    font-family:var(--mono); font-weight:700; font-size:12px; letter-spacing:.1em; text-transform:uppercase;
-    color:#14121F; opacity:.7; margin-bottom:16px;
+    display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:20px;
+  }
+  .blister-logo{
+    width:32px; height:32px; border-radius:50%; background:var(--bg-raised); flex:none;
+    display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.25);
+  }
+  .blister-logo svg{ width:20px; height:20px; }
+  .blister-title{
+    font-family:var(--display); font-weight:800; font-size:clamp(20px,3vw + 10px,26px);
+    letter-spacing:.02em; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,.2);
   }
   .blister-window{ display:flex; align-items:center; justify-content:center; gap:14px; }
   .blister-bubble{
@@ -463,7 +480,8 @@
   .blister-item-ic{ font-size:24px; }
   .blister-nameplate{
     font-family:var(--display); font-weight:800; font-size:clamp(19px,2.6vw + 10px,25px);
-    color:#14121F; margin-top:18px; line-height:1.15;
+    text-transform:uppercase; letter-spacing:.02em;
+    color:#14121F; margin-top:20px; line-height:1.15;
   }
   .blister-sub{ font-size:12px; color:#14121F; opacity:.75; margin-top:6px; }
 
@@ -3037,14 +3055,24 @@ function renderKit(){
     levelMedalSvg(level.level, pop, 48) +
     '</div>';
 
-  var blisterCardHtml = themeDetails.length ? '<div class="blister-card" style="--pop:' + pop + ';">' +
-    '<div class="blister-header">✦ Starter Pack ✦</div>' +
-    '<div class="blister-window">' +
-      '<div class="blister-bubble blister-bubble-main">' + mascotImgHtml(topCats[0], level.level, 118, 250, pop) + '</div>' +
-      '<div class="blister-accessories">' + accessoryBubbles + medalBubble + '</div>' +
+  var blisterLogoSvg = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<rect x="16" y="14" width="68" height="66" rx="26" fill="#191d2b"></rect>' +
+    '<rect x="26" y="39" width="48" height="17" rx="8.5" fill="#7C3AED"></rect>' +
+    '<rect x="4" y="40" width="14" height="20" rx="7" fill="#191d2b"></rect>' +
+    '<rect x="82" y="40" width="14" height="20" rx="7" fill="#191d2b"></rect>' +
+    '</svg>';
+
+  var blisterCardHtml = themeDetails.length ? '<div class="blister-outer">' +
+    '<div class="blister-tab" style="--pop:' + pop + ';"><div class="blister-tab-hole"></div></div>' +
+    '<div class="blister-card" style="--pop:' + pop + ';">' +
+      '<div class="blister-header"><div class="blister-logo">' + blisterLogoSvg + '</div><div class="blister-title">Starter Pack</div></div>' +
+      '<div class="blister-window">' +
+        '<div class="blister-bubble blister-bubble-main">' + mascotImgHtml(topCats[0], level.level, 118, 250, pop) + '</div>' +
+        '<div class="blister-accessories">' + accessoryBubbles + medalBubble + '</div>' +
+      '</div>' +
+      (topArchetype.archetype ? '<div class="blister-nameplate">' + escapeHtml(topArchetype.archetype) + '</div>' : '') +
+      '<div class="blister-sub">Niveau ' + level.level + ' · ' + escapeHtml(level.name) + ' · ' + level.answered + '/' + level.total + ' sujets' + nextCaption + '</div>' +
     '</div>' +
-    (topArchetype.archetype ? '<div class="blister-nameplate">' + escapeHtml(topArchetype.archetype) + '</div>' : '') +
-    '<div class="blister-sub">Niveau ' + level.level + ' · ' + escapeHtml(level.name) + ' · ' + level.answered + '/' + level.total + ' sujets' + nextCaption + '</div>' +
     '</div>' +
     '<button class="btn btn-block pop-share-btn" id="kit-share-btn">📤 Partager mon profil</button>' : '';
 
