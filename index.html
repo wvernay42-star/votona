@@ -1,4 +1,4 @@
-<title>Votona</title>
+<title>Votona — Donne le ton à ton vote</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="icon" type="image/png" href="assets/ui/logo-head.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -591,6 +591,10 @@
   }
   .hero-wrap{ position:relative; overflow:hidden; isolation:isolate; max-width:640px; margin-left:auto; margin-right:auto; }
   h1 .hl{ color:var(--accent); }
+  .hero-tagline{
+    font-family:var(--display); font-weight:700; font-size:clamp(17px,2.2vw + 12px,21px);
+    color:var(--accent); text-align:center; margin-top:2px; margin-bottom:12px;
+  }
 
   /* ---------- Adaptable à tout écran ---------- */
   @media (min-width:640px){
@@ -2724,6 +2728,7 @@ function renderProfiles(){
       '<img class="hero-watermark" src="assets/ui/logo-head.png" alt="" aria-hidden="true" />' +
       '<span class="eyebrow">Qui vote aujourd\'hui ?</span>' +
       '<h1>Vot<span class="hl">ona</span></h1>' +
+      '<p class="hero-tagline">Donne le ton à ton vote.</p>' +
       '<p class="intro-copy">Réponds aux prises de position des candidats déclarés à la présidentielle 2027, à ton rythme. Chaque profil garde ses propres réponses et ses propres résultats, sur cet ordinateur.</p>' +
     '</div>' +
     '<div class="trust-row">' +
