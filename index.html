@@ -394,6 +394,14 @@
   .empty-state{ text-align:center; padding:40px 10px; color:var(--ink-faint); font-size:13.5px; }
 
   /* ---------- Landing sections (page d'accueil) ---------- */
+  .referral-banner{
+    display:flex; align-items:center; gap:14px; max-width:640px; margin:0 auto 18px; padding:14px 18px;
+    border-radius:var(--radius); background:color-mix(in srgb, var(--pop, var(--accent)) 12%, var(--bg-raised));
+    border:2px solid color-mix(in srgb, var(--pop, var(--accent)) 45%, var(--line-soft));
+  }
+  .referral-banner .referral-ic{ font-size:28px; flex:none; }
+  .referral-banner .referral-title{ font-weight:700; font-size:14px; }
+  .referral-banner .referral-sub{ font-size:12.5px; color:var(--ink-faint); margin-top:2px; }
   .trust-row{
     display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; justify-content:center;
     max-width:640px; margin-left:auto; margin-right:auto;
@@ -2435,6 +2443,46 @@ async function trackShareEvent(eventType){
   }catch(e){}
 }
 
+function findCategoryBySlug(slug){
+  var found = null;
+  Object.keys(CATEGORY_META).forEach(function(catName){
+    if(CATEGORY_META[catName].slug === slug) found = catName;
+  });
+  return found;
+}
+
+function buildReferralUrl(profile){
+  var topCats = computeTopCategories(profile);
+  var meta = topCats.length ? (CATEGORY_META[topCats[0]] || {}) : {};
+  var level = computeEngagementLevel(profile);
+  var params = [];
+  if(meta.slug) params.push("ref_cat=" + encodeURIComponent(meta.slug));
+  params.push("ref_lvl=" + encodeURIComponent(level.level));
+  return location.origin + location.pathname + "?" + params.join("&");
+}
+
+async function trackReferralLanding(refCat, refLevel){
+  if(!sb) return;
+  try{
+    await sb.from("share_events").insert({
+      event_type: "referral_landing_view",
+      ref_cat: refCat,
+      ref_level: refLevel
+    });
+  }catch(e){}
+}
+
+var referralLanded = false;
+function maybeTrackReferralLanding(){
+  if(referralLanded) return;
+  var params = new URLSearchParams(location.search);
+  var refCat = params.get("ref_cat");
+  if(!refCat || !findCategoryBySlug(refCat)) return;
+  referralLanded = true;
+  var refLevelRaw = parseInt(params.get("ref_lvl"), 10);
+  trackReferralLanding(refCat, isNaN(refLevelRaw) ? null : refLevelRaw);
+}
+
 function drawRoundedRect(ctx, x, y, w, h, r){
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -2656,7 +2704,23 @@ function renderProfiles(){
       '<div class="profile-arrow">›</div></button>';
   }).join("");
 
-  var html = '<div class="hero-wrap">' +
+  var refParams = new URLSearchParams(location.search);
+  var refCatSlug = refParams.get("ref_cat");
+  var refCatName = refCatSlug ? findCategoryBySlug(refCatSlug) : null;
+  var refMeta = refCatName ? CATEGORY_META[refCatName] : null;
+  var refLevelNum = parseInt(refParams.get("ref_lvl"), 10);
+  if(refMeta) maybeTrackReferralLanding();
+
+  var referralBannerHtml = refMeta ? (
+    '<div class="referral-banner" style="--pop:' + refMeta.pop + ';">' +
+      '<span class="referral-ic">' + (refMeta.ic || "🗳️") + '</span>' +
+      '<div><div class="referral-title">Un proche a obtenu <strong>' + escapeHtml(refMeta.archetype || refCatName) + '</strong>' + (!isNaN(refLevelNum) ? ' (niveau ' + refLevelNum + ')' : '') + ' sur Votona.</div>' +
+      '<div class="referral-sub">Fais le test à ton tour pour découvrir ton profil et comparer.</div></div>' +
+    '</div>'
+  ) : '';
+
+  var html = referralBannerHtml +
+    '<div class="hero-wrap">' +
       '<img class="hero-watermark" src="assets/ui/logo-head.png" alt="" aria-hidden="true" />' +
       '<span class="eyebrow">Qui vote aujourd\'hui ?</span>' +
       '<h1>Vot<span class="hl">ona</span></h1>' +
@@ -3140,7 +3204,7 @@ function renderResults(){
     var lines = podiumOrder.map(function(r, i){
       return (i+1) + ". " + r.candidate.name + " (" + r.pct + "%)";
     });
-    var text = "Mon classement sur Votona :\n" + lines.join("\n") + "\n\nFais le test toi aussi : " + location.href;
+    var text = "Mon classement sur Votona :\n" + lines.join("\n") + "\n\nFais le test toi aussi : " + buildReferralUrl(profile);
     if(navigator.share){
       navigator.share({text: text}).then(function(){ trackShareEvent("results_native_share"); }).catch(function(){});
     } else if(navigator.clipboard){
@@ -3366,7 +3430,7 @@ function renderKitShare(){
           navigator.share({
             files: [file],
             title: "Mon profil Votona",
-            text: "Découvre ton profil politique sur Votona : " + location.origin
+            text: "Découvre ton profil politique sur Votona : " + buildReferralUrl(profile)
           }).then(function(){ trackShareEvent("kit_image_share"); }).catch(function(){});
         };
       } else {
