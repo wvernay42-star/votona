@@ -486,20 +486,8 @@
   }
   .blister-sub{ font-size:12px; color:#14121F; opacity:.75; margin-top:6px; }
 
-  .share-card{
-    max-width:340px; margin:20px auto 0; padding:40px 24px 32px; border-radius:36px;
-    text-align:center; color:#14121F; box-shadow:0 20px 50px -20px rgba(0,0,0,.35);
-  }
-  .share-brand{ font-family:var(--mono); font-weight:700; font-size:13px; letter-spacing:.06em; margin-bottom:18px; }
-  .share-mascot{ display:flex; justify-content:center; margin-bottom:16px; }
-  .share-level{
-    font-family:var(--mono); font-weight:700; font-size:12px; text-transform:uppercase;
-    letter-spacing:.06em; margin-bottom:6px; opacity:.75;
-  }
-  .share-name{ font-family:var(--display); font-weight:800; font-size:26px; margin-bottom:16px; line-height:1.15; }
-  .share-words{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:6px; }
-  .share-pill{ font-size:12px; font-weight:700; padding:5px 11px; border-radius:99px; background:rgba(255,255,255,.55); }
-  .share-footer{ font-family:var(--mono); font-size:10.5px; margin-top:22px; opacity:.6; }
+  .share-canvas-wrap{ max-width:340px; margin:20px auto 0; text-align:center; }
+  .share-canvas-wrap canvas{ width:100%; max-width:340px; border-radius:28px; box-shadow:0 20px 50px -20px rgba(0,0,0,.35); }
 
   .kit-modal-overlay{
     position:fixed; inset:0; background:rgba(20,18,31,.55); z-index:50;
@@ -2435,6 +2423,151 @@ function computeTopReasons(profile, candidate){
 }
 
 /* ============================================================
+   PARTAGE — génération d'image + suivi
+   ============================================================ */
+async function trackShareEvent(eventType){
+  if(!sb) return;
+  try{
+    await sb.from("share_events").insert({
+      profile_id: isValidUUID(state.activeProfileId) ? state.activeProfileId : null,
+      event_type: eventType
+    });
+  }catch(e){}
+}
+
+function drawRoundedRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function loadImageSafe(src){
+  return new Promise(function(resolve){
+    var img = new Image();
+    img.onload = function(){ resolve(img); };
+    img.onerror = function(){ resolve(null); };
+    img.src = src;
+  });
+}
+
+function drawImageContain(ctx, img, boxX, boxY, boxW, boxH){
+  var scale = Math.min(boxW / img.naturalWidth, boxH / img.naturalHeight);
+  var w = img.naturalWidth * scale, h = img.naturalHeight * scale;
+  var x = boxX + (boxW - w) / 2, y = boxY + (boxH - h) / 2;
+  ctx.drawImage(img, x, y, w, h);
+}
+
+function wrapCanvasText(ctx, text, maxWidth){
+  var words = text.split(" ");
+  var lines = [];
+  var current = "";
+  words.forEach(function(w){
+    var test = current ? current + " " + w : w;
+    if(current && ctx.measureText(test).width > maxWidth){
+      lines.push(current);
+      current = w;
+    } else {
+      current = test;
+    }
+  });
+  if(current) lines.push(current);
+  return lines;
+}
+
+async function generateShareCardImage(profile){
+  var topCats = computeTopCategories(profile);
+  var meta = topCats.length ? (CATEGORY_META[topCats[0]] || {}) : {};
+  var pop = meta.pop || "#7C3AED";
+  var level = computeEngagementLevel(profile);
+  var archetypeName = meta.archetype || "Citoyen Engagé";
+  var wordPills = topCats.map(function(cat){
+    var m = CATEGORY_META[cat] || {};
+    return m.word ? ((m.ic || "") + " " + m.word) : null;
+  }).filter(Boolean);
+
+  try{ if(document.fonts && document.fonts.ready){ await document.fonts.ready; } }catch(e){}
+
+  var W = 640, H = 1080, pad = 56, radius = 48;
+  var canvas = document.createElement("canvas");
+  canvas.width = W; canvas.height = H;
+  var ctx = canvas.getContext("2d");
+
+  drawRoundedRect(ctx, 0, 0, W, H, radius);
+  ctx.fillStyle = pop;
+  ctx.fill();
+
+  ctx.fillStyle = "#14121F";
+  ctx.font = "700 26px 'IBM Plex Mono', monospace";
+  ctx.textAlign = "left";
+  ctx.fillText("🗳️ Votona", pad, 108);
+
+  var mascotW = 230, mascotH = 486, mascotX = (W - mascotW) / 2, mascotY = 140;
+  if(meta.slug){
+    var mascotImg = await loadImageSafe("assets/characters/" + meta.slug + "-n" + (level.level || 1) + ".png");
+    if(mascotImg) drawImageContain(ctx, mascotImg, mascotX, mascotY, mascotW, mascotH);
+  }
+
+  var y = mascotY + mascotH + 46;
+  ctx.textAlign = "center";
+  ctx.globalAlpha = 0.75;
+  ctx.font = "700 22px 'IBM Plex Mono', monospace";
+  ctx.fillText(("NIVEAU " + level.level + " · " + level.name).toUpperCase(), W / 2, y);
+  ctx.globalAlpha = 1;
+
+  y += 50;
+  ctx.font = "800 42px 'Baloo 2', sans-serif";
+  wrapCanvasText(ctx, archetypeName, W - pad * 2).forEach(function(line){
+    ctx.fillText(line, W / 2, y);
+    y += 48;
+  });
+
+  y += 14;
+  if(wordPills.length){
+    ctx.font = "700 22px 'Work Sans', sans-serif";
+    var pillPadX = 22, pillGap = 14, pillH = 46, maxRowWidth = W - pad * 2;
+    var rows = [], currentRow = [], currentWidth = 0;
+    wordPills.forEach(function(text){
+      var tw = ctx.measureText(text).width + pillPadX * 2;
+      if(currentRow.length && currentWidth + pillGap + tw > maxRowWidth){
+        rows.push(currentRow);
+        currentRow = [];
+        currentWidth = 0;
+      }
+      currentWidth += (currentRow.length ? pillGap : 0) + tw;
+      currentRow.push({text: text, w: tw});
+    });
+    if(currentRow.length) rows.push(currentRow);
+
+    rows.forEach(function(row){
+      var rowWidth = row.reduce(function(s, p){ return s + p.w; }, 0) + pillGap * (row.length - 1);
+      var x = (W - rowWidth) / 2;
+      row.forEach(function(p){
+        ctx.fillStyle = "rgba(255,255,255,.55)";
+        drawRoundedRect(ctx, x, y, p.w, pillH, pillH / 2);
+        ctx.fill();
+        ctx.fillStyle = "#14121F";
+        ctx.textAlign = "left";
+        ctx.fillText(p.text, x + pillPadX, y + pillH / 2 + 8);
+        x += p.w + pillGap;
+      });
+      y += pillH + 10;
+    });
+  }
+
+  ctx.globalAlpha = 0.6;
+  ctx.font = "500 22px 'IBM Plex Mono', monospace";
+  ctx.textAlign = "center";
+  ctx.fillText("votona.vercel.app", W / 2, H - 50);
+  ctx.globalAlpha = 1;
+
+  return canvas;
+}
+
+/* ============================================================
    RENDER — TOPBAR
    ============================================================ */
 function goToFaq(){
@@ -3009,9 +3142,10 @@ function renderResults(){
     });
     var text = "Mon classement sur Votona :\n" + lines.join("\n") + "\n\nFais le test toi aussi : " + location.href;
     if(navigator.share){
-      navigator.share({text: text}).catch(function(){});
+      navigator.share({text: text}).then(function(){ trackShareEvent("results_native_share"); }).catch(function(){});
     } else if(navigator.clipboard){
       navigator.clipboard.writeText(text).then(function(){
+        trackShareEvent("results_clipboard_copy");
         shareBtn.textContent = "Copié dans le presse-papiers !";
         setTimeout(function(){ shareBtn.textContent = "Partager mon classement"; }, 2200);
       }).catch(function(){});
@@ -3202,32 +3336,56 @@ function renderKit(){
 function renderKitShare(){
   var profile = activeProfile();
   if(!profile){ state.screen = "profiles"; render(); return; }
-  var topCats = computeTopCategories(profile);
-  var topArchetype = topCats.length ? (CATEGORY_META[topCats[0]] || {}) : {};
-  var pop = topArchetype.pop || "#7C3AED";
-  var level = computeEngagementLevel(profile);
-  var wordsHtml = topCats.map(function(cat){
-    var m = CATEGORY_META[cat] || {};
-    return m.word ? '<span class="share-pill">' + (m.ic || "") + ' ' + escapeHtml(m.word) + '</span>' : "";
-  }).join("");
 
-  var html = '<div class="share-card" style="background:' + pop + ';">' +
-      '<div class="share-brand">🗳️ Votona</div>' +
-      '<div class="share-mascot">' + mascotImgHtml(topCats[0], level.level, 90, 190, "#ffffff") + '</div>' +
-      '<div class="share-level">Niveau ' + level.level + ' · ' + escapeHtml(level.name) + '</div>' +
-      '<div class="share-name">' + escapeHtml(topArchetype.archetype || "Citoyen Engagé") + '</div>' +
-      '<div class="share-words">' + wordsHtml + '</div>' +
-      '<div class="share-footer">votona.vercel.app</div>' +
+  var html = '<div class="share-canvas-wrap" id="share-canvas-wrap"><p class="intro-copy">Génération de ton image…</p></div>' +
+    '<div id="share-actions" style="display:none; max-width:340px; margin:0 auto;">' +
+      '<button class="btn btn-accent btn-block" id="kit-share-native" style="margin-top:16px;">📤 Partager</button>' +
+      '<button class="btn btn-ghost btn-block" id="kit-share-download" style="margin-top:10px;">⬇️ Télécharger l\'image</button>' +
     '</div>' +
-    '<p class="intro-copy" style="text-align:center;margin-top:18px;">Fais une capture d\'écran pour partager ton profil sur les réseaux.</p>' +
-    '<button class="btn btn-ghost btn-block" id="share-back" style="margin-top:14px;">← Retour au kit</button>';
+    '<button class="btn btn-ghost btn-block" id="share-back" style="margin-top:14px; max-width:340px; margin-left:auto; margin-right:auto;">← Retour au kit</button>';
 
   document.getElementById("app").innerHTML = html;
-  wireMascotFallbacks();
   document.getElementById("share-back").onclick = function(){
     state.screen = "kit";
     render();
   };
+
+  generateShareCardImage(profile).then(function(canvas){
+    var wrap = document.getElementById("share-canvas-wrap");
+    wrap.innerHTML = "";
+    wrap.appendChild(canvas);
+    document.getElementById("share-actions").style.display = "block";
+
+    canvas.toBlob(function(blob){
+      if(!blob) return;
+      var file = new File([blob], "votona-profil.png", {type: "image/png"});
+
+      var nativeBtn = document.getElementById("kit-share-native");
+      if(navigator.canShare && navigator.canShare({files: [file]})){
+        nativeBtn.onclick = function(){
+          navigator.share({
+            files: [file],
+            title: "Mon profil Votona",
+            text: "Découvre ton profil politique sur Votona : " + location.origin
+          }).then(function(){ trackShareEvent("kit_image_share"); }).catch(function(){});
+        };
+      } else {
+        nativeBtn.style.display = "none";
+      }
+
+      var downloadBtn = document.getElementById("kit-share-download");
+      downloadBtn.onclick = function(){
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url; a.download = "votona-profil.png";
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+        trackShareEvent("kit_image_download");
+      };
+    }, "image/png");
+  }).catch(function(){
+    document.getElementById("share-canvas-wrap").innerHTML = '<p class="intro-copy">Impossible de générer l\'image pour le moment.</p>';
+  });
 }
 
 /* ============================================================
