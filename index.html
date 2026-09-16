@@ -2396,6 +2396,23 @@ function computeEngagementLevel(profile){
   };
 }
 
+function computeTopReasons(profile, candidate){
+  var topics = getTopics();
+  var topicsById = {}; topics.forEach(function(t){ topicsById[t.id] = t; });
+  var answers = profile.answers || {};
+  var reasons = [];
+  Object.keys(answers).forEach(function(tid){
+    var a = answers[tid];
+    if(a.importance !== 3) return;
+    var pos = candidate.positions[tid];
+    var t = topicsById[tid];
+    if(!pos || !t) return;
+    reasons.push({topic:t, score:matchScore(a.stance, pos.stance)});
+  });
+  reasons.sort(function(a,b){ return b.score - a.score; });
+  return reasons.slice(0,5);
+}
+
 /* ============================================================
    RENDER — TOPBAR
    ============================================================ */
@@ -3051,9 +3068,9 @@ function renderKit(){
       propImgHtml(d.cat, 32, d.meta.ic) +
       '</button>';
   }).join("");
-  var medalBubble = '<div class="blister-bubble blister-bubble-sm blister-medal" title="Niveau ' + level.level + '">' +
+  var medalBubble = '<button class="blister-bubble blister-bubble-sm blister-item blister-medal" data-cat="level" title="Ton niveau">' +
     levelMedalSvg(level.level, pop, 48) +
-    '</div>';
+    '</button>';
 
   var blisterLogoSvg = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
     '<rect x="16" y="14" width="68" height="66" rx="26" fill="#191d2b"></rect>' +
@@ -3067,7 +3084,7 @@ function renderKit(){
     '<div class="blister-card" style="--pop:' + pop + ';">' +
       '<div class="blister-header"><div class="blister-logo">' + blisterLogoSvg + '</div><div class="blister-title">Starter Pack</div></div>' +
       '<div class="blister-window">' +
-        '<div class="blister-bubble blister-bubble-main">' + mascotImgHtml(topCats[0], level.level, 118, 250, pop) + '</div>' +
+        '<button class="blister-bubble blister-bubble-main blister-item" data-cat="practical" title="Infos pratiques pour voter">' + mascotImgHtml(topCats[0], level.level, 118, 250, pop) + '</button>' +
         '<div class="blister-accessories">' + accessoryBubbles + medalBubble + '</div>' +
       '</div>' +
       (topArchetype.archetype ? '<div class="blister-nameplate">' + escapeHtml(topArchetype.archetype) + '</div>' : '') +
@@ -3076,32 +3093,67 @@ function renderKit(){
     '</div>' +
     '<button class="btn btn-block pop-share-btn" id="kit-share-btn">📤 Partager mon profil</button>' : '';
 
-  var activeDetail = state.kitModalCat ? themeDetails.filter(function(d){ return d.cat === state.kitModalCat; })[0] : null;
   var modalHtml = "";
-  if(activeDetail){
-    var dc = activeDetail.meta.pop || pop;
-    var mediaModalHtml = activeDetail.media.map(function(s){
-      var tm = MEDIA_TYPE_META[s.type] || {ic:"", label:""};
-      return '<a class="axis-card" href="' + escapeHtml(s.url) + '" target="_blank" rel="noopener">' +
-        '<span class="media-type-tag ' + escapeHtml(s.type) + '">' + tm.ic + ' ' + escapeHtml(tm.label) + '</span>' +
-        '<div class="t">' + escapeHtml(s.name) + '</div>' +
-        '<div class="d">' + escapeHtml(s.d) + '</div></a>';
-    }).join("");
-    var glossaryModalHtml = activeDetail.glossary
-      ? '<div class="glossary-card"><div class="term">' + escapeHtml(activeDetail.glossary.term) + '</div><div class="def">' + escapeHtml(activeDetail.glossary.d) + '</div></div>'
-      : "";
+  if(state.kitModalCat === "practical"){
     modalHtml = '<div class="kit-modal-overlay" id="kit-modal-overlay">' +
         '<div class="kit-modal-card">' +
           '<button class="kit-modal-close" id="kit-modal-close">✕</button>' +
           '<div class="kit-modal-header">' +
-            '<div class="kit-modal-icon" style="background:color-mix(in srgb, ' + dc + ' 20%, transparent); color:' + dc + ';">' + (activeDetail.meta.ic || "") + '</div>' +
-            '<div class="kit-modal-title">' + escapeHtml(activeDetail.cat) + '</div>' +
+            '<div class="kit-modal-icon" style="background:color-mix(in srgb, ' + pop + ' 20%, transparent); color:' + pop + ';">🗳️</div>' +
+            '<div class="kit-modal-title">Infos pratiques pour voter</div>' +
           '</div>' +
-          '<div class="kit-modal-desc">' + escapeHtml(activeDetail.meta.d || "") + '</div>' +
-          (mediaModalHtml ? '<div class="kit-modal-section-label">Pour approfondir</div><div class="media-links" style="margin-bottom:20px;">' + mediaModalHtml + '</div>' : '') +
-          (glossaryModalHtml ? '<div class="kit-modal-section-label">Glossaire</div><div class="glossary-grid">' + glossaryModalHtml + '</div>' : '') +
+          '<div class="kit-modal-desc">L\'essentiel pour ne rien rater le jour J.</div>' +
+          '<div class="axis-grid">' + practicalHtml + '</div>' +
         '</div>' +
       '</div>';
+  } else if(state.kitModalCat === "level"){
+    var topCandidate = topCandidates[0] ? topCandidates[0].candidate : null;
+    var reasons = topCandidate ? computeTopReasons(profile, topCandidate) : [];
+    var reasonsHtml = reasons.map(function(r){
+      var agree = r.score === 1;
+      return '<div class="glossary-card"><div class="term" style="color:' + (agree ? "var(--good)" : "var(--ink-faint)") + ';">' +
+        (agree ? "✓ Accord" : "≈ Neutre") + '</div><div class="def">' + escapeHtml(r.topic.statement) + '</div></div>';
+    }).join("");
+    modalHtml = '<div class="kit-modal-overlay" id="kit-modal-overlay">' +
+        '<div class="kit-modal-card">' +
+          '<button class="kit-modal-close" id="kit-modal-close">✕</button>' +
+          '<div class="kit-modal-header">' +
+            '<div class="kit-modal-icon" style="background:color-mix(in srgb, ' + pop + ' 20%, transparent); color:' + pop + ';">🏅</div>' +
+            '<div class="kit-modal-title">Niveau ' + level.level + ' · ' + escapeHtml(level.name) + '</div>' +
+          '</div>' +
+          (topCandidate
+            ? '<div class="kit-modal-desc">Les sujets qui comptaient le plus pour toi, et qui ont mis <strong>' + escapeHtml(topCandidate.name) + '</strong> en tête de ton classement.</div>'
+            : '<div class="kit-modal-desc">Réponds à quelques sujets pour voir apparaître ton candidat en tête.</div>') +
+          (reasonsHtml ? '<div class="glossary-grid">' + reasonsHtml + '</div>' : '') +
+        '</div>' +
+      '</div>';
+  } else if(state.kitModalCat){
+    var activeDetail = themeDetails.filter(function(d){ return d.cat === state.kitModalCat; })[0];
+    if(activeDetail){
+      var dc = activeDetail.meta.pop || pop;
+      var mediaModalHtml = activeDetail.media.map(function(s){
+        var tm = MEDIA_TYPE_META[s.type] || {ic:"", label:""};
+        return '<a class="axis-card" href="' + escapeHtml(s.url) + '" target="_blank" rel="noopener">' +
+          '<span class="media-type-tag ' + escapeHtml(s.type) + '">' + tm.ic + ' ' + escapeHtml(tm.label) + '</span>' +
+          '<div class="t">' + escapeHtml(s.name) + '</div>' +
+          '<div class="d">' + escapeHtml(s.d) + '</div></a>';
+      }).join("");
+      var glossaryModalHtml = activeDetail.glossary
+        ? '<div class="glossary-card"><div class="term">' + escapeHtml(activeDetail.glossary.term) + '</div><div class="def">' + escapeHtml(activeDetail.glossary.d) + '</div></div>'
+        : "";
+      modalHtml = '<div class="kit-modal-overlay" id="kit-modal-overlay">' +
+          '<div class="kit-modal-card">' +
+            '<button class="kit-modal-close" id="kit-modal-close">✕</button>' +
+            '<div class="kit-modal-header">' +
+              '<div class="kit-modal-icon" style="background:color-mix(in srgb, ' + dc + ' 20%, transparent); color:' + dc + ';">' + (activeDetail.meta.ic || "") + '</div>' +
+              '<div class="kit-modal-title">' + escapeHtml(activeDetail.cat) + '</div>' +
+            '</div>' +
+            '<div class="kit-modal-desc">' + escapeHtml(activeDetail.meta.d || "") + '</div>' +
+            (mediaModalHtml ? '<div class="kit-modal-section-label">Pour approfondir</div><div class="media-links" style="margin-bottom:20px;">' + mediaModalHtml + '</div>' : '') +
+            (glossaryModalHtml ? '<div class="kit-modal-section-label">Glossaire</div><div class="glossary-grid">' + glossaryModalHtml + '</div>' : '') +
+          '</div>' +
+        '</div>';
+    }
   }
 
   var html = '<span class="eyebrow">Bienvenue ' + escapeHtml(profile.name) + '</span>' +
@@ -3109,7 +3161,6 @@ function renderKit(){
     '<p class="intro-copy">Un résumé de ton profil politique, et tout ce qu\'il faut savoir pour voter le moment venu.</p>' +
     blisterCardHtml +
     (candidatesHtml ? '<section class="landing-section"><h2>Tes candidats</h2><div class="sub">D\'après tes réponses au questionnaire.</div><div class="candidate-list">' + candidatesHtml + '</div></section>' : '') +
-    '<section class="landing-section landing-narrow"><h2>Infos pratiques pour voter</h2><div class="sub">L\'essentiel pour ne rien rater le jour J.</div><div class="axis-grid">' + practicalHtml + '</div></section>' +
     '<div style="margin-top:24px;"><button class="btn btn-accent btn-block" id="kit-continue">Voir mon tableau de bord</button></div>' +
     modalHtml;
 
