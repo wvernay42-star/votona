@@ -1,5 +1,6 @@
 <title>Votona</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/png" href="assets/ui/logo-head.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -124,12 +125,12 @@
   }
   .brand-home:hover .name{ color:var(--gold); }
   .brand .mark{
-    width:34px; height:34px; flex:none;
+    width:40px; height:32px; flex:none;
     animation: markSettle .9s cubic-bezier(.22,1,.36,1) both;
     transition: transform .45s cubic-bezier(.34,1.56,.64,1);
   }
   .brand .mark:hover{ transform: rotate(-8deg) scale(1.08); }
-  .brand .mark svg{ display:block; width:100%; height:100%; }
+  .brand .mark svg, .brand .mark img{ display:block; width:100%; height:100%; object-fit:contain; }
   .vt-head{ fill:var(--ink); }
   .vt-visor{ fill:var(--accent); }
   .vt-antenna{ stroke:var(--gold); }
@@ -457,7 +458,7 @@
     width:28px; height:28px; border-radius:50%; background:var(--bg-raised); flex:none;
     display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.25);
   }
-  .blister-logo svg{ width:18px; height:18px; }
+  .blister-logo img{ width:24px; height:24px; object-fit:cover; object-position:center 40%; border-radius:50%; }
   .blister-title{
     font-family:var(--display); font-weight:800; font-size:clamp(18px,3vw + 9px,23px);
     letter-spacing:.02em; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,.2);
@@ -613,22 +614,7 @@
     <div class="brand">
       <button class="brand-home" id="brand-home" type="button">
         <div class="mark">
-          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <line class="vt-antenna" x1="50" y1="14" x2="50" y2="6" stroke-width="4" stroke-linecap="round"></line>
-            <rect class="vt-badge-blue" x="42" y="0" width="5.33" height="7" rx="1"></rect>
-            <rect class="vt-badge-white" x="47.33" y="0" width="5.33" height="7"></rect>
-            <rect class="vt-badge-red" x="52.66" y="0" width="5.33" height="7" rx="1"></rect>
-            <rect class="vt-head" x="4" y="40" width="14" height="20" rx="7"></rect>
-            <rect class="vt-head" x="82" y="40" width="14" height="20" rx="7"></rect>
-            <rect class="vt-head" x="16" y="14" width="68" height="66" rx="26"></rect>
-            <rect class="vt-visor" x="26" y="39" width="48" height="17" rx="8.5"></rect>
-            <circle class="vt-badge-blue" cx="66" cy="64" r="7"></circle>
-            <circle class="vt-badge-white" cx="66" cy="64" r="4.5"></circle>
-            <circle class="vt-badge-red" cx="66" cy="64" r="2"></circle>
-            <rect class="vt-badge-blue" x="38" y="70" width="8" height="3" rx="1.5"></rect>
-            <rect class="vt-badge-white" x="46" y="70" width="8" height="3" rx="1.5"></rect>
-            <rect class="vt-badge-red" x="54" y="70" width="8" height="3" rx="1.5"></rect>
-          </svg>
+          <img src="assets/ui/logo-head.png" alt="Votona" />
         </div>
         <div><div class="name">Votona</div></div>
       </button>
@@ -3072,17 +3058,12 @@ function renderKit(){
     levelMedalSvg(level.level, pop, 48) +
     '</button>';
 
-  var blisterLogoSvg = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
-    '<rect x="16" y="14" width="68" height="66" rx="26" fill="#191d2b"></rect>' +
-    '<rect x="26" y="39" width="48" height="17" rx="8.5" fill="#7C3AED"></rect>' +
-    '<rect x="4" y="40" width="14" height="20" rx="7" fill="#191d2b"></rect>' +
-    '<rect x="82" y="40" width="14" height="20" rx="7" fill="#191d2b"></rect>' +
-    '</svg>';
+  var blisterLogoImg = '<img src="assets/ui/logo-head.png" alt="Votona" />';
 
   var blisterCardHtml = themeDetails.length ? '<div class="blister-outer">' +
     '<div class="blister-tab" style="--pop:' + pop + ';"><div class="blister-tab-hole"></div></div>' +
     '<div class="blister-card" style="--pop:' + pop + ';">' +
-      '<div class="blister-header"><div class="blister-logo">' + blisterLogoSvg + '</div><div class="blister-title">Starter Pack</div></div>' +
+      '<div class="blister-header"><div class="blister-logo">' + blisterLogoImg + '</div><div class="blister-title">Starter Pack</div></div>' +
       '<div class="blister-window">' +
         '<button class="blister-bubble blister-bubble-main blister-item" data-cat="practical" title="Infos pratiques pour voter">' + mascotImgHtml(topCats[0], level.level, 118, 250, pop) + '</button>' +
         '<div class="blister-accessories">' + accessoryBubbles + medalBubble + '</div>' +
