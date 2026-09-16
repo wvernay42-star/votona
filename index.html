@@ -2234,6 +2234,8 @@ async function syncAfterLogin(){
   }
   state.activeProfileId = resolvedId;
 
+  if(resolvedId){ updateActiveProfile(function(){}); }
+
   if(pendingOptIn && resolvedId){
     updateActiveProfile(function(p){ p.newsOptIn = true; });
   }
@@ -2287,6 +2289,7 @@ function updateActiveProfile(mutator){
   var p = profiles[state.activeProfileId];
   if(!p) return;
   mutator(p);
+  p.lastSeenAt = new Date().toISOString();
   profiles[state.activeProfileId] = p;
   saveProfiles(profiles);
   if(isLoggedIn()){ pushProfileToCloud(state.activeProfileId, p).catch(function(){}); }
@@ -2633,7 +2636,6 @@ function renderDashboard(){
   if(dismiss) dismiss.onclick = function(){
     updateActiveProfile(function(p){
       p.seenNewIds = candidates.map(function(c){return c.id;});
-      p.lastSeenAt = new Date().toISOString();
     });
     render();
   };
