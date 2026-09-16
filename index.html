@@ -164,7 +164,7 @@
     border-bottom:4px solid color-mix(in srgb, var(--accent) 70%, black);
   }
   .btn-accent:active{ border-bottom-width:1px; }
-  .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid var(--line); }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); }
   .btn-ghost:hover{ color:var(--ink); border-color:var(--ink-faint); }
   .btn-block{ width:100%; }
   .btn-sm{ padding:8px 14px; font-size:13px; border-radius:14px; }
@@ -581,9 +581,9 @@
   .result-row:hover{ transform:translateY(-1px); border-color:var(--ink-faint); }
   .candidate-row:hover{ border-color:var(--ink-faint); }
   .hero-watermark{
-    position:absolute; top:-18px; right:-30px; width:200px; height:200px;
+    position:absolute; top:-6px; right:6px; width:180px; height:180px;
     pointer-events:none; z-index:-1; animation: markSettleFaint 1.3s cubic-bezier(.22,1,.36,1) both;
-    opacity:.14; object-fit:contain;
+    opacity:.14; object-fit:contain; object-position:top;
   }
   .hero-wrap{ position:relative; overflow:hidden; isolation:isolate; max-width:640px; margin-left:auto; margin-right:auto; }
   h1 .hl{ color:var(--accent); }
