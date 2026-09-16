@@ -3045,8 +3045,8 @@ function renderKit(){
     '</div>' +
     (topArchetype.archetype ? '<div class="blister-nameplate">' + escapeHtml(topArchetype.archetype) + '</div>' : '') +
     '<div class="blister-sub">Niveau ' + level.level + ' · ' + escapeHtml(level.name) + ' · ' + level.answered + '/' + level.total + ' sujets' + nextCaption + '</div>' +
-    '<button class="btn btn-block pop-share-btn" id="kit-share-btn">📤 Partager mon profil</button>' +
-    '</div>' : '';
+    '</div>' +
+    '<button class="btn btn-block pop-share-btn" id="kit-share-btn">📤 Partager mon profil</button>' : '';
 
   var activeDetail = state.kitModalCat ? themeDetails.filter(function(d){ return d.cat === state.kitModalCat; })[0] : null;
   var modalHtml = "";
