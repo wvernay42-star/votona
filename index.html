@@ -185,6 +185,14 @@
   .profile-meta .pname{ font-weight:600; font-size:15px; }
   .profile-meta .psub{ font-size:12.5px; color:var(--ink-faint); margin-top:2px; }
   .profile-arrow{ color:var(--ink-faint); }
+  .acct-profile-row{ display:flex; align-items:center; gap:12px; }
+  .acct-profile-row .profile-meta .pname{ display:flex; align-items:center; gap:7px; }
+  .acct-row-actions{ display:flex; align-items:center; gap:12px; flex:none; }
+  .acct-danger-zone{
+    margin-top:28px; padding:14px 16px; border-radius:var(--radius);
+    border:2px solid color-mix(in srgb, var(--bad) 30%, var(--line-soft));
+  }
+  .acct-danger-zone .field-label{ color:var(--bad); }
   .new-profile-form{
     margin-top:16px; padding:16px; border:1px dashed var(--line); border-radius:var(--radius);
     display:none; gap:10px; flex-direction:column; max-width:420px;
@@ -2192,6 +2200,22 @@ async function pushProfileToCloud(id, profile){
   }
 }
 
+async function deleteProfileCloud(id){
+  if(!sb || !isLoggedIn()) return;
+  await sb.from("answers").delete().eq("profile_id", id);
+  await sb.from("profiles").delete().eq("id", id);
+}
+
+async function deleteAllAccountData(){
+  if(!sb || !isLoggedIn()) return;
+  var userId = authSession.user.id;
+  var ids = Object.keys(loadProfiles());
+  if(ids.length){
+    await sb.from("answers").delete().in("profile_id", ids);
+  }
+  await sb.from("profiles").delete().eq("user_id", userId);
+}
+
 async function syncAfterLogin(){
   var pendingProfileId = safeGet(LS_PENDING_KIT, null);
   var pendingOptIn = safeGet(LS_PENDING_OPTIN, false);
@@ -2203,6 +2227,17 @@ async function syncAfterLogin(){
   var finalProfiles;
   if(Object.keys(cloud).length){
     finalProfiles = cloud;
+    var localExtra = loadProfiles();
+    var localExtraIds = Object.keys(localExtra);
+    for(var j=0;j<localExtraIds.length;j++){
+      var lid = localExtraIds[j];
+      if(finalProfiles[lid]) continue;
+      var lp = localExtra[lid];
+      var lCloudId = isValidUUID(lid) ? lid : newProfileId();
+      oldToNew[lid] = lCloudId;
+      finalProfiles[lCloudId] = lp;
+      await pushProfileToCloud(lCloudId, lp);
+    }
     saveProfiles(finalProfiles);
   } else {
     var local = loadProfiles();
@@ -2285,15 +2320,18 @@ function activeProfile(){
   var profiles = loadProfiles();
   return state.activeProfileId ? profiles[state.activeProfileId] : null;
 }
-function updateActiveProfile(mutator){
+function updateProfileById(id, mutator, touch){
   var profiles = loadProfiles();
-  var p = profiles[state.activeProfileId];
+  var p = profiles[id];
   if(!p) return;
   mutator(p);
-  p.lastSeenAt = new Date().toISOString();
-  profiles[state.activeProfileId] = p;
+  if(touch) p.lastSeenAt = new Date().toISOString();
+  profiles[id] = p;
   saveProfiles(profiles);
-  if(isLoggedIn()){ pushProfileToCloud(state.activeProfileId, p).catch(function(){}); }
+  if(isLoggedIn()){ pushProfileToCloud(id, p).catch(function(){}); }
+}
+function updateActiveProfile(mutator){
+  updateProfileById(state.activeProfileId, mutator, true);
 }
 
 /* ============================================================
@@ -3217,9 +3255,40 @@ function renderAccount(){
   if(!sb){
     html = '<h1>Mon compte</h1><p class="intro-copy">La connexion par email n\'est pas disponible pour le moment.</p>';
   } else if(isLoggedIn()){
+    var topics = getTopics();
+    var profiles = loadProfiles();
+    var ids = Object.keys(profiles).sort(function(a,b){ return (profiles[b].createdAt||"").localeCompare(profiles[a].createdAt||""); });
+    var active = activeProfile();
+
+    var profilesHtml = ids.map(function(id){
+      var p = profiles[id];
+      var isActive = id === state.activeProfileId;
+      var answered = Object.keys(p.answers || {}).length;
+      return '<div class="profile-card acct-profile-row" data-pid="' + id + '">' +
+        '<div class="profile-avatar" style="background:' + avatarColor(p.name) + '">' + escapeHtml(initials(p.name)) + '</div>' +
+        '<div class="profile-meta"><div class="pname">' + escapeHtml(p.name) + (isActive ? ' <span class="badge-new">Actif</span>' : '') + '</div>' +
+        '<div class="psub">' + answered + ' / ' + topics.length + ' sujets répondus</div></div>' +
+        '<div class="acct-row-actions">' +
+          (isActive ? '' : '<button class="btn btn-ghost btn-sm" data-switch="' + id + '">Choisir</button>') +
+          '<button class="btn btn-ghost btn-sm" data-rename="' + id + '">Renommer</button>' +
+          '<button class="danger-link" data-delprofile="' + id + '">Supprimer</button>' +
+        '</div>' +
+      '</div>';
+    }).join("");
+
     html = '<h1>Mon compte</h1>' +
-      '<p class="intro-copy">Connecté avec <strong>' + escapeHtml(authSession.user.email) + '</strong>. Tes profils et réponses sont synchronisés — reconnecte-toi avec cet email sur n\'importe quel appareil pour les retrouver.</p>' +
-      '<button class="btn btn-ghost btn-block" id="btn-signout" style="margin-top:16px;">Se déconnecter</button>';
+      '<p class="intro-copy">Connecté avec <strong>' + escapeHtml(authSession.user.email) + '</strong>. Reconnecte-toi avec cet email sur n\'importe quel appareil pour retrouver tes profils et réponses.</p>' +
+      (active ? '<label class="field-label" style="display:flex; align-items:center; gap:7px; cursor:pointer; font-weight:400; margin-top:16px;">' +
+        '<input type="checkbox" id="account-optin"' + (active.newsOptIn ? " checked" : "") + ' style="width:auto;" /> Recevoir les emails de nouveautés pour le profil « ' + escapeHtml(active.name) + ' »' +
+      '</label>' : '') +
+      '<div class="results-subhead" style="margin-top:22px;">Profils liés à ce compte</div>' +
+      '<div class="profile-grid" style="margin-top:10px;">' + profilesHtml + '</div>' +
+      '<button class="btn btn-ghost btn-block" id="btn-signout" style="margin-top:18px;">Se déconnecter</button>' +
+      '<div class="acct-danger-zone">' +
+        '<label class="field-label">Zone de danger</label>' +
+        '<p class="intro-copy" style="margin-top:4px;">Supprime définitivement tous les profils et réponses liés à ce compte, sur tous les appareils.</p>' +
+        '<button class="danger-link" id="btn-delete-account" style="margin-top:8px;">Supprimer toutes mes données</button>' +
+      '</div>';
   } else {
     html = '<h1>Mon compte</h1>' +
       '<p class="intro-copy">Connecte-toi par email pour retrouver tes profils et réponses sur un autre appareil. Sans connexion, tout continue de fonctionner normalement, gardé uniquement sur cet appareil.</p>' +
@@ -3230,6 +3299,54 @@ function renderAccount(){
   }
   html += '<button class="btn btn-ghost btn-block" id="btn-account-back" style="margin-top:22px;">← Retour</button>';
   document.getElementById("app").innerHTML = html;
+
+  var optinToggle = document.getElementById("account-optin");
+  if(optinToggle) optinToggle.onchange = function(){
+    updateActiveProfile(function(p){ p.newsOptIn = optinToggle.checked; });
+  };
+
+  document.querySelectorAll("[data-switch]").forEach(function(btn){
+    btn.onclick = function(){
+      state.activeProfileId = btn.getAttribute("data-switch");
+      render();
+    };
+  });
+
+  document.querySelectorAll("[data-rename]").forEach(function(btn){
+    btn.onclick = function(){
+      var id = btn.getAttribute("data-rename");
+      var profiles = loadProfiles();
+      var p = profiles[id];
+      if(!p) return;
+      var name = prompt("Nouveau nom pour ce profil :", p.name);
+      if(name === null) return;
+      name = name.trim();
+      if(!name) return;
+      updateProfileById(id, function(pr){ pr.name = name; }, id === state.activeProfileId);
+      render();
+    };
+  });
+
+  document.querySelectorAll("[data-delprofile]").forEach(function(btn){
+    btn.onclick = function(){
+      var id = btn.getAttribute("data-delprofile");
+      var profiles = loadProfiles();
+      var p = profiles[id];
+      if(!p) return;
+      if(!confirm('Supprimer le profil « ' + p.name + ' » et toutes ses réponses ? Cette action est irréversible.')) return;
+      delete profiles[id];
+      saveProfiles(profiles);
+      if(state.activeProfileId === id){
+        var remaining = Object.keys(profiles);
+        state.activeProfileId = remaining.length ? remaining[0] : null;
+      }
+      deleteProfileCloud(id).catch(function(){});
+      if(!state.activeProfileId && !Object.keys(profiles).length){
+        state.screen = "profiles";
+      }
+      render();
+    };
+  });
 
   var signout = document.getElementById("btn-signout");
   if(signout) signout.onclick = function(){
@@ -3253,6 +3370,25 @@ function renderAccount(){
         ? "Une erreur est survenue, réessaie dans un instant."
         : "Lien envoyé ! Vérifie ta boîte mail (" + email + ") et clique sur le lien pour te connecter.";
       render();
+    });
+  };
+  var deleteAccountBtn = document.getElementById("btn-delete-account");
+  if(deleteAccountBtn) deleteAccountBtn.onclick = function(){
+    if(!confirm("Supprimer définitivement tous tes profils et réponses liés à ce compte ? Cette action est irréversible.")) return;
+    if(!confirm("Dernière confirmation : toutes tes données seront perdues pour toujours. Continuer ?")) return;
+    deleteAccountBtn.disabled = true;
+    deleteAccountBtn.textContent = "Suppression en cours…";
+    deleteAllAccountData().then(function(){
+      return sb.auth.signOut();
+    }).then(function(){
+      saveProfiles({});
+      authSession = null;
+      state.activeProfileId = null;
+      state.screen = "profiles";
+      render();
+    }).catch(function(){
+      deleteAccountBtn.disabled = false;
+      deleteAccountBtn.textContent = "Supprimer toutes mes données";
     });
   };
   document.getElementById("btn-account-back").onclick = function(){
