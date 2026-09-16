@@ -2176,7 +2176,8 @@ async function pushProfileToCloud(id, profile){
     id: id, user_id: userId, name: profile.name,
     created_at: profile.createdAt, last_seen_at: profile.lastSeenAt,
     seen_new_ids: profile.seenNewIds || [], seen_new_topics: profile.seenNewTopics || [],
-    news_opt_in: !!profile.newsOptIn
+    news_opt_in: !!profile.newsOptIn,
+    reminder1_sent_at: null, reminder2_sent_at: null
   });
   var answers = profile.answers || {};
   var rows = Object.keys(answers).map(function(tid){
