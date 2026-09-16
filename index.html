@@ -31,9 +31,9 @@
     --plum-soft: #ece3f7;
     --teal: #1f8f8a;
     --teal-soft: #ddf1ef;
-    --masthead-bg: #1b2030;
-    --masthead-ink: #f4efe3;
-    --masthead-line: rgba(244,239,227,.18);
+    --masthead-bg: #F6F2FE;
+    --masthead-ink: #191d2b;
+    --masthead-line: rgba(25,29,43,.14);
     --shadow: 0 1px 2px rgba(28,34,48,.07), 0 10px 28px -12px rgba(124,58,237,.18);
     --radius: 26px;
     --display: 'Baloo 2', ui-rounded, system-ui, sans-serif;
@@ -115,7 +115,7 @@
 
   header.topbar{
     display:flex; align-items:center; justify-content:space-between;
-    padding:16px clamp(20px,4vw,40px); border-bottom:3px solid var(--gold);
+    padding:16px clamp(20px,4vw,40px); border-bottom:3px solid var(--accent);
     position:sticky; top:0; background:var(--masthead-bg); z-index:20;
   }
   .brand{ display:flex; align-items:center; gap:9px; }
@@ -123,7 +123,7 @@
     display:flex; align-items:center; gap:9px; background:none; border:none; padding:0;
     cursor:pointer; font:inherit; color:inherit; -webkit-tap-highlight-color:transparent;
   }
-  .brand-home:hover .name{ color:var(--gold); }
+  .brand-home:hover .name{ color:var(--accent); }
   .brand .mark{
     width:40px; height:32px; flex:none;
     animation: markSettle .9s cubic-bezier(.22,1,.36,1) both;
@@ -131,16 +131,8 @@
   }
   .brand .mark:hover{ transform: rotate(-8deg) scale(1.08); }
   .brand .mark svg, .brand .mark img{ display:block; width:100%; height:100%; object-fit:contain; }
-  .vt-head{ fill:var(--ink); }
-  .vt-visor{ fill:var(--accent); }
-  .vt-antenna{ stroke:var(--gold); }
-  .vt-badge-blue{ fill:var(--blue); }
-  .vt-badge-red{ fill:var(--bad); }
-  .vt-badge-white{ fill:var(--bg); }
-  header.topbar .vt-head{ fill:var(--masthead-ink); }
-  header.topbar .vt-badge-white{ fill:var(--masthead-bg); }
   .brand .name{ font-family:var(--display); font-weight:700; font-size:18px; letter-spacing:.2px; color:var(--masthead-ink); white-space:nowrap; transition:color .15s ease; }
-  .brand .year{ font-family:var(--mono); font-size:11px; color:var(--gold); letter-spacing:.06em; white-space:nowrap; }
+  .brand .year{ font-family:var(--mono); font-size:11px; color:var(--accent); letter-spacing:.06em; white-space:nowrap; }
   @media (max-width:420px){ .brand .year{ display:none; } }
   .topbar-actions{ display:flex; align-items:center; gap:6px; }
   .icon-btn{
@@ -148,7 +140,7 @@
     background:transparent; color:var(--masthead-ink); display:flex; align-items:center;
     justify-content:center; cursor:pointer; font-size:15px;
   }
-  .icon-btn:hover{ color:var(--gold); border-color:var(--gold); }
+  .icon-btn:hover{ color:var(--accent); border-color:var(--accent); }
 
   main{ flex:1; padding:24px clamp(20px,4vw,40px) 48px; max-width:680px; margin:0 auto; width:100%; }
   main.app-wide{ max-width:100%; }
