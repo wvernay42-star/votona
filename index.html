@@ -674,7 +674,8 @@ var TOPICS = [
   {id:"t28", cat:"Économie & travail", statement:"Alourdir la fiscalité sur les très gros héritages (\"méga-successions\")", addedDate:"2026-09-08", context:"Les inégalités de patrimoine transmises par héritage sont revenues au cœur du débat économique, entre taxation accrue des grandes fortunes et défense de la libre transmission."},
   {id:"t29", cat:"Sécurité & immigration", statement:"Abaisser la majorité pénale à 15 ans", addedDate:"2026-09-09", context:"Proposée en septembre 2026 par plusieurs candidats de droite, cette mesure s'inscrit dans un débat récurrent sur la réponse pénale face à la délinquance des mineurs."},
   {id:"t30", cat:"Société", statement:"Instaurer un dépistage obligatoire de l'addiction aux écrans à l'entrée en sixième et en seconde", addedDate:"2026-09-10", context:"L'exposition des jeunes aux écrans et ses effets sur la santé mentale sont devenus une préoccupation croissante, portée notamment par Gabriel Attal en septembre 2026."},
-  {id:"t31", cat:"Économie & travail", statement:"Baisser la TVA et la TICPE sur les carburants pour redonner du pouvoir d'achat aux automobilistes", addedDate:"2026-09-12", context:"La hausse persistante des prix à la pompe en 2026 a relancé le débat entre allègement généralisé de la fiscalité sur les carburants et taxation ciblée des superprofits pétroliers."}
+  {id:"t31", cat:"Économie & travail", statement:"Baisser la TVA et la TICPE sur les carburants pour redonner du pouvoir d'achat aux automobilistes", addedDate:"2026-09-12", context:"La hausse persistante des prix à la pompe en 2026 a relancé le débat entre allègement généralisé de la fiscalité sur les carburants et taxation ciblée des superprofits pétroliers."},
+  {id:"t32", cat:"Défense & numérique", statement:"Interdire l'accès aux réseaux sociaux aux mineurs de moins de 15 ans", addedDate:"2026-09-15", context:"Une première version de cette interdiction, adoptée par le Parlement en juillet 2026, avait été censurée mi-août par le Conseil constitutionnel pour atteinte disproportionnée à la liberté d'expression des mineurs. Le gouvernement a transmis le 14 septembre 2026 une nouvelle version à la Commission européenne, qui autoriserait les 13-15 ans à accéder aux réseaux avec l'accord de leurs représentants légaux."}
 ];
 
 function P(stance, detail){ return {stance:stance, detail:detail}; }
@@ -713,7 +714,8 @@ var CANDIDATES = [
       t28:P("contre","Le RN défend une baisse des droits de succession pour les classes moyennes et modestes plutôt qu'un alourdissement sur les grandes successions."),
       t29:P("pour","Défend de longue date la fin de l'excuse de minorité, ayant déjà proposé d'abaisser la majorité pénale à 16 ans."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("pour","Propose de baisser la TVA de 20% à 5,5% sur les carburants et de réduire la TICPE, pour rendre 25 euros aux Français sur un plein moyen de 50 litres.")
+      t31:P("pour","Propose de baisser la TVA de 20% à 5,5% sur les carburants et de réduire la TICPE, pour rendre 25 euros aux Français sur un plein moyen de 50 litres."),
+      t32:P("neutre","Le RN, favorable à la loi lors du vote de janvier 2026, s'est ensuite abstenu en juillet en raison de ses réserves sur la vérification d'âge généralisée et l'anonymat en ligne.")
     }
   },
   {
@@ -749,7 +751,8 @@ var CANDIDATES = [
       t28:P("contre","S'inscrit dans sa ligne de stabilité fiscale du capital, plutôt qu'un alourdissement des droits de succession."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("pour","Horizons, membre de la majorité gouvernementale, a soutenu l'adoption de la loi et sa nouvelle version transmise à la Commission européenne le 14 septembre 2026.")
     }
   },
   {
@@ -785,7 +788,8 @@ var CANDIDATES = [
       t28:P("contre","Aligné sur la ligne de Renaissance favorable à la stabilité fiscale plutôt qu'à un alourdissement des successions."),
       t29:P("neutre","A proposé de restreindre l'excuse de minorité pour les mineurs de 16 ans et plus auteurs de faits graves, sans avoir formellement proposé d'abaisser l'âge légal de la majorité pénale."),
       t30:P("pour","Propose un dépistage obligatoire de l'addiction aux écrans à l'entrée en sixième et en seconde, avec un suivi psychologique proposé en cas de besoin, mesure qu'il porte comme ministre puis candidat."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("pour","Renaissance, dont la députée Laure Miller est à l'origine du texte, a porté cette interdiction et soutient la nouvelle version soumise à Bruxelles après la censure du Conseil constitutionnel.")
     }
   },
   {
@@ -821,7 +825,8 @@ var CANDIDATES = [
       t28:P("contre","A déclaré : 'Je ne serai pas le président qui augmentera les droits de succession mais celui qui les baissera.'"),
       t29:P("pour","A dévoilé cette proposition le 8 septembre 2026 sur CNEWS, aux côtés de la fin du droit du sol et de peines minimales."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -857,7 +862,8 @@ var CANDIDATES = [
       t28:P("pour","LFI, dont la présidente du groupe à l'Assemblée Mathilde Panot est proche, propose une taxation quasi confiscatoire au-delà de 12 millions d'euros d'héritage."),
       t29:P("contre","LFI s'est opposée en 2026 à un durcissement pénal visant les mineurs, jugé relever du 'populisme pénal'."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("contre","Plaide pour un blocage des prix et une taxation des superprofits de TotalEnergies plutôt qu'une baisse généralisée de la TVA sur les carburants.")
+      t31:P("contre","Plaide pour un blocage des prix et une taxation des superprofits de TotalEnergies plutôt qu'une baisse généralisée de la TVA sur les carburants."),
+      t32:P("contre","LFI a voté contre le texte et saisi le Conseil constitutionnel en juillet 2026, jugeant la mesure inefficace face aux vrais risques des réseaux sociaux.")
     }
   },
   {
@@ -893,7 +899,8 @@ var CANDIDATES = [
       t28:P("pour","Propose de taxer les successions de plus de 2 millions d'euros pour dégager 15 milliards d'euros redistribués aux salaires, l'une de ses mesures phares."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -929,7 +936,8 @@ var CANDIDATES = [
       t28:P("pour","Met en avant, comme Raphaël Glucksmann, une hausse de la taxation des plus grosses successions."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Les écologistes se sont montrés divisés selon les chambres, entre soutien majoritaire à l'Assemblée en janvier et abstention en bloc au Sénat en juillet 2026.")
     }
   },
   {
@@ -965,7 +973,8 @@ var CANDIDATES = [
       t28:P("contre","Proche de la ligne des Républicains, favorable à une baisse plutôt qu'une hausse des droits de succession."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1001,7 +1010,8 @@ var CANDIDATES = [
       t28:P("contre","Le RN, qu'elle a longtemps présidé, défend une baisse des droits de succession en ligne directe plutôt qu'un alourdissement sur les grandes successions."),
       t29:P("pour","Défend de longue date l'abaissement de la majorité pénale, réclamant par le passé de l'abaisser à 16 ans."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("pour","Le RN, dont Jordan Bardella porte la proposition chiffrée, défend de longue date une baisse de la TVA et de la TICPE sur les carburants pour redonner du pouvoir d'achat aux automobilistes.")
+      t31:P("pour","Le RN, dont Jordan Bardella porte la proposition chiffrée, défend de longue date une baisse de la TVA et de la TICPE sur les carburants pour redonner du pouvoir d'achat aux automobilistes."),
+      t32:P("neutre","Comme le reste du groupe RN, elle est passée d'un soutien affiché en janvier 2026 à une abstention en juillet, invoquant des réserves sur la vérification d'âge généralisée.")
     }
   },
   {
@@ -1037,7 +1047,8 @@ var CANDIDATES = [
       t28:P("contre","Son mouvement Nouvelle Énergie propose la suppression pure et simple des droits de succession."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1073,7 +1084,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Défend une ligne dure sur la criminalité des mineurs (y compris un référendum sur la peine de mort pour crimes sur enfants), mais ne s'est pas prononcé sur un abaissement de la majorité pénale."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1109,7 +1121,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Les députés socialistes, partagés entre vote pour et abstention lors du scrutin de juillet 2026, ont mis en avant leurs réserves sur le flou du dispositif de vérification d'âge.")
     }
   },
   {
@@ -1145,7 +1158,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Chef de file du PS, dont le groupe s'est réparti entre votes pour et abstentions en juillet 2026, pointant les incertitudes juridiques sur la vérification d'âge.")
     }
   },
   {
@@ -1181,7 +1195,8 @@ var CANDIDATES = [
       t28:P("pour","Ligne communiste révolutionnaire cohérente avec sa défense d'une taxation forte du capital et des grandes fortunes."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1217,7 +1232,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1253,7 +1269,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1289,7 +1306,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1325,7 +1343,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1361,7 +1380,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1397,7 +1417,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1433,7 +1454,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1469,7 +1491,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1505,7 +1528,8 @@ var CANDIDATES = [
       t28:P("pour","Propose déjà une mise à contribution des successions, en plus du retour de l'ISF, pour financer son programme."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1541,7 +1565,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1577,7 +1602,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1613,7 +1639,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1649,7 +1676,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1685,7 +1713,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1721,7 +1750,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1757,7 +1787,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1793,7 +1824,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1829,7 +1861,8 @@ var CANDIDATES = [
       t28:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t29:P("neutre","Position non encore précisée publiquement sur ce sujet."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("neutre","Position non encore précisée publiquement sur ce sujet.")
+      t31:P("neutre","Position non encore précisée publiquement sur ce sujet."),
+      t32:P("neutre","Position non encore précisée publiquement sur ce sujet.")
     }
   },
   {
@@ -1865,7 +1898,8 @@ var CANDIDATES = [
       t28:P("pour","Propose une réforme des droits de succession fusionnant les multiples abattements en un abattement unique de 170 000 euros par héritier et un doublement des tranches visant les grosses successions."),
       t29:P("neutre","Le PCF s'est historiquement opposé aux durcissements pénaux visant les mineurs, mais sans prise de position directement sourcée sur ce seuil précis."),
       t30:P("neutre","Position non encore précisée publiquement sur ce sujet."),
-      t31:P("contre","Le PCF défend un blocage des prix des carburants et une taxation des superprofits pétroliers plutôt qu'une baisse généralisée de la TVA et de la TICPE.")
+      t31:P("contre","Le PCF défend un blocage des prix des carburants et une taxation des superprofits pétroliers plutôt qu'une baisse généralisée de la TVA et de la TICPE."),
+      t32:P("neutre","Les sénateurs communistes se sont abstenus en bloc lors du vote de juillet 2026, sans prise de position publique tranchée de Fabien Roussel sur la nouvelle version transmise à Bruxelles.")
     }
   }
 ];
