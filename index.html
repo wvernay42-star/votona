@@ -2144,6 +2144,7 @@ var LS_ACTIVE = "votona.active.v1";
 var LS_PENDING_KIT = "votona.pendingKit.v1";
 var LS_PENDING_OPTIN = "votona.pendingOptIn.v1";
 var NEW_WINDOW_DAYS = 3;
+var ADMIN_MODE = new URLSearchParams(location.search).get("admin") === "1";
 
 function safeGet(key, fallback){
   try{
@@ -2742,13 +2743,14 @@ function renderTopbar(){
   }
   html += '<button class="icon-btn" id="btn-account" title="' + (isLoggedIn() ? "Mon compte" : "Se connecter") + '">' + (isLoggedIn() ? "✉" : "⊕") + '</button>';
   html += '<button class="icon-btn" id="btn-faq" title="Questions fréquentes">?</button>';
-  html += '<button class="icon-btn" id="btn-admin" title="Gérer candidats et sujets">⚙</button>';
+  if(ADMIN_MODE){ html += '<button class="icon-btn" id="btn-admin" title="Gérer candidats et sujets">⚙</button>'; }
   el.innerHTML = html;
   var home = document.getElementById("btn-home");
   if(home) home.onclick = function(){ state.screen = "dashboard"; render(); };
   document.getElementById("btn-account").onclick = function(){ state.screen = "account"; render(); };
   document.getElementById("btn-faq").onclick = goToFaq;
-  document.getElementById("btn-admin").onclick = function(){ state.screen = "admin"; state.adminOpenId=null; render(); };
+  var adminBtn = document.getElementById("btn-admin");
+  if(adminBtn) adminBtn.onclick = function(){ state.screen = "admin"; state.adminOpenId=null; render(); };
 
   var pl = document.getElementById("profile-switch-link");
   pl.innerHTML = activeProfile() ? ' · <a id="switch-link">changer de profil</a>' : "";
@@ -3758,6 +3760,7 @@ function renderAccount(){
    SCREEN — ADMIN
    ============================================================ */
 function renderAdmin(){
+  if(!ADMIN_MODE){ state.screen = "profiles"; render(); return; }
   var candidates = getCandidates();
   var topics = getTopics();
 
