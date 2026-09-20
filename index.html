@@ -405,6 +405,12 @@
     border-radius:20px; padding:15px 17px; margin-bottom:16px; text-decoration:none; color:inherit;
   }
   a.sponsor-card:hover{ border-color:var(--ink-faint); }
+  .signup-cta-card{
+    background:color-mix(in srgb, var(--accent) 7%, var(--bg-raised));
+    border-color:color-mix(in srgb, var(--accent) 45%, var(--line-soft));
+  }
+  .signup-cta-card .sponsor-label{ color:var(--accent); font-weight:700; }
+  .signup-cta-card .sponsor-name{ font-size:16px; font-family:var(--display); font-weight:700; }
   .sponsor-label{
     font-family:var(--mono); font-size:9.5px; text-transform:uppercase; letter-spacing:.08em;
     color:var(--ink-faint); display:block; margin-bottom:5px;
@@ -3357,21 +3363,7 @@ function renderResults(){
     '</div>';
   }).join("");
 
-  var signupCta = "";
-  if(!isLoggedIn() && !state.dismissedSignupCta){
-    signupCta = '<div class="sponsor-card" id="signup-cta" style="margin-top:18px;">' +
-      '<div class="sponsor-label">Nouveau</div>' +
-      '<div class="sponsor-name">Garde ce classement à jour</div>' +
-      '<div class="sponsor-tagline">Le questionnaire évolue : de nouveaux sujets et candidats s\'ajoutent régulièrement. Crée un compte gratuit par email pour retrouver tes réponses sur n\'importe quel appareil.</div>' +
-      '<div style="margin-top:12px;"><input type="email" id="signup-email" placeholder="toi@exemple.fr" /></div>' +
-      '<label class="field-label" style="display:flex; align-items:center; gap:7px; cursor:pointer; margin-top:10px; font-weight:400;">' +
-        '<input type="checkbox" id="signup-optin" style="width:auto;" /> Me tenir informé par email des nouveaux sujets' +
-      '</label>' +
-      '<button class="btn btn-accent btn-block" id="signup-submit" style="margin-top:12px;">Créer mon compte gratuit</button>' +
-      '<button class="btn btn-ghost btn-block" id="signup-later" style="margin-top:8px;">Plus tard</button>' +
-      (authMessage ? '<p class="intro-copy" style="margin-top:10px;">' + escapeHtml(authMessage) + '</p>' : '') +
-    '</div>';
-  }
+  var signupCta = signupCtaHtml();
 
   var html = '<div id="sponsor-slot-results" style="margin-bottom:16px;"></div>' +
     '<span class="eyebrow">' + answered + ' / ' + topics.length + ' sujets pris en compte</span>' +
@@ -3418,32 +3410,7 @@ function renderResults(){
   var gotoKit = document.getElementById("btn-goto-kit");
   if(gotoKit) gotoKit.onclick = function(){ state.screen = "kit"; render(); };
 
-  var signupSubmit = document.getElementById("signup-submit");
-  if(signupSubmit) signupSubmit.onclick = function(){
-    if(!sb || authBusy) return;
-    var emailInput = document.getElementById("signup-email");
-    var email = emailInput.value.trim();
-    if(!email){ emailInput.focus(); return; }
-    var optin = document.getElementById("signup-optin").checked;
-    authBusy = true;
-    signupSubmit.disabled = true;
-    signupSubmit.textContent = "Envoi en cours…";
-    safeSet(LS_PENDING_KIT, state.activeProfileId);
-    safeSet(LS_PENDING_OPTIN, optin);
-    sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.origin } }).then(function(res){
-      authBusy = false;
-      authMessage = res.error
-        ? "Une erreur est survenue, réessaie dans un instant."
-        : "Lien envoyé ! Vérifie ta boîte mail (" + email + ") et clique sur le lien pour continuer.";
-      render();
-    });
-  };
-  var signupLater = document.getElementById("signup-later");
-  if(signupLater) signupLater.onclick = function(){
-    state.dismissedSignupCta = true;
-    authMessage = null;
-    render();
-  };
+  wireSignupCta();
 
   var shareBtn = document.getElementById("btn-share");
   if(shareBtn) shareBtn.onclick = function(){
@@ -3597,12 +3564,14 @@ function renderKit(){
     '<h1>Ton kit pour la présidentielle</h1>' +
     '<p class="intro-copy">Un résumé de ton profil politique, et tout ce qu\'il faut savoir pour voter le moment venu.</p>' +
     blisterCardHtml +
+    signupCtaHtml() +
     '<div style="margin-top:24px;"><button class="btn btn-accent btn-block" id="kit-continue">Voir mon tableau de bord</button></div>' +
     modalHtml;
 
   document.getElementById("app").innerHTML = html;
   wireMascotFallbacks();
   wirePropFallbacks();
+  wireSignupCta();
   document.getElementById("kit-continue").onclick = function(){
     state.kitModalCat = null;
     state.screen = "dashboard";
@@ -3974,6 +3943,53 @@ function renderAdmin(){
       };
     });
   }
+}
+
+/* ============================================================
+   SIGNUP CTA — partagé entre Résultats et Kit
+   ============================================================ */
+function signupCtaHtml(){
+  if(!sb || isLoggedIn() || state.dismissedSignupCta) return "";
+  return '<div class="sponsor-card signup-cta-card" id="signup-cta" style="margin-top:18px;">' +
+    '<div class="sponsor-label">⚠ Pour l\'instant, gardé uniquement sur cet appareil</div>' +
+    '<div class="sponsor-name">Ne perds pas ton profil</div>' +
+    '<div class="sponsor-tagline">Si tu changes de téléphone, d\'ordinateur ou effaces tes données de navigation, tes réponses disparaissent. Crée un compte gratuit par email (10 secondes, pas de mot de passe) pour les retrouver n\'importe où.</div>' +
+    '<div style="margin-top:12px;"><input type="email" id="signup-email" placeholder="toi@exemple.fr" /></div>' +
+    '<label class="field-label" style="display:flex; align-items:center; gap:7px; cursor:pointer; margin-top:10px; font-weight:400;">' +
+      '<input type="checkbox" id="signup-optin" style="width:auto;" /> Me tenir informé par email des nouveaux sujets' +
+    '</label>' +
+    '<button class="btn btn-accent btn-block" id="signup-submit" style="margin-top:12px;">Créer mon compte gratuit</button>' +
+    '<button class="btn btn-ghost btn-block" id="signup-later" style="margin-top:8px;">Plus tard</button>' +
+    (authMessage ? '<p class="intro-copy" style="margin-top:10px;">' + escapeHtml(authMessage) + '</p>' : '') +
+  '</div>';
+}
+function wireSignupCta(){
+  var signupSubmit = document.getElementById("signup-submit");
+  if(signupSubmit) signupSubmit.onclick = function(){
+    if(!sb || authBusy) return;
+    var emailInput = document.getElementById("signup-email");
+    var email = emailInput.value.trim();
+    if(!email){ emailInput.focus(); return; }
+    var optin = document.getElementById("signup-optin").checked;
+    authBusy = true;
+    signupSubmit.disabled = true;
+    signupSubmit.textContent = "Envoi en cours…";
+    safeSet(LS_PENDING_KIT, state.activeProfileId);
+    safeSet(LS_PENDING_OPTIN, optin);
+    sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.origin } }).then(function(res){
+      authBusy = false;
+      authMessage = res.error
+        ? "Une erreur est survenue, réessaie dans un instant."
+        : "Lien envoyé ! Vérifie ta boîte mail (" + email + ") et clique sur le lien pour continuer.";
+      render();
+    });
+  };
+  var signupLater = document.getElementById("signup-later");
+  if(signupLater) signupLater.onclick = function(){
+    state.dismissedSignupCta = true;
+    authMessage = null;
+    render();
+  };
 }
 
 /* ============================================================
