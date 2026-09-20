@@ -198,6 +198,22 @@
     display:none; gap:10px; flex-direction:column; max-width:420px;
   }
   .dash-head{ max-width:640px; margin-left:auto; margin-right:auto; }
+  .dash-badge-row{ display:flex; align-items:center; gap:14px; margin-bottom:4px; }
+  .dash-starter-badge{
+    position:relative; flex:none; width:60px; height:78px; padding:0; border-radius:14px; cursor:pointer;
+    background:color-mix(in srgb, var(--pop, var(--accent)) 16%, var(--bg-raised));
+    border:1.5px solid color-mix(in srgb, var(--pop, var(--accent)) 55%, var(--line));
+    display:flex; align-items:flex-end; justify-content:center; overflow:hidden;
+  }
+  .dash-starter-badge img{ width:100%; height:100%; object-fit:contain; object-position:bottom; display:block; }
+  .dash-badge-level{
+    position:absolute; top:-6px; right:-6px; width:22px; height:22px; border-radius:50%;
+    background:var(--pop, var(--accent)); color:#fff; border:2px solid var(--bg-raised);
+    font-family:var(--mono); font-weight:700; font-size:11px; display:flex; align-items:center; justify-content:center;
+  }
+  .dash-badge-info .eyebrow{ text-align:left; margin-bottom:2px; }
+  .dash-badge-info h1{ font-size:clamp(22px,3vw + 12px,30px); text-align:left; margin-bottom:2px; }
+  .dash-badge-info .sub-line{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); }
   .new-profile-form.open{ display:flex; }
   input[type="text"], input[type="email"], select, textarea{
     font-family:var(--sans); font-size:14.5px; padding:11px 14px; border-radius:16px;
@@ -2946,10 +2962,31 @@ function renderDashboard(){
       (c.withdrawn ? '<span class="badge-withdrawn">Retiré</span>' : isNew ? '<span class="badge-new">Nouveau</span>' : '') + '</div>';
   }).join("");
 
+  var badgeHtml = "";
+  if(answered > 0){
+    var topCats = computeTopCategories(profile);
+    var topMeta = topCats.length ? (CATEGORY_META[topCats[0]] || {}) : {};
+    var level = computeEngagementLevel(profile);
+    var pop = topMeta.pop || "#7C3AED";
+    badgeHtml = '<div class="dash-badge-row">' +
+      '<button class="dash-starter-badge" id="dash-starter-badge" style="--pop:' + pop + ';" title="Voir mon Starter Pack">' +
+        (topCats.length ? mascotImgHtml(topCats[0], level.level, 56, 76, pop) : "") +
+        '<span class="dash-badge-level">' + level.level + '</span>' +
+      '</button>' +
+      '<div class="dash-badge-info">' +
+        '<span class="eyebrow">Bonjour ' + escapeHtml(profile.name) + '</span>' +
+        '<h1>Ton tableau de bord</h1>' +
+        '<div class="sub-line">' + escapeHtml(level.name) + ' · ' + pct + '% du questionnaire</div>' +
+      '</div>' +
+    '</div>';
+  } else {
+    badgeHtml = '<span class="eyebrow">Bonjour ' + escapeHtml(profile.name) + '</span>' +
+      '<h1>Ton tableau de bord</h1>';
+  }
+
   var html = '<div class="dash-head"><div id="sponsor-slot-dash" style="margin-bottom:16px;"></div>' +
     bannerHtml +
-    '<span class="eyebrow">Bonjour ' + escapeHtml(profile.name) + '</span>' +
-    '<h1>Ton tableau de bord</h1>' +
+    badgeHtml +
     '<div class="stat-row">' +
       '<div class="stat-tile"><div class="num">' + answered + ' / ' + topics.length + '</div><div class="lbl">Sujets répondus</div>' +
         '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div></div>' +
@@ -2963,6 +3000,9 @@ function renderDashboard(){
       '<div class="candidate-list">' + candRows + '</div></section>';
 
   document.getElementById("app").innerHTML = html;
+  wireMascotFallbacks();
+  var starterBadge = document.getElementById("dash-starter-badge");
+  if(starterBadge) starterBadge.onclick = function(){ state.screen = "kit"; render(); };
 
   var dismiss = document.getElementById("dismiss-banner");
   if(dismiss) dismiss.onclick = function(){
