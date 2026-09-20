@@ -279,8 +279,8 @@
   }
   .vote-card:active{ cursor:grabbing; }
   .vote-card .cat{
-    font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--blue);
-    background:var(--blue-soft); display:inline-block; padding:4px 9px; border-radius:10px; margin-bottom:14px;
+    font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--pop, var(--blue));
+    background:color-mix(in srgb, var(--pop, var(--blue)) 15%, var(--bg)); display:inline-block; padding:4px 9px; border-radius:10px; margin-bottom:14px;
   }
   .vote-card .statement{ font-family:var(--display); font-size:22px; line-height:1.32; font-weight:500; cursor:pointer; }
   .context-hint{
@@ -406,6 +406,15 @@
   }
   .sponsor-name{ font-size:13.5px; font-weight:600; color:var(--ink); }
   .sponsor-tagline{ font-size:12px; color:var(--ink-soft); margin-top:2px; line-height:1.4; }
+  .sponsor-card.placeholder{
+    background:transparent; border:2px dashed color-mix(in srgb, var(--accent) 30%, var(--line));
+    display:flex; align-items:center; gap:12px;
+  }
+  .sponsor-card.placeholder .sponsor-ic{
+    flex:none; width:34px; height:34px; border-radius:11px; display:flex; align-items:center; justify-content:center;
+    background:color-mix(in srgb, var(--accent) 14%, transparent); color:var(--accent);
+  }
+  .sponsor-card.placeholder .sponsor-body{ flex:1; min-width:0; }
 
   .empty-state{ text-align:center; padding:40px 10px; color:var(--ink-faint); font-size:13.5px; }
 
@@ -415,7 +424,7 @@
     border-radius:var(--radius); background:color-mix(in srgb, var(--pop, var(--accent)) 12%, var(--bg-raised));
     border:2px solid color-mix(in srgb, var(--pop, var(--accent)) 45%, var(--line-soft));
   }
-  .referral-banner .referral-ic{ font-size:28px; flex:none; }
+  .referral-banner .referral-ic{ font-size:28px; flex:none; color:var(--pop, var(--accent)); }
   .referral-banner .referral-title{ font-weight:700; font-size:14px; }
   .referral-banner .referral-sub{ font-size:12.5px; color:var(--ink-faint); margin-top:2px; }
   .trust-row{
@@ -1997,7 +2006,7 @@ var CANDIDATES = [
    Laisser SPONSORS = [] pour ne rien afficher.
    ============================================================ */
 var SPONSORS = [
-  {id:"exemple", label:"Publicité", name:"Votre publicité ici", tagline:"Cet emplacement est disponible — remplace ce bloc par un vrai annonceur.", url:"", active:true}
+  {id:"exemple", label:"Publicité", name:"Emplacement disponible", tagline:"Touche des primo-votants engagés sur toute la campagne 2027.", url:"", active:true}
 ];
 
 /* ============================================================
@@ -2019,6 +2028,25 @@ var CATEGORY_META = {
   "Société": {ic:"👥", d:"École, logement, santé, libertés individuelles.", c:"--teal", word:"Citoyen", archetype:"Citoyen Engagé", pop:"#FF5DA2", slug:"societe"},
   "Défense & numérique": {ic:"🔐", d:"Armée, intelligence artificielle, souveraineté technologique.", c:"--ink-soft", word:"Régalien", archetype:"Éclaireur Numérique", pop:"#00B4D8", slug:"defense"}
 };
+
+/* Icônes vectorielles des 7 thèmes — remplacent les emoji comme icône
+   principale (certains emoji, notamment le drapeau européen, ne
+   rendent pas de façon fiable selon la police système du visiteur). */
+var CATEGORY_ICON_PATHS = {
+  "Économie & travail": '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+  "Protection sociale": '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>',
+  "Sécurité & immigration": '<path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/>',
+  "Écologie": '<path d="M12 22v-7"/><path d="M12 15c-4.5 0-8-3.5-8-8 4.5 0 8 2 8 5.5"/><path d="M12 15c4.5 0 8-3.5 8-8-4.5 0-8 2-8 5.5"/>',
+  "Europe & institutions": '<circle cx="12" cy="12" r="9"/><path d="M12 7.3l1.1 2.4 2.6.2-2 1.8.6 2.6L12 12.9l-2.3 1.4.6-2.6-2-1.8 2.6-.2L12 7.3z"/>',
+  "Société": '<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  "Défense & numérique": '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'
+};
+function categoryIconSvg(cat, size){
+  size = size || 22;
+  var path = CATEGORY_ICON_PATHS[cat];
+  if(!path) return "";
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>';
+}
 
 var MEDIA_TYPE_META = {
   podcast: {ic:"🎙️", label:"Podcast"},
@@ -2777,7 +2805,7 @@ function avatarColor(seed){
 function axisGridHtml(){
   return CATEGORIES.map(function(cat){
     var m = CATEGORY_META[cat] || {ic:"•", d:"", c:"--accent"};
-    return '<div class="axis-card"><div class="ic" style="background:color-mix(in srgb, var(' + m.c + ') 16%, transparent); color:var(' + m.c + ')">' + m.ic + '</div>' +
+    return '<div class="axis-card"><div class="ic" style="background:color-mix(in srgb, var(' + m.c + ') 16%, transparent); color:var(' + m.c + ')">' + categoryIconSvg(cat) + '</div>' +
       '<div class="t">' + escapeHtml(cat) + '</div>' +
       '<div class="d">' + escapeHtml(m.d) + '</div></div>';
   }).join("");
@@ -2826,7 +2854,7 @@ function renderProfiles(){
 
   var referralBannerHtml = refMeta ? (
     '<div class="referral-banner" style="--pop:' + refMeta.pop + ';">' +
-      '<span class="referral-ic">' + (refMeta.ic || "🗳️") + '</span>' +
+      '<span class="referral-ic">' + (refCatName ? categoryIconSvg(refCatName, 26) : "🗳️") + '</span>' +
       '<div><div class="referral-title">Un proche a obtenu <strong>' + escapeHtml(refMeta.archetype || refCatName) + '</strong>' + (!isNaN(refLevelNum) ? ' (niveau ' + refLevelNum + ')' : '') + ' sur Votona.</div>' +
       '<div class="referral-sub">Fais le test à ton tour pour découvrir ton profil et comparer.</div></div>' +
     '</div>'
@@ -2959,7 +2987,8 @@ function renderDashboard(){
 
   var candRows = candidates.map(function(c){
     var isNew = daysSince(c.addedDate) <= NEW_WINDOW_DAYS;
-    return '<div class="candidate-row' + (c.withdrawn ? ' withdrawn' : '') + '"><div class="cand-dot" style="background:' + c.color + '"></div>' +
+    var searchKey = (c.name + " " + c.party).toLowerCase();
+    return '<div class="candidate-row' + (c.withdrawn ? ' withdrawn' : '') + '" data-search="' + escapeHtml(searchKey) + '"><div class="cand-dot" style="background:' + c.color + '"></div>' +
       '<div class="cand-name">' + escapeHtml(c.name) + '<div class="cand-party">' + escapeHtml(c.party) + '</div></div>' +
       (c.withdrawn ? '<span class="badge-withdrawn">Retiré</span>' : isNew ? '<span class="badge-new">Nouveau</span>' : '') + '</div>';
   }).join("");
@@ -2999,12 +3028,28 @@ function renderDashboard(){
     (answered > 0 ? '<div style="margin-top:10px;"><button class="btn btn-ghost btn-block" id="btn-kit">Voir mon kit</button></div>' : '') +
     '</div>' +
     '<section class="block" style="margin-top:22px;"><h2>Candidats suivis</h2><div class="sub">Mis à jour automatiquement lorsqu\'une nouvelle candidature est confirmée.</div>' +
-      '<div class="candidate-list">' + candRows + '</div></section>';
+      (candidates.length > 6 ? '<input type="text" id="cand-search" placeholder="Rechercher un candidat ou un parti…" style="margin-top:12px;" />' : '') +
+      '<div class="candidate-list" id="candidate-list">' + candRows + '</div>' +
+      '<p class="empty-state" id="candidate-empty" style="display:none;">Aucun candidat ne correspond à ta recherche.</p>' +
+    '</section>';
 
   document.getElementById("app").innerHTML = html;
   wireMascotFallbacks();
   var starterBadge = document.getElementById("dash-starter-badge");
   if(starterBadge) starterBadge.onclick = function(){ state.screen = "kit"; render(); };
+
+  var candSearch = document.getElementById("cand-search");
+  if(candSearch) candSearch.oninput = function(){
+    var q = candSearch.value.trim().toLowerCase();
+    var rows = document.querySelectorAll("#candidate-list .candidate-row");
+    var visibleCount = 0;
+    rows.forEach(function(row){
+      var match = !q || (row.getAttribute("data-search") || "").indexOf(q) !== -1;
+      row.style.display = match ? "" : "none";
+      if(match) visibleCount++;
+    });
+    document.getElementById("candidate-empty").style.display = visibleCount === 0 ? "" : "none";
+  };
 
   var dismiss = document.getElementById("dismiss-banner");
   if(dismiss) dismiss.onclick = function(){
@@ -3052,7 +3097,8 @@ var IMPORTANCE_LABEL = {1:"Peu important", 2:"Important", 3:"Très important"};
 function topicHeaderHtml(topic){
   var hint = topic.context ? '<span class="context-hint">ⓘ</span>' : '';
   var panel = topic.context ? '<div class="context-panel">' + escapeHtml(topic.context) + '</div>' : '';
-  return '<span class="cat">' + escapeHtml(topic.cat) + '</span>' +
+  var pop = (CATEGORY_META[topic.cat] || {}).pop;
+  return '<span class="cat"' + (pop ? ' style="--pop:' + pop + ';"' : '') + '>' + escapeHtml(topic.cat) + '</span>' +
     '<div class="statement">' + escapeHtml(topic.statement) + hint + '</div>' +
     panel;
 }
@@ -3297,11 +3343,14 @@ function renderResults(){
       var items = Object.keys(profile.answers).map(function(tid){
         var t = topics.filter(function(x){return x.id===tid;})[0];
         var pos = cand.positions[tid];
-        if(!t || !pos) return "";
+        if(!t || !pos) return null;
         var userA = profile.answers[tid];
         var agree = matchScore(userA.stance, pos.stance);
+        return {t: t, pos: pos, agree: agree};
+      }).filter(Boolean).sort(function(a, b){ return b.agree - a.agree; }).map(function(item){
+        var agree = item.agree;
         var ic = agree === 1 ? '<span style="color:var(--good)">✓</span>' : agree === 0 ? '<span style="color:var(--bad)">✕</span>' : '<span style="color:var(--neutral)">–</span>';
-        return '<div class="rd-item"><span class="ic">' + ic + '</span><div class="txt"><b>' + escapeHtml(t.statement) + '</b><br>' + escapeHtml(pos.detail) + '</div></div>';
+        return '<div class="rd-item"><span class="ic">' + ic + '</span><div class="txt"><b>' + escapeHtml(item.t.statement) + '</b><br>' + escapeHtml(item.pos.detail) + '</div></div>';
       }).join("");
       det.innerHTML = items;
     });
@@ -3479,7 +3528,7 @@ function renderKit(){
           '<div class="kit-modal-card">' +
             '<button class="kit-modal-close" id="kit-modal-close">✕</button>' +
             '<div class="kit-modal-header">' +
-              '<div class="kit-modal-icon" style="background:color-mix(in srgb, ' + dc + ' 20%, transparent); color:' + dc + ';">' + (activeDetail.meta.ic || "") + '</div>' +
+              '<div class="kit-modal-icon" style="background:color-mix(in srgb, ' + dc + ' 20%, transparent); color:' + dc + ';">' + categoryIconSvg(activeDetail.cat, 24) + '</div>' +
               '<div class="kit-modal-title">' + escapeHtml(activeDetail.cat) + '</div>' +
             '</div>' +
             '<div class="kit-modal-desc">' + escapeHtml(activeDetail.meta.d || "") + '</div>' +
@@ -3879,14 +3928,21 @@ function fillSponsorEl(el){
   if(!el) return;
   var s = SPONSORS.filter(function(x){ return x.active; })[0];
   if(!s){ el.innerHTML = ""; return; }
-  var inner =
-    '<span class="sponsor-label">' + escapeHtml(s.label || "Publicité") + '</span>' +
-    '<div class="sponsor-name">' + escapeHtml(s.name) + '</div>' +
-    (s.tagline ? '<div class="sponsor-tagline">' + escapeHtml(s.tagline) + '</div>' : '');
   if(s.url){
+    var inner =
+      '<span class="sponsor-label">' + escapeHtml(s.label || "Publicité") + '</span>' +
+      '<div class="sponsor-name">' + escapeHtml(s.name) + '</div>' +
+      (s.tagline ? '<div class="sponsor-tagline">' + escapeHtml(s.tagline) + '</div>' : '');
     el.innerHTML = '<a class="sponsor-card" href="' + escapeHtml(s.url) + '" target="_blank" rel="noopener sponsored">' + inner + '</a>';
   } else {
-    el.innerHTML = '<div class="sponsor-card">' + inner + '</div>';
+    el.innerHTML = '<div class="sponsor-card placeholder">' +
+      '<div class="sponsor-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 13v-2z"/><path d="M11 16.5V21h2"/></svg></div>' +
+      '<div class="sponsor-body">' +
+        '<span class="sponsor-label">' + escapeHtml(s.label || "Publicité") + '</span>' +
+        '<div class="sponsor-name">' + escapeHtml(s.name) + '</div>' +
+        (s.tagline ? '<div class="sponsor-tagline">' + escapeHtml(s.tagline) + '</div>' : '') +
+      '</div>' +
+    '</div>';
   }
 }
 /* Sur dashboard/résultats, la bannière se cale tout en haut de l'écran
