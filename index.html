@@ -496,7 +496,7 @@
   .blister-slot-1 img, .blister-slot-2 img, .blister-slot-3 img,
   .blister-slot-1 svg, .blister-slot-2 svg, .blister-slot-3 svg{ max-width:78%; max-height:78%; transform:translate(3px, 3px); }
   .blister-slot-1 .blister-item-ic, .blister-slot-2 .blister-item-ic, .blister-slot-3 .blister-item-ic{ transform:translate(3px, 3px); }
-  .blister-item-ic{ font-size:34px; }
+  .blister-item-ic{ font-size:34px; display:flex; align-items:center; justify-content:center; color:var(--pop, var(--accent)); }
   .blister-nameplate{
     font-family:var(--display); font-weight:800; font-size:clamp(19px,2.6vw + 10px,25px);
     text-transform:uppercase; letter-spacing:.02em;
@@ -2244,10 +2244,18 @@ function propImgHtml(cat, size, fallbackEmoji){
   var meta = CATEGORY_META[cat] || {};
   size = size || 28;
   var fallback = fallbackEmoji || meta.ic || "";
-  if(!meta.slug) return '<span class="blister-item-ic">' + fallback + '</span>';
+  if(!meta.slug) return '<span class="blister-item-ic">' + iconOrEmoji(cat, size, fallback) + '</span>';
   var src = "assets/props/" + meta.slug + ".png";
-  return '<img class="prop-img" data-fallback="' + escapeHtml(fallback) + '" ' +
+  return '<img class="prop-img" data-cat="' + escapeHtml(cat) + '" data-size="' + size + '" data-fallback="' + escapeHtml(fallback) + '" ' +
     'src="' + src + '" width="' + size + '" height="' + size + '" alt="" style="width:' + size + 'px;height:' + size + 'px;object-fit:contain;" />';
+}
+
+/* Icône vectorielle du thème si on en a une (voir CATEGORY_ICON_PATHS),
+   sinon l'emoji fourni — utilisé notamment quand un accessoire PNG
+   dédié n'existe pas encore pour ce thème. */
+function iconOrEmoji(cat, size, fallbackEmoji){
+  var svg = categoryIconSvg(cat, size);
+  return svg || fallbackEmoji || "";
 }
 
 function wirePropFallbacks(root){
@@ -2256,7 +2264,7 @@ function wirePropFallbacks(root){
     img.onerror = function(){
       var span = document.createElement("span");
       span.className = "blister-item-ic";
-      span.textContent = img.getAttribute("data-fallback") || "";
+      span.innerHTML = iconOrEmoji(img.getAttribute("data-cat"), img.getAttribute("data-size"), img.getAttribute("data-fallback"));
       img.replaceWith(span);
     };
   });
@@ -3454,7 +3462,7 @@ function renderKit(){
 
   var accessoryThemes = themeDetails.slice(1, 3);
   var accessorySlots = accessoryThemes.map(function(d, i){
-    return '<button class="blister-slot blister-slot-' + (i+1) + ' blister-item" data-cat="' + escapeHtml(d.cat) + '" title="' + escapeHtml(d.cat) + '">' +
+    return '<button class="blister-slot blister-slot-' + (i+1) + ' blister-item" data-cat="' + escapeHtml(d.cat) + '" title="' + escapeHtml(d.cat) + '" style="--pop:' + (d.meta.pop || pop) + ';">' +
       propImgHtml(d.cat, 64, d.meta.ic) +
       '</button>';
   }).join("");
