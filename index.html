@@ -2619,22 +2619,22 @@ function computeTopCategories(profile){
   var topics = getTopics();
   var topicsById = {}; topics.forEach(function(t){ topicsById[t.id] = t; });
   var answers = profile.answers || {};
-  var counts = {};
+  var importantCounts = {};
+  var allCounts = {};
   Object.keys(answers).forEach(function(tid){
-    if(answers[tid].importance !== 3) return;
     var t = topicsById[tid];
     if(!t) return;
-    counts[t.cat] = (counts[t.cat] || 0) + 1;
+    allCounts[t.cat] = (allCounts[t.cat] || 0) + 1;
+    if(answers[tid].importance === 3){
+      importantCounts[t.cat] = (importantCounts[t.cat] || 0) + 1;
+    }
   });
-  var ranked = Object.keys(counts).sort(function(a,b){ return counts[b] - counts[a]; });
-  if(!ranked.length){
-    Object.keys(answers).forEach(function(tid){
-      var t = topicsById[tid];
-      if(!t) return;
-      counts[t.cat] = (counts[t.cat] || 0) + 1;
-    });
-    ranked = Object.keys(counts).sort(function(a,b){ return counts[b] - counts[a]; });
-  }
+  var ranked = Object.keys(importantCounts).sort(function(a,b){ return importantCounts[b] - importantCounts[a]; });
+  var byAll = Object.keys(allCounts).sort(function(a,b){ return allCounts[b] - allCounts[a]; });
+  byAll.forEach(function(cat){
+    if(ranked.length >= 3) return;
+    if(ranked.indexOf(cat) === -1) ranked.push(cat);
+  });
   return ranked.slice(0,3);
 }
 
