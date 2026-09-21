@@ -2107,11 +2107,16 @@ var CATEGORY_ICON_PATHS = {
   "Société": '<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
   "Défense & numérique": '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'
 };
-function categoryIconSvg(cat, size){
+function categoryIconSvg(cat, size, color){
   size = size || 22;
   var path = CATEGORY_ICON_PATHS[cat];
   if(!path) return "";
-  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>';
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="' + (color || "currentColor") + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>';
+}
+function categoryIconDataUrl(cat, size, color){
+  var svg = categoryIconSvg(cat, size, color);
+  if(!svg) return null;
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 }
 
 var TOPBAR_ICON_PATHS = {
@@ -2816,8 +2821,14 @@ async function generateShareCardImage(profile){
   var archetypeName = meta.archetype || "Citoyen Engagé";
   var wordPills = topCats.map(function(cat){
     var m = CATEGORY_META[cat] || {};
-    return m.word ? ((m.ic || "") + " " + m.word) : null;
+    return m.word ? {cat: cat, word: m.word} : null;
   }).filter(Boolean);
+  var pillIconSize = 22;
+  var pillIcons = {};
+  await Promise.all(wordPills.map(async function(p){
+    var url = categoryIconDataUrl(p.cat, pillIconSize, "#14121F");
+    pillIcons[p.cat] = url ? await loadImageSafe(url) : null;
+  }));
 
   try{ if(document.fonts && document.fonts.ready){ await document.fonts.ready; } }catch(e){}
 
@@ -2861,17 +2872,17 @@ async function generateShareCardImage(profile){
   y += 14;
   if(wordPills.length){
     ctx.font = "700 22px 'Work Sans', sans-serif";
-    var pillPadX = 22, pillGap = 14, pillH = 46, maxRowWidth = W - pad * 2;
+    var pillPadX = 22, pillIconGap = 8, pillGap = 14, pillH = 46, maxRowWidth = W - pad * 2;
     var rows = [], currentRow = [], currentWidth = 0;
-    wordPills.forEach(function(text){
-      var tw = ctx.measureText(text).width + pillPadX * 2;
+    wordPills.forEach(function(p){
+      var tw = ctx.measureText(p.word).width + pillPadX * 2 + pillIconSize + pillIconGap;
       if(currentRow.length && currentWidth + pillGap + tw > maxRowWidth){
         rows.push(currentRow);
         currentRow = [];
         currentWidth = 0;
       }
       currentWidth += (currentRow.length ? pillGap : 0) + tw;
-      currentRow.push({text: text, w: tw});
+      currentRow.push({cat: p.cat, word: p.word, w: tw});
     });
     if(currentRow.length) rows.push(currentRow);
 
@@ -2882,9 +2893,15 @@ async function generateShareCardImage(profile){
         ctx.fillStyle = "rgba(255,255,255,.55)";
         drawRoundedRect(ctx, x, y, p.w, pillH, pillH / 2);
         ctx.fill();
+        var iconImg = pillIcons[p.cat];
+        var textX = x + pillPadX;
+        if(iconImg){
+          ctx.drawImage(iconImg, textX, y + (pillH - pillIconSize) / 2, pillIconSize, pillIconSize);
+          textX += pillIconSize + pillIconGap;
+        }
         ctx.fillStyle = "#14121F";
         ctx.textAlign = "left";
-        ctx.fillText(p.text, x + pillPadX, y + pillH / 2 + 8);
+        ctx.fillText(p.word, textX, y + pillH / 2 + 8);
         x += p.w + pillGap;
       });
       y += pillH + 10;
@@ -3695,6 +3712,12 @@ function renderKit(){
     state.kitModalCat = null;
     renderKit();
   };
+  if(!window.__kitEscapeWired){
+    window.__kitEscapeWired = true;
+    document.addEventListener("keydown", function(e){
+      if(e.key === "Escape" && state.kitModalCat){ state.kitModalCat = null; renderKit(); }
+    });
+  }
 }
 
 /* ============================================================
