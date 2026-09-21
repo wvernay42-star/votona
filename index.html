@@ -662,7 +662,7 @@
     <div class="brand">
       <button class="brand-home" id="brand-home" type="button">
         <div class="mark">
-          <img src="assets/ui/logo-head.png" alt="Votona" />
+          <img src="assets/ui/logo-head.webp" alt="Votona" />
         </div>
         <div><div class="name">Votona</div></div>
       </button>
@@ -2305,7 +2305,7 @@ function mascotImgHtml(cat, level, width, height, fallbackColor){
   height = height || width;
   var fallbackSize = Math.min(width, height);
   if(!meta.slug) return mascotSvg(fallbackColor || meta.pop || "#7C3AED", fallbackSize);
-  var src = "assets/characters/" + meta.slug + "-n" + (level || 1) + ".png";
+  var src = "assets/characters/" + meta.slug + "-n" + (level || 1) + ".webp";
   return '<img class="mascot-img" data-cat="' + escapeHtml(cat) + '" data-size="' + fallbackSize + '" data-fallback="' + escapeHtml(fallbackColor || "") + '" ' +
     'src="' + src + '" width="' + width + '" height="' + height + '" alt="" style="width:' + width + 'px;height:' + height + 'px;object-fit:contain;" />';
 }
@@ -2329,7 +2329,7 @@ function propImgHtml(cat, size, fallbackEmoji){
   size = size || 28;
   var fallback = fallbackEmoji || meta.ic || "";
   if(!meta.slug) return '<span class="blister-item-ic">' + iconOrEmoji(cat, size, fallback) + '</span>';
-  var src = "assets/props/" + meta.slug + ".png";
+  var src = "assets/props/" + meta.slug + ".webp";
   return '<img class="prop-img" data-cat="' + escapeHtml(cat) + '" data-size="' + size + '" data-fallback="' + escapeHtml(fallback) + '" ' +
     'src="' + src + '" width="' + size + '" height="' + size + '" alt="" style="width:' + size + 'px;height:' + size + 'px;object-fit:contain;" />';
 }
@@ -2841,7 +2841,7 @@ async function generateShareCardImage(profile){
 
   var mascotW = 230, mascotH = 486, mascotX = (W - mascotW) / 2, mascotY = 140;
   if(meta.slug){
-    var mascotImg = await loadImageSafe("assets/characters/" + meta.slug + "-n" + (level.level || 1) + ".png");
+    var mascotImg = await loadImageSafe("assets/characters/" + meta.slug + "-n" + (level.level || 1) + ".webp");
     if(mascotImg) drawImageContain(ctx, mascotImg, mascotX, mascotY, mascotW, mascotH);
   }
 
@@ -3009,7 +3009,7 @@ function renderProfiles(){
 
   var html = referralBannerHtml +
     '<div class="hero-wrap">' +
-      '<img class="hero-watermark" src="assets/ui/logo-head.png" alt="" aria-hidden="true" />' +
+      '<img class="hero-watermark" src="assets/ui/logo-head.webp" alt="" aria-hidden="true" />' +
       '<span class="eyebrow">Qui vote aujourd\'hui ?</span>' +
       '<h1>Vot<span class="hl">on</span><span class="hl spin-a-bob"><span class="spin-a"><span class="spin-a-face spin-a-front">a</span><span class="spin-a-face spin-a-back">a</span></span></span></h1>' +
       '<p class="hero-tagline">Donne le ton à ton vote.</p>' +
@@ -3585,12 +3585,12 @@ function renderKit(){
     levelRingSvg(level.level, topCatShare ? topCatShare.pct : 0, pop, 64) +
     '</button>';
 
-  var blisterLogoImg = '<img src="assets/ui/logo-head.png" alt="Votona" />';
+  var blisterLogoImg = '<img src="assets/ui/logo-head.webp" alt="Votona" />';
 
   var blisterCardHtml = themeDetails.length ? '<div class="blister-outer">' +
     '<div class="blister-header"><div class="blister-logo">' + blisterLogoImg + '</div><div class="blister-title">Starter Pack</div></div>' +
     '<div class="blister-photo">' +
-      '<img class="blister-photo-bg" src="assets/ui/blister-template.png" alt="" />' +
+      '<img class="blister-photo-bg" src="assets/ui/blister-template.webp" alt="" />' +
       '<button class="blister-slot blister-slot-main blister-item" data-cat="practical" title="Infos pratiques pour voter">' + mascotImgHtml(topCats[0], level.level, 220, 460, pop) + '</button>' +
       accessorySlots + medalSlot +
     '</div>' +
