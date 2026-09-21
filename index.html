@@ -3339,11 +3339,16 @@ function renderVote(){
   } else {
     var stance = state.pendingStance;
     var candidates = getCandidates().filter(function(c){ return !c.withdrawn; });
-    var chips = candidates.map(function(c){
-      var pos = c.positions[topic.id];
-      if(!pos) return "";
-      return '<div class="reveal-chip"><span class="ic" style="color:var(' + STANCE_COLORVAR[pos.stance] + ')">' + STANCE_ICON[pos.stance] + '</span>' + escapeHtml(c.name.split(" ").slice(-1)[0]) + '</div>';
-    }).join("");
+    var chips = candidates
+      .map(function(c){
+        var pos = c.positions[topic.id];
+        return pos ? {c: c, pos: pos, agree: matchScore(stance, pos.stance)} : null;
+      })
+      .filter(Boolean)
+      .sort(function(a, b){ return b.agree - a.agree; })
+      .map(function(item){
+        return '<div class="reveal-chip"><span class="ic" style="color:var(' + STANCE_COLORVAR[item.pos.stance] + ')">' + STANCE_ICON[item.pos.stance] + '</span>' + escapeHtml(item.c.name.split(" ").slice(-1)[0]) + '</div>';
+      }).join("");
     bodyHtml =
       '<div class="vote-card">' +
         topicHeaderHtml(topic) +
