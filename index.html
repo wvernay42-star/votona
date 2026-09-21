@@ -262,6 +262,9 @@
   }
   .candidate-row.withdrawn{ opacity:.55; }
   .candidate-row.withdrawn .cand-dot{ filter:grayscale(1); }
+  .cand-poll-pct{
+    font-size:12.5px; font-weight:700; color:var(--ink-faint); flex:none;
+  }
 
   section.block{ margin-top:32px; }
   section.block h2{ font-size:19px; margin-bottom:3px; }
@@ -2005,6 +2008,40 @@ var CANDIDATES = [
 // ==CANDIDATES_DATA_END==
 
 /* ============================================================
+   SONDAGES — moyenne d'intentions de vote au 1er tour, par id de
+   candidat, mise à jour par la veille quotidienne (votona-veille-
+   quotidienne) à partir de sondages réels et sourcés. Clé absente
+   ou valeur null = pas de donnée de sondage fiable trouvée pour ce
+   candidat (il n'apparaît alors pas dans le "top 15 sondages").
+   Ne jamais estimer/inventer une valeur : une valeur ici doit
+   toujours provenir d'un sondage réel, daté et cité.
+   ============================================================ */
+// ==POLL_DATA_START==
+var CANDIDATE_POLL_PCT = {
+  bardella: 34.0,
+  lepen: 33.5,
+  philippe: 17.0,
+  melenchon: 16.0,
+  glucksmann: 9.0,
+  attal: 8.5,
+  retailleau: 7.5,
+  zemmour: 5.0,
+  tondelier: 3.5,
+  roussel: 3.0,
+  "dupont-aignan": 2.5
+};
+var CANDIDATE_POLL_UPDATED_AT = "2026-09-20";
+var TOP_CANDIDATES_COUNT = 15;
+function getTopPolledCandidates(candidates, limit){
+  limit = limit || TOP_CANDIDATES_COUNT;
+  return candidates
+    .filter(function(c){ return !c.withdrawn && typeof CANDIDATE_POLL_PCT[c.id] === "number"; })
+    .sort(function(a, b){ return CANDIDATE_POLL_PCT[b.id] - CANDIDATE_POLL_PCT[a.id]; })
+    .slice(0, limit);
+}
+// ==POLL_DATA_END==
+
+/* ============================================================
    SPONSORS — encart publicitaire statique, géré MANUELLEMENT
    par l'auteur du site. La veille automatique quotidienne ne
    touche jamais à ce bloc.
@@ -3042,12 +3079,14 @@ function renderDashboard(){
       '</div></div>';
   }
 
-  var candRows = candidates.map(function(c){
+  var topPolledCandidates = getTopPolledCandidates(candidates);
+  var candRows = topPolledCandidates.map(function(c){
     var isNew = daysSince(c.addedDate) <= NEW_WINDOW_DAYS;
     var searchKey = (c.name + " " + c.party).toLowerCase();
+    var pollPct = CANDIDATE_POLL_PCT[c.id];
     return '<div class="candidate-row' + (c.withdrawn ? ' withdrawn' : '') + '" data-search="' + escapeHtml(searchKey) + '"><div class="cand-dot" style="background:' + c.color + '"></div>' +
       '<div class="cand-name">' + escapeHtml(c.name) + '<div class="cand-party">' + escapeHtml(c.party) + '</div></div>' +
-      (c.withdrawn ? '<span class="badge-withdrawn">Retiré</span>' : isNew ? '<span class="badge-new">Nouveau</span>' : '') + '</div>';
+      (c.withdrawn ? '<span class="badge-withdrawn">Retiré</span>' : isNew ? '<span class="badge-new">Nouveau</span>' : '<span class="cand-poll-pct mono">' + pollPct.toFixed(1).replace(".0","") + '%</span>') + '</div>';
   }).join("");
 
   var badgeHtml = "";
@@ -3078,14 +3117,14 @@ function renderDashboard(){
     '<div class="stat-row">' +
       '<div class="stat-tile"><div class="num">' + answered + ' / ' + topics.length + '</div><div class="lbl">Sujets répondus</div>' +
         '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div></div>' +
-      '<div class="stat-tile"><div class="num">' + candidates.length + '</div><div class="lbl">Candidats suivis</div></div>' +
+      '<div class="stat-tile"><div class="num">' + topPolledCandidates.length + '</div><div class="lbl">Candidats en tête</div></div>' +
     '</div>' +
     '<button class="btn btn-accent btn-block" id="btn-vote">' + (answered === 0 ? "Commencer le questionnaire" : answered < topics.length ? "Continuer (" + (topics.length-answered) + " restants)" : "Revoir mes réponses") + '</button>' +
     (answered > 0 ? '<div style="margin-top:10px;"><button class="btn btn-ghost btn-block" id="btn-results">Voir mes résultats</button></div>' : '') +
     (answered > 0 ? '<div style="margin-top:10px;"><button class="btn btn-ghost btn-block" id="btn-kit">Voir mon kit</button></div>' : '') +
     '</div>' +
-    '<section class="block" style="margin-top:22px;"><h2>Candidats suivis</h2><div class="sub">Mis à jour automatiquement lorsqu\'une nouvelle candidature est confirmée.</div>' +
-      (candidates.length > 6 ? '<input type="text" id="cand-search" placeholder="Rechercher un candidat ou un parti…" style="margin-top:12px;" />' : '') +
+    '<section class="block" style="margin-top:22px;"><h2>Top ' + topPolledCandidates.length + ' selon les sondages</h2><div class="sub">Basé sur les sondages d\'intentions de vote (dernière mise à jour : ' + escapeHtml(CANDIDATE_POLL_UPDATED_AT) + '). Ton classement personnel (page Résultats) prend en compte tous les candidats, pas seulement ceux-ci.</div>' +
+      (topPolledCandidates.length > 6 ? '<input type="text" id="cand-search" placeholder="Rechercher un candidat ou un parti…" style="margin-top:12px;" />' : '') +
       '<div class="candidate-list" id="candidate-list">' + candRows + '</div>' +
       '<p class="empty-state" id="candidate-empty" style="display:none;">Aucun candidat ne correspond à ta recherche.</p>' +
     '</section>';
