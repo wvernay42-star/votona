@@ -404,6 +404,7 @@
 
   footer.appfoot{ text-align:center; padding:22px clamp(20px,4vw,40px) 30px; font-size:11.5px; color:var(--ink-faint); max-width:680px; margin:0 auto; width:100%; }
   footer.appfoot a{ text-decoration:underline; cursor:pointer; }
+  .footer-links{ margin-top:8px; }
 
   .sponsor-card{
     display:block; text-align:left; background:var(--bg-raised); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line-soft));
@@ -482,6 +483,19 @@
 
   .pop-share-btn{ background:#14121F; color:#fff; border-radius:16px; font-weight:700; margin-top:18px; }
 
+  .practical-list{ display:flex; flex-direction:column; gap:10px; margin-top:16px; }
+  .practical-item{
+    display:flex; align-items:flex-start; gap:13px;
+    background:var(--bg-raised); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line-soft));
+    border-radius:18px; padding:14px 16px;
+  }
+  .practical-item .ic{
+    width:38px; height:38px; border-radius:14px; font-size:17px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .practical-item .t{ font-size:14px; font-weight:700; }
+  .practical-item .d{ font-size:12.5px; color:var(--ink-faint); margin-top:2px; line-height:1.4; }
+
   .blister-outer{ max-width:280px; margin:34px auto 6px; text-align:center; }
   .blister-header{
     display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:12px;
@@ -525,11 +539,11 @@
 
   .kit-modal-overlay{
     position:fixed; inset:0; background:rgba(20,18,31,.55); z-index:50;
-    display:flex; align-items:flex-end; justify-content:center;
+    display:flex; align-items:center; justify-content:center; padding:16px;
   }
   .kit-modal-card{
-    background:var(--bg); width:100%; max-width:480px; max-height:88vh; overflow-y:auto;
-    border-radius:28px 28px 0 0; padding:26px 22px 30px; position:relative;
+    background:var(--bg); width:calc(100% - 8px); max-width:440px; max-height:80vh; overflow-y:auto;
+    border-radius:26px; padding:26px 22px 30px; position:relative;
   }
   .kit-modal-close{
     position:absolute; top:16px; right:16px; width:34px; height:34px; border-radius:50%;
@@ -543,10 +557,6 @@
   .kit-modal-section-label{
     font-size:12px; font-weight:700; color:var(--ink-soft); margin-bottom:8px;
     text-transform:uppercase; letter-spacing:.04em;
-  }
-  @media (min-width:640px){
-    .kit-modal-overlay{ align-items:center; padding:20px; }
-    .kit-modal-card{ border-radius:28px; }
   }
 
   .glossary-grid{ display:grid; grid-template-columns:1fr; gap:14px; margin-top:16px; }
@@ -617,8 +627,8 @@
   }
   .hero-wrap{ position:relative; overflow:hidden; isolation:isolate; max-width:640px; margin-left:auto; margin-right:auto; }
   h1 .hl{ color:var(--accent); }
-  h1 .spin-a-bob{ display:inline-grid; line-height:1.61; vertical-align:baseline; animation:spinABob 11s ease-in-out infinite; }
-  h1 .spin-a{ display:inline-grid; grid-area:1/1; animation:spinA 11s ease-in-out infinite; }
+  h1 .spin-a-bob{ display:inline-grid; line-height:1.61; vertical-align:baseline; animation:spinABob 9s ease-in-out infinite; }
+  h1 .spin-a{ display:inline-grid; grid-area:1/1; animation:spinA 9s ease-in-out infinite; }
   h1 .spin-a-face{ grid-area:1/1; backface-visibility:hidden; }
   h1 .spin-a-back{ transform:rotateX(180deg); }
   @keyframes spinABob{
@@ -670,6 +680,7 @@
     <div id="sponsor-slot"></div>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques — ni exhaustives ni officielles.
     <span id="profile-switch-link"></span>
+    <div class="footer-links"><a href="#" id="footer-legal-link">Mentions légales</a> · <a href="#" id="footer-contact-link">Contact</a></div>
   </footer>
 </div>
 
@@ -2850,100 +2861,101 @@ async function generateShareCardImage(profile){
   var pop = meta.pop || "#7C3AED";
   var level = computeEngagementLevel(profile);
   var archetypeName = meta.archetype || "Citoyen Engagé";
-  var wordPills = topCats.map(function(cat){
-    var m = CATEGORY_META[cat] || {};
-    return m.word ? {cat: cat, word: m.word} : null;
-  }).filter(Boolean);
-  var pillIconSize = 22;
-  var pillIcons = {};
-  await Promise.all(wordPills.map(async function(p){
-    var url = categoryIconDataUrl(p.cat, pillIconSize, "#14121F");
-    pillIcons[p.cat] = url ? await loadImageSafe(url) : null;
-  }));
+  var topCatShare = computeCategoryShares(profile).filter(function(s){ return s.cat === topCats[0]; })[0];
+  var pct = topCatShare ? topCatShare.pct : 0;
+
+  var accessoryCats = topCats.slice(1, 3);
 
   try{ if(document.fonts && document.fonts.ready){ await document.fonts.ready; } }catch(e){}
 
-  var W = 640, H = 1080, pad = 56, radius = 48;
+  var templateImg = await loadImageSafe("assets/ui/blister-template.webp");
+  var mascotImg = meta.slug ? await loadImageSafe("assets/characters/" + meta.slug + "-n" + (level.level || 1) + ".webp") : null;
+  var accessoryImgs = await Promise.all(accessoryCats.map(function(cat){
+    var m = CATEGORY_META[cat] || {};
+    return m.slug ? loadImageSafe("assets/props/" + m.slug + ".webp") : Promise.resolve(null);
+  }));
+  var ringSvg = '<svg width="200" height="200" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<circle cx="50" cy="50" r="41" fill="none" stroke="#eee9dc" stroke-width="10"/>' +
+    (pct > 0 ? (function(){
+      var r = 41, circumference = 2 * Math.PI * r;
+      var len = Math.max(circumference * Math.min(pct, 100) / 100, 6);
+      return '<circle cx="50" cy="50" r="' + r + '" fill="none" stroke="' + pop + '" stroke-width="10" stroke-linecap="round" ' +
+        'stroke-dasharray="' + len.toFixed(2) + ' ' + (circumference - len).toFixed(2) + '" transform="rotate(-90 50 50)"/>';
+    })() : "") +
+    '<circle cx="50" cy="50" r="32" fill="#ffffff"/>' +
+    '<text x="50" y="62" text-anchor="middle" font-family="\'Baloo 2\', ui-rounded, sans-serif" font-weight="800" font-size="34" fill="' + pop + '">' + level.level + '</text>' +
+  '</svg>';
+  var ringImg = await loadImageSafe("data:image/svg+xml;charset=utf-8," + encodeURIComponent(ringSvg));
+
+  var W = 640, H = 1160, pad = 56, radius = 48;
   var canvas = document.createElement("canvas");
   canvas.width = W; canvas.height = H;
   var ctx = canvas.getContext("2d");
 
-  ctx.fillStyle = "#fbfaf7";
-  ctx.fillRect(0, 0, W, H);
-
   drawRoundedRect(ctx, 0, 0, W, H, radius);
-  ctx.fillStyle = pop;
+  ctx.fillStyle = "#fbfaf7";
   ctx.fill();
 
-  ctx.fillStyle = "#14121F";
-  ctx.font = "700 26px 'IBM Plex Mono', monospace";
-  ctx.textAlign = "left";
-  ctx.fillText("🗳️ Votona", pad, 108);
-
-  var mascotW = 230, mascotH = 486, mascotX = (W - mascotW) / 2, mascotY = 140;
-  if(meta.slug){
-    var mascotImg = await loadImageSafe("assets/characters/" + meta.slug + "-n" + (level.level || 1) + ".webp");
-    if(mascotImg) drawImageContain(ctx, mascotImg, mascotX, mascotY, mascotW, mascotH);
-  }
-
-  var y = mascotY + mascotH + 46;
   ctx.textAlign = "center";
-  ctx.globalAlpha = 0.75;
-  ctx.font = "700 22px 'IBM Plex Mono', monospace";
-  ctx.fillText(("NIVEAU " + level.level + " · " + level.name).toUpperCase(), W / 2, y);
-  ctx.globalAlpha = 1;
+  ctx.fillStyle = "#14121F";
+  ctx.font = "800 40px 'Baloo 2', sans-serif";
+  ctx.fillText("Votona", W / 2, 78);
 
-  y += 50;
-  ctx.font = "800 42px 'Baloo 2', sans-serif";
-  wrapCanvasText(ctx, archetypeName, W - pad * 2).forEach(function(line){
+  ctx.font = "700 15px 'IBM Plex Mono', monospace";
+  var tagText = "PRÉSIDENTIELLE 2027", tagW = ctx.measureText(tagText).width + 36, tagH = 32;
+  drawRoundedRect(ctx, (W - tagW) / 2, 96, tagW, tagH, tagH / 2);
+  ctx.fillStyle = pop;
+  ctx.fill();
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText(tagText, W / 2, 96 + tagH / 2 + 5);
+
+  var blisterW = 460, blisterH = blisterW * (1085 / 775);
+  var blisterX = (W - blisterW) / 2, blisterY = 156;
+  if(templateImg) ctx.drawImage(templateImg, blisterX, blisterY, blisterW, blisterH);
+
+  var mainBox = {x: blisterX + 0.042*blisterW, y: blisterY + 0.196*blisterH, w: 0.528*blisterW, h: 0.615*blisterH};
+  if(mascotImg){
+    var mainSubW = mainBox.w * 0.74, mainSubH = mainBox.h * 0.74;
+    var mainSubX = mainBox.x + (mainBox.w - mainSubW) / 2 + 0.04 * mainBox.w;
+    var mainSubY = mainBox.y + (mainBox.h - mainSubH) / 2;
+    drawImageContain(ctx, mascotImg, mainSubX, mainSubY, mainSubW, mainSubH);
+  }
+  var slotBoxes = [
+    {x: blisterX + 0.632*blisterW, y: blisterY + 0.220*blisterH, w: 0.293*blisterW, h: 0.172*blisterH},
+    {x: blisterX + 0.632*blisterW, y: blisterY + 0.441*blisterH, w: 0.293*blisterW, h: 0.172*blisterH},
+    {x: blisterX + 0.632*blisterW, y: blisterY + 0.663*blisterH, w: 0.293*blisterW, h: 0.172*blisterH}
+  ];
+  function drawInSlot(img, box){
+    if(!img) return;
+    var subW = box.w * 0.78, subH = box.h * 0.78;
+    drawImageContain(ctx, img, box.x + (box.w - subW) / 2, box.y + (box.h - subH) / 2, subW, subH);
+  }
+  accessoryImgs.forEach(function(img, i){ drawInSlot(img, slotBoxes[i]); });
+  drawInSlot(ringImg, slotBoxes[2]);
+
+  var y = blisterY + blisterH + 54;
+  ctx.font = "800 30px 'Baloo 2', sans-serif";
+  ctx.fillStyle = "#14121F";
+  wrapCanvasText(ctx, archetypeName.toUpperCase(), W - pad * 2).forEach(function(line){
     ctx.fillText(line, W / 2, y);
-    y += 48;
+    y += 36;
   });
 
-  y += 14;
-  if(wordPills.length){
-    ctx.font = "700 22px 'Work Sans', sans-serif";
-    var pillPadX = 22, pillIconGap = 8, pillGap = 14, pillH = 46, maxRowWidth = W - pad * 2;
-    var rows = [], currentRow = [], currentWidth = 0;
-    wordPills.forEach(function(p){
-      var tw = ctx.measureText(p.word).width + pillPadX * 2 + pillIconSize + pillIconGap;
-      if(currentRow.length && currentWidth + pillGap + tw > maxRowWidth){
-        rows.push(currentRow);
-        currentRow = [];
-        currentWidth = 0;
-      }
-      currentWidth += (currentRow.length ? pillGap : 0) + tw;
-      currentRow.push({cat: p.cat, word: p.word, w: tw});
-    });
-    if(currentRow.length) rows.push(currentRow);
-
-    rows.forEach(function(row){
-      var rowWidth = row.reduce(function(s, p){ return s + p.w; }, 0) + pillGap * (row.length - 1);
-      var x = (W - rowWidth) / 2;
-      row.forEach(function(p){
-        ctx.fillStyle = "rgba(255,255,255,.55)";
-        drawRoundedRect(ctx, x, y, p.w, pillH, pillH / 2);
-        ctx.fill();
-        var iconImg = pillIcons[p.cat];
-        var textX = x + pillPadX;
-        if(iconImg){
-          ctx.drawImage(iconImg, textX, y + (pillH - pillIconSize) / 2, pillIconSize, pillIconSize);
-          textX += pillIconSize + pillIconGap;
-        }
-        ctx.fillStyle = "#14121F";
-        ctx.textAlign = "left";
-        ctx.fillText(p.word, textX, y + pillH / 2 + 8);
-        x += p.w + pillGap;
-      });
-      y += pillH + 10;
-    });
-  }
-
-  ctx.globalAlpha = 0.6;
-  ctx.font = "500 22px 'IBM Plex Mono', monospace";
-  ctx.textAlign = "center";
-  ctx.fillText("votona.vercel.app", W / 2, H - 50);
+  y += 10;
+  ctx.globalAlpha = 0.75;
+  ctx.font = "500 17px 'Work Sans', sans-serif";
+  ctx.fillText("Niveau " + level.level + " · " + level.name + " · " + level.answered + "/" + level.total + " sujets", W / 2, y);
   ctx.globalAlpha = 1;
+
+  y += 56;
+  var ctaText = "Fais le test → votona.vercel.app", ctaPad = 28;
+  ctx.font = "700 19px 'IBM Plex Mono', monospace";
+  var ctaW = Math.min(ctx.measureText(ctaText).width + ctaPad * 2, W - pad * 2), ctaH = 58;
+  drawRoundedRect(ctx, (W - ctaW) / 2, y, ctaW, ctaH, ctaH / 2);
+  ctx.fillStyle = "#14121F";
+  ctx.fill();
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText(ctaText, W / 2, y + ctaH / 2 + 6);
 
   return canvas;
 }
@@ -2981,6 +2993,11 @@ function renderTopbar(){
 
   var brandHome = document.getElementById("brand-home");
   if(brandHome) brandHome.onclick = function(){ state.screen = "profiles"; render(); };
+
+  var legalLink = document.getElementById("footer-legal-link");
+  if(legalLink) legalLink.onclick = function(e){ e.preventDefault(); state.screen = "legal"; render(); };
+  var contactLink = document.getElementById("footer-contact-link");
+  if(contactLink) contactLink.onclick = function(e){ e.preventDefault(); state.screen = "contact"; render(); };
 }
 
 /* ============================================================
@@ -3369,9 +3386,9 @@ function renderVote(){
         topicHeaderHtml(topic) +
         '<div style="margin-top:14px; font-size:13px; color:var(--ink-soft);">Ton avis : <strong style="color:var(' + STANCE_COLORVAR[stance] + ')">' + STANCE_LABEL[stance] + '</strong></div>' +
       '</div>' +
-      '<div style="margin-top:16px; font-size:12px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.05em; font-family:var(--mono);">Position des candidats</div>' +
-      '<div class="reveal-row">' + chips + '</div>' +
-      '<button class="btn btn-primary btn-block" id="next-topic" style="margin-top:20px;">Sujet suivant</button>';
+      '<button class="btn btn-primary btn-block" id="next-topic" style="margin-top:20px;">Sujet suivant</button>' +
+      '<div style="margin-top:20px; font-size:12px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.05em; font-family:var(--mono);">Position des candidats</div>' +
+      '<div class="reveal-row">' + chips + '</div>';
   }
 
   var html =
@@ -3598,11 +3615,11 @@ function renderKit(){
     {ic:"🪪", t:"Pièces d'identité acceptées", d:"Carte nationale d'identité, passeport, permis de conduire ou une autre pièce avec photo listée par le ministère de l'Intérieur.", c:"--gold"},
     {ic:"✍️", t:"Absent le jour du vote ?", d:"Fais une procuration en ligne sur maprocuration.gouv.fr : une personne de confiance vote à ta place, dans le même bureau.", c:"--good"}
   ];
-  var practicalHtml = practicalInfo.map(function(item){
-    return '<div class="axis-card"><div class="ic" style="background:color-mix(in srgb, var(' + item.c + ') 16%, transparent); color:var(' + item.c + ')">' + item.ic + '</div>' +
-      '<div class="t">' + escapeHtml(item.t) + '</div>' +
-      '<div class="d">' + escapeHtml(item.d) + '</div></div>';
-  }).join("");
+  var practicalHtml = '<div class="practical-list">' + practicalInfo.map(function(item){
+    return '<div class="practical-item"><div class="ic" style="background:color-mix(in srgb, var(' + item.c + ') 16%, transparent); color:var(' + item.c + ')">' + item.ic + '</div>' +
+      '<div><div class="t">' + escapeHtml(item.t) + '</div>' +
+      '<div class="d">' + escapeHtml(item.d) + '</div></div></div>';
+  }).join("") + '</div>';
 
   var themeDetails = topCats.map(function(cat){
     var meta = CATEGORY_META[cat] || {};
@@ -3657,7 +3674,7 @@ function renderKit(){
             '<div class="kit-modal-title">Infos pratiques pour voter</div>' +
           '</div>' +
           '<div class="kit-modal-desc">L\'essentiel pour ne rien rater le jour J.</div>' +
-          '<div class="axis-grid">' + practicalHtml + '</div>' +
+          practicalHtml +
         '</div>' +
       '</div>';
   } else if(state.kitModalCat === "level"){
@@ -3813,6 +3830,47 @@ function renderKitShare(){
   }).catch(function(){
     document.getElementById("share-canvas-wrap").innerHTML = '<p class="intro-copy">Impossible de générer l\'image pour le moment.</p>';
   });
+}
+
+/* ============================================================
+   SCREEN — MENTIONS LÉGALES
+   ============================================================ */
+function renderLegal(){
+  var html = '<span class="eyebrow">Informations légales</span>' +
+    '<h1>Mentions légales</h1>' +
+    '<div class="editorial-block" style="margin-top:16px;">' +
+      '<p><strong>Éditeur du site</strong><br>William Vernay, à titre personnel et non professionnel.<br>Contact : <a href="mailto:w.vernay42@gmail.com">w.vernay42@gmail.com</a></p>' +
+      '<p><strong>Directeur de la publication</strong><br>William Vernay.</p>' +
+      '<p><strong>Conception et développement</strong><br>Site conçu et développé par William Vernay, avec l\'assistance technique de Claude (Anthropic) pour l\'écriture du code et la maintenance.</p>' +
+      '<p><strong>Hébergement</strong><br>Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis — <a href="https://vercel.com" target="_blank" rel="noopener">vercel.com</a></p>' +
+      '<p><strong>Données personnelles</strong><br>Les comptes et réponses sont stockés via Supabase. Aucune donnée n\'est vendue ni partagée avec des tiers à des fins commerciales. Tu peux supprimer l\'intégralité de tes données à tout moment depuis « Mon compte » → « Supprimer toutes mes données ».</p>' +
+      '<p><strong>Contenu éditorial</strong><br>Les positions des candidats sont établies à partir de déclarations publiques, sourcées quand possible, et mises à jour régulièrement. Elles sont fournies à titre indicatif et peuvent contenir des approximations — voir la FAQ pour plus de détails.</p>' +
+    '</div>' +
+    '<button class="btn btn-ghost btn-block" id="btn-legal-back" style="margin-top:22px;">← Retour</button>';
+  document.getElementById("app").innerHTML = html;
+  document.getElementById("btn-legal-back").onclick = function(){
+    state.screen = activeProfile() ? "dashboard" : "profiles";
+    render();
+  };
+}
+
+/* ============================================================
+   SCREEN — CONTACT
+   ============================================================ */
+function renderContact(){
+  var subject = encodeURIComponent("Votona — retour ou bug");
+  var body = encodeURIComponent("Décris ici ta suggestion ou le bug rencontré (et si possible, sur quel appareil/navigateur) :\n\n");
+  var html = '<span class="eyebrow">Une question, une idée ?</span>' +
+    '<h1>Contact</h1>' +
+    '<p class="intro-copy">Une suggestion, un bug rencontré, une erreur sur une position de candidat ? Écris-moi directement, je lis tout.</p>' +
+    '<a href="mailto:w.vernay42@gmail.com?subject=' + subject + '&body=' + body + '" class="btn btn-accent btn-block" style="margin-top:16px; text-decoration:none; display:block; text-align:center;">✉️ Envoyer un email</a>' +
+    '<p class="intro-copy" style="margin-top:14px; font-size:12.5px;">Ou directement à <a href="mailto:w.vernay42@gmail.com">w.vernay42@gmail.com</a></p>' +
+    '<button class="btn btn-ghost btn-block" id="btn-contact-back" style="margin-top:22px;">← Retour</button>';
+  document.getElementById("app").innerHTML = html;
+  document.getElementById("btn-contact-back").onclick = function(){
+    state.screen = activeProfile() ? "dashboard" : "profiles";
+    render();
+  };
 }
 
 /* ============================================================
@@ -4275,6 +4333,8 @@ function render(){
   else if(state.screen === "faq") renderFaq();
   else if(state.screen === "account") renderAccount();
   else if(state.screen === "admin") renderAdmin();
+  else if(state.screen === "legal") renderLegal();
+  else if(state.screen === "contact") renderContact();
   renderSponsor();
   window.scrollTo(0,0);
 }
