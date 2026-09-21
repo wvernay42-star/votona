@@ -622,7 +622,9 @@
   }
   .hero-wrap{ position:relative; overflow:hidden; isolation:isolate; max-width:640px; margin-left:auto; margin-right:auto; }
   h1 .hl{ color:var(--accent); }
-  h1 .spin-a{ display:inline-block; vertical-align:-0.233em; color:var(--accent); animation:spinA 16s ease-in-out infinite; }
+  h1 .spin-a{ display:inline-grid; vertical-align:-0.233em; animation:spinA 16s ease-in-out infinite; }
+  h1 .spin-a-face{ grid-area:1/1; backface-visibility:hidden; }
+  h1 .spin-a-back{ transform:rotateX(180deg); }
   @keyframes spinA{
     0%{ transform:rotateX(0deg); }
     45%{ transform:rotateX(720deg); }
@@ -3001,7 +3003,7 @@ function renderProfiles(){
     '<div class="hero-wrap">' +
       '<img class="hero-watermark" src="assets/ui/logo-head.png" alt="" aria-hidden="true" />' +
       '<span class="eyebrow">Qui vote aujourd\'hui ?</span>' +
-      '<h1>Vot<span class="hl">on</span><span class="hl spin-a">a</span></h1>' +
+      '<h1>Vot<span class="hl">on</span><span class="hl spin-a"><span class="spin-a-face spin-a-front">a</span><span class="spin-a-face spin-a-back">a</span></span></h1>' +
       '<p class="hero-tagline">Donne le ton à ton vote.</p>' +
       '<p class="intro-copy">Réponds aux prises de position des candidats déclarés à la présidentielle 2027, à ton rythme. Chaque profil garde ses propres réponses et ses propres résultats, sur cet ordinateur.</p>' +
     '</div>' +
