@@ -200,17 +200,12 @@
   .dash-head{ max-width:640px; margin-left:auto; margin-right:auto; }
   .dash-badge-row{ display:flex; align-items:center; gap:14px; margin-bottom:4px; }
   .dash-starter-badge{
-    position:relative; flex:none; width:78px; height:94px; padding:0; border-radius:16px; cursor:pointer;
+    position:relative; flex:none; width:clamp(64px, 20vw, 96px); height:clamp(77px, 24vw, 116px); padding:0; border-radius:16px; cursor:pointer;
     background:color-mix(in srgb, var(--pop, var(--accent)) 16%, var(--bg-raised));
     border:1.5px solid color-mix(in srgb, var(--pop, var(--accent)) 55%, var(--line));
     display:flex; align-items:flex-end; justify-content:center; overflow:hidden;
   }
   .dash-starter-badge img{ width:100%; height:100%; object-fit:contain; object-position:bottom; display:block; }
-  .dash-badge-level{
-    position:absolute; top:-6px; right:-6px; width:22px; height:22px; border-radius:50%;
-    background:var(--pop, var(--accent)); color:#fff; border:2px solid var(--bg-raised);
-    font-family:var(--mono); font-weight:700; font-size:11px; display:flex; align-items:center; justify-content:center;
-  }
   .dash-badge-info .eyebrow{ text-align:left; margin-bottom:2px; }
   .dash-badge-info h1{ font-size:clamp(22px,3vw + 12px,30px); text-align:left; margin-bottom:2px; }
   .dash-badge-info .sub-line{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); }
@@ -2303,11 +2298,15 @@ function mascotImgHtml(cat, level, width, height, fallbackColor){
   var meta = CATEGORY_META[cat] || {};
   width = width || 96;
   height = height || width;
-  var fallbackSize = Math.min(width, height);
+  var isFluid = typeof width === "string";
+  var wCss = isFluid ? width : width + "px";
+  var hCss = isFluid ? height : height + "px";
+  var fallbackSize = isFluid ? 56 : Math.min(width, height);
   if(!meta.slug) return mascotSvg(fallbackColor || meta.pop || "#7C3AED", fallbackSize);
   var src = "assets/characters/" + meta.slug + "-n" + (level || 1) + ".webp";
+  var sizeAttrs = isFluid ? "" : 'width="' + width + '" height="' + height + '" ';
   return '<img class="mascot-img" data-cat="' + escapeHtml(cat) + '" data-size="' + fallbackSize + '" data-fallback="' + escapeHtml(fallbackColor || "") + '" ' +
-    'src="' + src + '" width="' + width + '" height="' + height + '" alt="" style="width:' + width + 'px;height:' + height + 'px;object-fit:contain;" />';
+    'src="' + src + '" ' + sizeAttrs + 'alt="" style="width:' + wCss + ';height:' + hCss + ';object-fit:contain;" />';
 }
 
 function wireMascotFallbacks(root){
@@ -3152,8 +3151,7 @@ function renderDashboard(){
     var pop = topMeta.pop || "#7C3AED";
     badgeHtml = '<div class="dash-badge-row">' +
       '<button class="dash-starter-badge" id="dash-starter-badge" style="--pop:' + pop + ';" title="Voir mon Starter Pack">' +
-        (topCats.length ? mascotImgHtml(topCats[0], level.level, 72, 90, pop) : "") +
-        '<span class="dash-badge-level">' + level.level + '</span>' +
+        (topCats.length ? mascotImgHtml(topCats[0], level.level, "100%", "100%", pop) : "") +
       '</button>' +
       '<div class="dash-badge-info">' +
         '<span class="eyebrow">Bonjour ' + escapeHtml(profile.name) + '</span>' +
