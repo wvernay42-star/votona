@@ -627,8 +627,8 @@
   }
   .hero-wrap{ position:relative; overflow:hidden; isolation:isolate; max-width:640px; margin-left:auto; margin-right:auto; }
   h1 .hl{ color:var(--accent); }
-  h1 .spin-a-bob{ display:inline-grid; line-height:1.61; vertical-align:baseline; animation:spinABob 9s ease-in-out infinite; }
-  h1 .spin-a{ display:inline-grid; grid-area:1/1; animation:spinA 9s ease-in-out infinite; }
+  h1 .spin-a-bob{ display:inline-grid; line-height:1.61; vertical-align:baseline; animation:spinABob 7s ease-in-out infinite; }
+  h1 .spin-a{ display:inline-grid; grid-area:1/1; animation:spinA 7s ease-in-out infinite; }
   h1 .spin-a-face{ grid-area:1/1; backface-visibility:hidden; }
   h1 .spin-a-back{ transform:rotateX(180deg); }
   @keyframes spinABob{
@@ -2896,6 +2896,14 @@ async function generateShareCardImage(profile){
   ctx.fillStyle = "#fbfaf7";
   ctx.fill();
 
+  var popRgb = hexToRgb(pop);
+  var bgGradient = ctx.createLinearGradient(0, 0, 0, H * 0.6);
+  bgGradient.addColorStop(0, "rgba(" + popRgb + ",.22)");
+  bgGradient.addColorStop(1, "rgba(" + popRgb + ",0)");
+  drawRoundedRect(ctx, 0, 0, W, H, radius);
+  ctx.fillStyle = bgGradient;
+  ctx.fill();
+
   ctx.textAlign = "center";
   ctx.fillStyle = "#14121F";
   ctx.font = "800 40px 'Baloo 2', sans-serif";
@@ -2948,16 +2956,28 @@ async function generateShareCardImage(profile){
   ctx.globalAlpha = 1;
 
   y += 56;
-  var ctaText = "Fais le test → votona.vercel.app", ctaPad = 28;
-  ctx.font = "700 19px 'IBM Plex Mono', monospace";
-  var ctaW = Math.min(ctx.measureText(ctaText).width + ctaPad * 2, W - pad * 2), ctaH = 58;
+  var ctaText = "Fais le test → votona.vercel.app", ctaPad = 30;
+  ctx.font = "700 20px 'IBM Plex Mono', monospace";
+  var ctaW = Math.min(ctx.measureText(ctaText).width + ctaPad * 2, W - pad * 2), ctaH = 64;
+  ctx.save();
+  ctx.shadowColor = "rgba(" + popRgb + ",.45)";
+  ctx.shadowBlur = 24;
+  ctx.shadowOffsetY = 8;
   drawRoundedRect(ctx, (W - ctaW) / 2, y, ctaW, ctaH, ctaH / 2);
-  ctx.fillStyle = "#14121F";
+  ctx.fillStyle = pop;
   ctx.fill();
+  ctx.restore();
   ctx.fillStyle = "#ffffff";
-  ctx.fillText(ctaText, W / 2, y + ctaH / 2 + 6);
+  ctx.fillText(ctaText, W / 2, y + ctaH / 2 + 7);
 
   return canvas;
+}
+
+function hexToRgb(hex){
+  hex = hex.replace("#", "");
+  if(hex.length === 3) hex = hex.split("").map(function(c){ return c + c; }).join("");
+  var num = parseInt(hex, 16);
+  return [(num >> 16) & 255, (num >> 8) & 255, num & 255].join(",");
 }
 
 /* ============================================================
