@@ -686,39 +686,39 @@
 var CATEGORIES = ["Économie & travail","Protection sociale","Sécurité & immigration","Écologie","Europe & institutions","Société","Défense & numérique"];
 
 var TOPICS = [
-  {id:"t1", cat:"Économie & travail", statement:"Ramener l'âge légal de départ à la retraite à 60 ans", addedDate:"2026-06-01", context:"La réforme de 2023 a porté l'âge légal à 64 ans après des mois de mobilisation sociale. Ce sujet reste l'un des plus clivants de la vie politique française."},
-  {id:"t2", cat:"Économie & travail", statement:"Rétablir un impôt renforcé sur les grandes fortunes", addedDate:"2026-06-01", context:"L'ISF a été remplacé par l'IFI en 2018, limité à l'immobilier. Sa restauration ou son renforcement divise la gauche, favorable, de la majorité présidentielle et la droite, plutôt opposées."},
-  {id:"t3", cat:"Économie & travail", statement:"Réduire la dette publique en priorité par la baisse des dépenses de l'État", addedDate:"2026-06-01", context:"La dette publique française dépasse 110% du PIB. Le débat oppose ceux qui veulent d'abord réduire les dépenses et ceux qui privilégient de nouvelles recettes fiscales."},
-  {id:"t4", cat:"Protection sociale", statement:"Conditionner le RSA à 15 heures d'activité hebdomadaire", addedDate:"2026-06-01", context:"Expérimentée dans plusieurs départements puis généralisée par la loi Plein emploi de 2023, cette mesure est contestée par les associations de lutte contre la pauvreté."},
-  {id:"t5", cat:"Protection sociale", statement:"Augmenter significativement le SMIC", addedDate:"2026-06-01", context:"Le pouvoir d'achat reste une préoccupation majeure des Français ; la hausse légale du salaire minimum s'oppose à la préférence de certains pour la négociation par branche."},
-  {id:"t6", cat:"Protection sociale", statement:"Durcir les conditions d'indemnisation du chômage", addedDate:"2026-06-01", context:"Plusieurs réformes de l'assurance chômage se sont succédé depuis 2019, réduisant la durée et les conditions d'indemnisation selon la conjoncture économique."},
-  {id:"t7", cat:"Sécurité & immigration", statement:"Réduire drastiquement l'immigration par des quotas stricts", addedDate:"2026-06-01", context:"L'immigration est l'un des thèmes les plus structurants de la campagne, entre quotas chiffrés par nationalité ou motif et politiques plus ouvertes."},
-  {id:"t8", cat:"Sécurité & immigration", statement:"Renforcer les moyens de la police et allonger les peines de prison", addedDate:"2026-06-01", context:"La sécurité du quotidien occupe une place croissante dans le débat public, entre approche répressive et approche misant sur la prévention."},
-  {id:"t9", cat:"Sécurité & immigration", statement:"Réserver certaines aides sociales aux seuls citoyens français", addedDate:"2026-06-01", context:"Le concept de \"priorité nationale\", porté historiquement par le RN, s'oppose au principe d'égalité d'accès aux prestations défendu par la gauche et une partie du centre."},
-  {id:"t10", cat:"Écologie", statement:"Relancer massivement la filière nucléaire", addedDate:"2026-06-01", context:"Depuis 2022, la France a amorcé une relance du nucléaire civil (EPR2), un choix qui divise entre soutien massif et priorité donnée aux énergies renouvelables."},
-  {id:"t11", cat:"Écologie", statement:"Renforcer la taxe carbone sur les entreprises polluantes", addedDate:"2026-06-01", context:"La fiscalité écologique reste un outil contesté : efficace pour la transition selon ses défenseurs, pénalisante pour la compétitivité selon ses opposants."},
-  {id:"t12", cat:"Europe & institutions", statement:"Approfondir l'intégration européenne, y compris une dette commune", addedDate:"2026-06-01", context:"Le plan de relance européen de 2020 a ouvert la voie à un emprunt commun inédit ; sa pérennisation divise entre europhiles et souverainistes."},
-  {id:"t13", cat:"Société", statement:"Recruter massivement du personnel soignant et revaloriser les salaires à l'hôpital public", addedDate:"2026-08-28", context:"L'hôpital public traverse une crise structurelle de moyens et d'attractivité depuis plusieurs années, un constat largement partagé mais un financement débattu."},
-  {id:"t14", cat:"Société", statement:"Reconnaître un droit à l'aide active à mourir, comme la loi promulguée en août 2026", addedDate:"2026-08-28", context:"Promulguée le 18 août 2026 après un long débat parlementaire, cette loi a été adoptée par 291 voix contre 241, la droite et l'extrême droite ayant majoritairement voté contre."},
-  {id:"t15", cat:"Société", statement:"Encadrer plus strictement les loyers dans les zones tendues", addedDate:"2026-08-28", context:"Déjà expérimenté dans plusieurs grandes villes, l'encadrement des loyers oppose défenseurs du pouvoir d'achat des locataires et partisans de l'incitation à la construction."},
-  {id:"t16", cat:"Société", statement:"Redonner davantage d'autonomie et de sélection aux établissements scolaires", addedDate:"2026-08-28", context:"Les réformes du \"choc des savoirs\" (groupes de niveau, examens d'entrée) ont relancé le débat entre égalité et exigence à l'école."},
-  {id:"t17", cat:"Défense & numérique", statement:"Augmenter fortement le budget de la défense face aux tensions internationales", addedDate:"2026-08-28", context:"La guerre en Ukraine et les tensions géopolitiques ont conduit la France à relever sa trajectoire budgétaire militaire depuis 2022, un effort que certains veulent accélérer, d'autres freiner."},
-  {id:"t18", cat:"Défense & numérique", statement:"Maintenir un soutien militaire et financier fort à l'Ukraine face à la Russie", addedDate:"2026-08-28", context:"Le soutien à l'Ukraine, dont le prêt européen de 90 milliards d'euros voté en 2026, distingue nettement les candidats atlantistes des lignes souverainistes ou critiques de l'OTAN."},
-  {id:"t19", cat:"Europe & institutions", statement:"Instaurer une dose de proportionnelle aux élections législatives", addedDate:"2026-08-28", context:"Promise à plusieurs reprises sans jamais être mise en œuvre, la proportionnelle profiterait aux partis aujourd'hui sous-représentés à l'Assemblée."},
-  {id:"t20", cat:"Défense & numérique", statement:"Encadrer strictement l'intelligence artificielle par une régulation nationale ou européenne renforcée", addedDate:"2026-08-28", context:"Entre l'AI Act européen et la course mondiale à l'IA, le débat oppose protection des citoyens et de l'emploi à compétitivité industrielle."},
-  {id:"t21", cat:"Écologie", statement:"Interdire rapidement les pesticides de synthèse en agriculture", addedDate:"2026-09-01", context:"Ce sujet a cristallisé la mobilisation agricole de 2024-2026, opposant enjeux de santé publique et préservation des revenus agricoles."},
-  {id:"t22", cat:"Société", statement:"Créer un droit opposable à un mode de garde pour la petite enfance", addedDate:"2026-09-02", context:"Le manque de places en crèche reste un frein majeur à l'emploi des parents, notamment des mères ; plusieurs candidats en ont fait un enjeu de pouvoir d'achat des familles."},
-  {id:"t23", cat:"Société", statement:"Plafonner les effectifs à 19 élèves par classe en recrutant davantage d'enseignants", addedDate:"2026-09-03", context:"La surcharge des classes et la pénurie d'enseignants sont devenues un thème central du débat sur l'école, popularisé notamment par le programme de Mélenchon."},
-  {id:"t24", cat:"Sécurité & immigration", statement:"Rendre imprescriptibles les crimes sexuels et violents commis sur des mineurs", addedDate:"2026-09-04", context:"Ce sujet a été relancé par le meurtre de la jeune Lyhanna en juin 2026, qui a suscité une vive émotion et des appels transpartisans à durcir la loi."},
-  {id:"t25", cat:"Protection sociale", statement:"Allonger le délai de carence non indemnisé pour les arrêts de travail courts", addedDate:"2026-09-05", context:"Porté par plusieurs candidats lors du débat du Medef du 27 août 2026, ce sujet touche à l'équilibre financier de la Sécurité sociale, les arrêts courts étant évalués à 17 milliards d'euros par an."},
-  {id:"t26", cat:"Europe & institutions", statement:"S'opposer à la ratification de l'accord de libre-échange entre l'Union européenne et le Mercosur", addedDate:"2026-09-06", context:"Négocié depuis plus de 20 ans, cet accord commercial avec quatre pays d'Amérique du Sud a suscité une mobilisation agricole massive et une résolution transpartisane de l'Assemblée contre sa ratification."},
-  {id:"t27", cat:"Europe & institutions", statement:"Convoquer une assemblée constituante pour instaurer une VIe République", addedDate:"2026-09-07", context:"Portée historiquement par la gauche radicale, l'idée d'une VIe République vise à limiter les pouvoirs du président et renforcer le Parlement, en rupture avec la Constitution de 1958."},
-  {id:"t28", cat:"Économie & travail", statement:"Alourdir la fiscalité sur les très gros héritages (\"méga-successions\")", addedDate:"2026-09-08", context:"Les inégalités de patrimoine transmises par héritage sont revenues au cœur du débat économique, entre taxation accrue des grandes fortunes et défense de la libre transmission."},
-  {id:"t29", cat:"Sécurité & immigration", statement:"Abaisser la majorité pénale à 15 ans", addedDate:"2026-09-09", context:"Proposée en septembre 2026 par plusieurs candidats de droite, cette mesure s'inscrit dans un débat récurrent sur la réponse pénale face à la délinquance des mineurs."},
-  {id:"t30", cat:"Société", statement:"Instaurer un dépistage obligatoire de l'addiction aux écrans à l'entrée en sixième et en seconde", addedDate:"2026-09-10", context:"L'exposition des jeunes aux écrans et ses effets sur la santé mentale sont devenus une préoccupation croissante, portée notamment par Gabriel Attal en septembre 2026."},
-  {id:"t31", cat:"Économie & travail", statement:"Baisser la TVA et la TICPE sur les carburants pour redonner du pouvoir d'achat aux automobilistes", addedDate:"2026-09-12", context:"La hausse persistante des prix à la pompe en 2026 a relancé le débat entre allègement généralisé de la fiscalité sur les carburants et taxation ciblée des superprofits pétroliers."},
-  {id:"t32", cat:"Défense & numérique", statement:"Interdire l'accès aux réseaux sociaux aux mineurs de moins de 15 ans", addedDate:"2026-09-15", context:"Une première version de cette interdiction, adoptée par le Parlement en juillet 2026, avait été censurée mi-août par le Conseil constitutionnel pour atteinte disproportionnée à la liberté d'expression des mineurs. Le gouvernement a transmis le 14 septembre 2026 une nouvelle version à la Commission européenne, qui autoriserait les 13-15 ans à accéder aux réseaux avec l'accord de leurs représentants légaux."},
-  {id:"t33", cat:"Protection sociale", statement:"Geler la revalorisation des pensions de retraite dépassant 2 034 euros mensuels pour financer le budget 2027", addedDate:"2026-09-20", context:"Présentée par le Premier ministre Sébastien Lecornu le 17 septembre 2026 dans le cadre du budget 2027, cette piste viserait environ 6 milliards d'euros d'économies en gelant ou sous-indexant les pensions au-delà de ce seuil. Elle est contestée à la fois par le Rassemblement national, qui en fait une \"ligne rouge\", et par la gauche, qui dénonce un budget \"purge\" visant les retraités."}
+  {id:"t1", cat:"Économie & travail", statement:"Ramener l'âge légal de départ à la retraite à 60 ans", addedDate:"2026-06-01", context:"L'âge légal est l'âge minimum à partir duquel on peut liquider sa pension, actuellement fixé à 64 ans. Le ramener à 60 ans permettrait de partir plus tôt, sous réserve d'avoir cotisé le nombre de trimestres requis pour une retraite à taux plein."},
+  {id:"t2", cat:"Économie & travail", statement:"Rétablir un impôt renforcé sur les grandes fortunes", addedDate:"2026-06-01", context:"Un impôt sur la fortune taxe chaque année le patrimoine des foyers les plus riches au-delà d'un certain seuil, indépendamment de leurs revenus. Le renforcer signifierait élargir son assiette au-delà du seul immobilier (l'actuel IFI) et/ou augmenter son taux."},
+  {id:"t3", cat:"Économie & travail", statement:"Réduire la dette publique en priorité par la baisse des dépenses de l'État", addedDate:"2026-06-01", context:"La dette publique correspond à l'ensemble des sommes empruntées par l'État pour financer ses dépenses. La réduire par la baisse des dépenses signifie diminuer le budget de l'État plutôt que d'augmenter les impôts ou taxes pour dégager de nouvelles recettes."},
+  {id:"t4", cat:"Protection sociale", statement:"Conditionner le RSA à 15 heures d'activité hebdomadaire", addedDate:"2026-06-01", context:"Le RSA est une allocation minimale versée aux foyers sans ressources suffisantes. La conditionner à 15 heures d'activité hebdomadaire imposerait aux bénéficiaires de justifier de cette durée en formation, recherche d'emploi ou activité professionnelle pour continuer à la percevoir."},
+  {id:"t5", cat:"Protection sociale", statement:"Augmenter significativement le SMIC", addedDate:"2026-06-01", context:"Le SMIC est le salaire minimum légal que doit percevoir tout salarié en France. L'augmenter significativement reviendrait à relever ce plancher au-delà des simples revalorisations automatiques liées à l'inflation."},
+  {id:"t6", cat:"Protection sociale", statement:"Durcir les conditions d'indemnisation du chômage", addedDate:"2026-06-01", context:"L'assurance chômage indemnise les demandeurs d'emploi ayant suffisamment cotisé, pour une durée et un montant calculés selon leur ancien salaire. Durcir les conditions signifierait par exemple allonger la durée de cotisation requise ou réduire la durée et le montant de l'indemnisation."},
+  {id:"t7", cat:"Sécurité & immigration", statement:"Réduire drastiquement l'immigration par des quotas stricts", addedDate:"2026-06-01", context:"Des quotas d'immigration fixent à l'avance un nombre maximal d'entrées autorisées sur le territoire, par exemple par nationalité ou par motif (travail, regroupement familial, asile). Les rendre stricts limiterait fortement le nombre de titres de séjour délivrés chaque année."},
+  {id:"t8", cat:"Sécurité & immigration", statement:"Renforcer les moyens de la police et allonger les peines de prison", addedDate:"2026-06-01", context:"Renforcer les moyens de la police consiste à augmenter ses effectifs, son équipement ou son budget. Allonger les peines de prison signifie prévoir des peines minimales ou maximales plus longues pour certaines infractions, en durcissant le code pénal."},
+  {id:"t9", cat:"Sécurité & immigration", statement:"Réserver certaines aides sociales aux seuls citoyens français", addedDate:"2026-06-01", context:"Cette mesure, connue sous le nom de \"préférence nationale\", consisterait à réserver certaines prestations sociales aux citoyens français, à l'exclusion des étrangers résidant légalement en France qui y ont aujourd'hui droit sous conditions."},
+  {id:"t10", cat:"Écologie", statement:"Relancer massivement la filière nucléaire", addedDate:"2026-06-01", context:"La filière nucléaire regroupe la construction et l'exploitation des centrales produisant de l'électricité par fission atomique. La relancer massivement impliquerait de construire de nouveaux réacteurs et de prolonger la durée de vie du parc existant, au-delà des projets déjà engagés."},
+  {id:"t11", cat:"Écologie", statement:"Renforcer la taxe carbone sur les entreprises polluantes", addedDate:"2026-06-01", context:"Une taxe carbone impose aux entreprises un coût proportionnel à leurs émissions de gaz à effet de serre, pour inciter à les réduire. La renforcer signifie augmenter le prix payé par tonne de CO2 émise et/ou élargir son champ à davantage de secteurs."},
+  {id:"t12", cat:"Europe & institutions", statement:"Approfondir l'intégration européenne, y compris une dette commune", addedDate:"2026-06-01", context:"Une dette commune européenne consiste à emprunter collectivement au niveau de l'Union plutôt que chaque État séparément, comme lors du plan de relance de 2020. Approfondir l'intégration peut aussi inclure davantage de décisions prises à la majorité plutôt qu'à l'unanimité entre États membres."},
+  {id:"t13", cat:"Société", statement:"Recruter massivement du personnel soignant et revaloriser les salaires à l'hôpital public", addedDate:"2026-08-28", context:"Il s'agit d'augmenter significativement les effectifs de médecins, infirmiers et aides-soignants dans les hôpitaux publics, et de relever leurs salaires au-delà des revalorisations déjà accordées ces dernières années."},
+  {id:"t14", cat:"Société", statement:"Reconnaître un droit à l'aide active à mourir, comme la loi promulguée en août 2026", addedDate:"2026-08-28", context:"L'aide active à mourir désigne la possibilité, pour une personne atteinte d'une maladie grave et incurable, de recevoir une assistance médicale pour mettre fin à ses jours, sous conditions strictes. Elle se distingue des soins palliatifs, qui visent à soulager la souffrance sans chercher à hâter la mort."},
+  {id:"t15", cat:"Société", statement:"Encadrer plus strictement les loyers dans les zones tendues", addedDate:"2026-08-28", context:"L'encadrement des loyers fixe un plafond au montant du loyer qu'un propriétaire peut demander lors d'une nouvelle location, dans les zones où la demande de logement dépasse fortement l'offre. Le renforcer signifierait étendre ce dispositif à plus de villes ou durcir les plafonds et les sanctions en cas de dépassement."},
+  {id:"t16", cat:"Société", statement:"Redonner davantage d'autonomie et de sélection aux établissements scolaires", addedDate:"2026-08-28", context:"Donner plus d'autonomie aux établissements signifie leur laisser davantage de liberté pour organiser l'enseignement (choix pédagogiques, groupes de niveau). Leur donner plus de sélection permettrait de conditionner l'admission des élèves à des critères propres à l'établissement, plutôt qu'une affectation automatique."},
+  {id:"t17", cat:"Défense & numérique", statement:"Augmenter fortement le budget de la défense face aux tensions internationales", addedDate:"2026-08-28", context:"Il s'agit d'accroître significativement les crédits alloués aux armées (équipements, effectifs, dissuasion nucléaire...) au-delà de la trajectoire budgétaire déjà votée, qui doit porter le budget de la défense à 2% du PIB."},
+  {id:"t18", cat:"Défense & numérique", statement:"Maintenir un soutien militaire et financier fort à l'Ukraine face à la Russie", addedDate:"2026-08-28", context:"Ce soutien recouvre la livraison d'armements et d'équipements militaires, ainsi que des financements directs ou via des prêts européens garantis, destinés à aider l'Ukraine à se défendre face à l'invasion russe engagée en 2022."},
+  {id:"t19", cat:"Europe & institutions", statement:"Instaurer une dose de proportionnelle aux élections législatives", addedDate:"2026-08-28", context:"Le mode de scrutin actuel élit les députés au scrutin majoritaire à deux tours, circonscription par circonscription. Une \"dose\" de proportionnelle consisterait à réserver une partie des sièges à une répartition proportionnelle aux voix obtenues par chaque parti au niveau national."},
+  {id:"t20", cat:"Défense & numérique", statement:"Encadrer strictement l'intelligence artificielle par une régulation nationale ou européenne renforcée", addedDate:"2026-08-28", context:"Réguler l'intelligence artificielle consiste à fixer par la loi des règles contraignantes sur son développement et son usage : transparence des algorithmes, encadrement ou interdiction de certains usages jugés à risque, sanctions en cas de non-respect."},
+  {id:"t21", cat:"Écologie", statement:"Interdire rapidement les pesticides de synthèse en agriculture", addedDate:"2026-09-01", context:"Les pesticides de synthèse sont des produits phytosanitaires fabriqués chimiquement, utilisés pour protéger les cultures contre les nuisibles, par opposition aux produits naturels autorisés en agriculture biologique. Les interdire rapidement imposerait aux agriculteurs de s'en passer sur un délai court."},
+  {id:"t22", cat:"Société", statement:"Créer un droit opposable à un mode de garde pour la petite enfance", addedDate:"2026-09-02", context:"Un droit \"opposable\" est un droit garanti par la loi que le citoyen peut faire valoir en justice contre l'État s'il n'est pas respecté, sur le modèle du droit au logement opposable (DALO). Appliqué à la garde d'enfant, il obligerait les pouvoirs publics à proposer une solution de garde à toute famille qui en fait la demande."},
+  {id:"t23", cat:"Société", statement:"Plafonner les effectifs à 19 élèves par classe en recrutant davantage d'enseignants", addedDate:"2026-09-03", context:"Il s'agit de fixer un nombre maximal de 19 élèves par classe, contre une moyenne actuellement plus élevée dans de nombreux établissements, ce qui nécessiterait de recruter des enseignants supplémentaires pour ouvrir davantage de classes."},
+  {id:"t24", cat:"Sécurité & immigration", statement:"Rendre imprescriptibles les crimes sexuels et violents commis sur des mineurs", addedDate:"2026-09-04", context:"Un crime est \"prescrit\" lorsque le délai légal pour poursuivre son auteur est dépassé (actuellement 20 à 30 ans selon les cas pour les crimes sur mineurs, à compter de leur majorité). Le rendre imprescriptible supprimerait tout délai, permettant des poursuites à n'importe quel moment."},
+  {id:"t25", cat:"Protection sociale", statement:"Allonger le délai de carence non indemnisé pour les arrêts de travail courts", addedDate:"2026-09-05", context:"Le délai de carence est la période, en début d'arrêt de travail, durant laquelle le salarié n'est pas indemnisé par la Sécurité sociale (actuellement 3 jours). L'allonger signifierait repousser le début du versement des indemnités journalières, notamment pour les arrêts courts."},
+  {id:"t26", cat:"Europe & institutions", statement:"S'opposer à la ratification de l'accord de libre-échange entre l'Union européenne et le Mercosur", addedDate:"2026-09-06", context:"L'accord UE-Mercosur est un traité de libre-échange qui réduirait les droits de douane et les barrières commerciales entre l'Union européenne et quatre pays d'Amérique du Sud (Brésil, Argentine, Paraguay, Uruguay). S'y opposer bloquerait sa ratification par la France, une étape nécessaire à son entrée en vigueur complète."},
+  {id:"t27", cat:"Europe & institutions", statement:"Convoquer une assemblée constituante pour instaurer une VIe République", addedDate:"2026-09-07", context:"Une assemblée constituante est une instance spécialement élue pour rédiger une nouvelle Constitution, remplaçant celle de 1958 qui fonde l'actuelle Ve République. Une VIe République viserait généralement à rééquilibrer les pouvoirs entre le président, très puissant dans le système actuel, et le Parlement."},
+  {id:"t28", cat:"Économie & travail", statement:"Alourdir la fiscalité sur les très gros héritages (\"méga-successions\")", addedDate:"2026-09-08", context:"Les droits de succession sont l'impôt payé sur un héritage, avec un barème progressif qui monte déjà jusqu'à 45% au-delà d'un certain montant. Alourdir la fiscalité sur les \"méga-successions\" viserait spécifiquement les patrimoines transmis les plus élevés, par exemple via une tranche supplémentaire au barème actuel."},
+  {id:"t29", cat:"Sécurité & immigration", statement:"Abaisser la majorité pénale à 15 ans", addedDate:"2026-09-09", context:"La majorité pénale est l'âge à partir duquel une personne est jugée comme un adulte par la justice, avec des peines potentiellement plus lourdes, plutôt que par la justice des mineurs qui privilégie l'éducatif. Elle est actuellement fixée à 18 ans ; l'abaisser à 15 ans ferait basculer les 15-17 ans vers ce régime plus sévère."},
+  {id:"t30", cat:"Société", statement:"Instaurer un dépistage obligatoire de l'addiction aux écrans à l'entrée en sixième et en seconde", addedDate:"2026-09-10", context:"Il s'agirait d'intégrer un temps de repérage de l'usage problématique des écrans (temps passé, impact sur le sommeil, les résultats scolaires...) aux visites médicales déjà obligatoires à ces âges, afin d'orienter les jeunes concernés vers un accompagnement si besoin."},
+  {id:"t31", cat:"Économie & travail", statement:"Baisser la TVA et la TICPE sur les carburants pour redonner du pouvoir d'achat aux automobilistes", addedDate:"2026-09-12", context:"La TVA est la taxe générale sur la consommation, et la TICPE une taxe spécifique aux carburants ; ensemble, elles représentent une part importante du prix payé à la pompe. Les baisser réduirait directement ce prix, mais diminuerait d'autant les recettes fiscales de l'État."},
+  {id:"t32", cat:"Défense & numérique", statement:"Interdire l'accès aux réseaux sociaux aux mineurs de moins de 15 ans", addedDate:"2026-09-15", context:"Cette interdiction viserait à bloquer la création de comptes sur les réseaux sociaux avant 15 ans, sauf accord parental entre 13 et 15 ans. Une première version a été censurée par le Conseil constitutionnel en août 2026 pour atteinte disproportionnée à la liberté d'expression des mineurs ; une nouvelle version a été transmise à la Commission européenne le 14 septembre 2026."},
+  {id:"t33", cat:"Protection sociale", statement:"Geler la revalorisation des pensions de retraite dépassant 2 034 euros mensuels pour financer le budget 2027", addedDate:"2026-09-20", context:"La revalorisation des pensions est leur réévaluation annuelle en fonction de l'inflation, destinée à maintenir le pouvoir d'achat des retraités. La geler pour les pensions dépassant 2 034 euros mensuels reviendrait à ne pas les augmenter cette année-là, ce qui équivaut à une baisse de leur valeur réelle une fois l'inflation prise en compte."}
 ];
 
 function P(stance, detail){ return {stance:stance, detail:detail}; }
@@ -2120,7 +2120,7 @@ function categoryIconDataUrl(cat, size, color){
 }
 
 var TOPBAR_ICON_PATHS = {
-  home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+  home: '<circle cx="12" cy="12" r="9"/><polygon points="15.5 8.5 13.3 13.3 8.5 15.5 10.7 10.7 15.5 8.5"/>',
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>',
   faq: '<circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 1 1 3.9 2.4c-1 .5-1.7 1.1-1.7 2.4"/><line x1="12" y1="17.2" x2="12" y2="17.21"/>',
   admin: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.6 1H21a2 2 0 1 1 0 4h-.2a1.7 1.7 0 0 0-1.5 1z"/>'
@@ -2418,6 +2418,21 @@ async function saveOverridesToCloud(o){
   var res = await sb.from("content_overrides").update({data: o}).eq("id", "main");
   if(!res.error) cloudOverrides = o;
   return res;
+}
+
+var relanceQueueItems = {email1: [], email2: []};
+var relanceQueueLoaded = false;
+async function loadRelanceQueue(){
+  if(!sb) return;
+  try{
+    var res = await sb.from("relance_news_queue").select("*").is("consumed_at", null).order("created_at", {ascending:true});
+    var rows = res.data || [];
+    relanceQueueItems = {
+      email1: rows.filter(function(r){return r.target==="email1";}),
+      email2: rows.filter(function(r){return r.target==="email2";})
+    };
+  }catch(e){}
+  relanceQueueLoaded = true;
 }
 
 async function fetchCloudProfiles(){
@@ -3981,15 +3996,42 @@ function renderAdmin(){
   var tabsHtml = '<div class="admin-tabs">' +
     '<button class="admin-tab' + (state.adminTab==="candidates"?" active":"") + '" data-tab="candidates">Candidats</button>' +
     '<button class="admin-tab' + (state.adminTab==="topics"?" active":"") + '" data-tab="topics">Sujets</button>' +
+    '<button class="admin-tab' + (state.adminTab==="relances"?" active":"") + '" data-tab="relances">Relances email</button>' +
   '</div>';
 
   var loginHint = !isLoggedIn() ? ' <strong>Connecte-toi (Mon compte) avec ton email admin pour pouvoir enregistrer.</strong>' : '';
   var disclaimer = state.adminTab === "candidates"
     ? '<div class="disclaimer">Seule la veille automatique quotidienne ajoute de nouveaux candidats. Tu peux corriger une position ici si elle te semble erronée ; publiée, la correction s\'applique à tous les visiteurs du site.' + loginHint + '</div>'
-    : '<div class="disclaimer">Seule la veille automatique quotidienne ajoute de nouveaux sujets, lorsqu\'un thème de campagne majeur émerge.</div>';
+    : state.adminTab === "topics"
+    ? '<div class="disclaimer">Seule la veille automatique quotidienne ajoute de nouveaux sujets, lorsqu\'un thème de campagne majeur émerge.</div>'
+    : '<div class="disclaimer">Empile ici les actus à inclure dans le prochain email de relance envoyé aux utilisateurs inactifs. Rien n\'est envoyé tant que cette liste est vide pour un email donné.' + loginHint + '</div>';
 
   var body = "";
-  if(state.adminTab === "candidates"){
+  if(state.adminTab === "relances"){
+    if(!relanceQueueLoaded){
+      body = '<p class="empty-state">Chargement…</p>';
+    } else {
+      body = ["email1","email2"].map(function(target){
+        var items = relanceQueueItems[target] || [];
+        var label = target === "email1" ? "Email 1 — 1re relance (inactifs depuis 1 semaine)" : "Email 2 — dernière relance (inactifs depuis 1 mois)";
+        var itemsHtml = items.length ? items.map(function(it){
+          return '<div class="admin-item" data-queue-id="' + it.id + '">' +
+            '<div class="admin-item-head"><span class="t">' + escapeHtml(it.headline) + '</span></div>' +
+            (it.body ? '<div class="meta" style="margin-top:4px;">' + escapeHtml(it.body) + '</div>' : '') +
+            '<div class="form-actions"><button class="danger-link" data-queue-delete="' + it.id + '">Retirer</button></div>' +
+          '</div>';
+        }).join("") : '<p class="empty-state">Rien en attente pour cet email.</p>';
+        return '<section class="block" style="margin-top:16px;"><h2 style="font-size:15px;">' + label + '</h2>' +
+          itemsHtml +
+          '<div class="admin-form" style="margin-top:10px;">' +
+            '<div><label class="field-label">Titre de l\'actu</label><input type="text" class="queue-headline" data-target="' + target + '" placeholder="Ex. Nouveau sujet : la fin des véhicules thermiques" /></div>' +
+            '<div><label class="field-label">Texte court (optionnel)</label><input type="text" class="queue-body" data-target="' + target + '" placeholder="Une phrase d\'accroche" /></div>' +
+            '<div class="form-actions"><button class="btn btn-primary btn-sm" data-queue-add="' + target + '">Ajouter à la file</button></div>' +
+          '</div>' +
+        '</section>';
+      }).join("");
+    }
+  } else if(state.adminTab === "candidates"){
     var ovForList = loadOverrides();
     body = candidates.map(function(c){
       var open = state.adminOpenId === c.id;
@@ -4031,8 +4073,45 @@ function renderAdmin(){
     '<h1>Gérer candidats et sujets</h1>' + disclaimer + tabsHtml + '<div>' + body + '</div>';
 
   document.querySelectorAll(".admin-tab").forEach(function(t){
-    t.onclick = function(){ state.adminTab = t.getAttribute("data-tab"); state.adminOpenId=null; render(); };
+    t.onclick = function(){
+      state.adminTab = t.getAttribute("data-tab");
+      state.adminOpenId = null;
+      if(state.adminTab === "relances" && !relanceQueueLoaded) loadRelanceQueue().then(render);
+      render();
+    };
   });
+
+  if(state.adminTab === "relances"){
+    document.querySelectorAll("[data-queue-add]").forEach(function(btn){
+      btn.onclick = async function(){
+        if(!isLoggedIn()){ alert("Connecte-toi (Mon compte) avec ton email admin pour ajouter une actu à la file de relance."); return; }
+        var target = btn.getAttribute("data-queue-add");
+        var headlineEl = document.querySelector('.queue-headline[data-target="' + target + '"]');
+        var bodyEl = document.querySelector('.queue-body[data-target="' + target + '"]');
+        var headline = headlineEl.value.trim();
+        if(!headline) return;
+        var text = bodyEl.value.trim();
+        btn.disabled = true;
+        var res = await sb.from("relance_news_queue").insert({target: target, headline: headline, body: text || null});
+        btn.disabled = false;
+        if(res && res.error){ alert("Échec de l'ajout : " + res.error.message); return; }
+        await loadRelanceQueue();
+        render();
+      };
+    });
+    document.querySelectorAll("[data-queue-delete]").forEach(function(btn){
+      btn.onclick = async function(){
+        if(!isLoggedIn()){ alert("Connecte-toi (Mon compte) avec ton email admin pour retirer une actu de la file de relance."); return; }
+        var id = btn.getAttribute("data-queue-delete");
+        btn.disabled = true;
+        var res = await sb.from("relance_news_queue").delete().eq("id", id);
+        btn.disabled = false;
+        if(res && res.error){ alert("Échec de la suppression : " + res.error.message); return; }
+        await loadRelanceQueue();
+        render();
+      };
+    });
+  }
 
   if(state.adminTab === "candidates"){
     document.querySelectorAll("[data-toggle]").forEach(function(h){
