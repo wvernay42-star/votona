@@ -2355,31 +2355,21 @@ function levelMedalSvg(level, color, size){
 
 function levelRingSvg(level, shares, fallbackColor, size){
   size = size || 56;
-  var r = 41, cx = 50, cy = 50, strokeW = 12;
+  var r = 41, cx = 50, cy = 50, strokeW = 10;
   var circumference = 2 * Math.PI * r;
-  var segments = "";
-  var centerColor = fallbackColor || "#7C3AED";
   var positiveShares = (shares || []).filter(function(s){ return s.pct > 0; });
-  if(positiveShares.length){
-    centerColor = (CATEGORY_META[positiveShares[0].cat] || {}).pop || centerColor;
-    var n = positiveShares.length;
-    var gapLen = n > 1 ? circumference * 0.018 : 0;
-    var cum = 0;
-    positiveShares.forEach(function(s){
-      var color = (CATEGORY_META[s.cat] || {}).pop || fallbackColor || "#7C3AED";
-      var rawLen = circumference * s.pct / 100;
-      var len = Math.max(rawLen - gapLen, strokeW * 0.6);
-      segments += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + strokeW + '" stroke-linecap="round" ' +
-        'stroke-dasharray="' + len.toFixed(2) + ' ' + (circumference - len).toFixed(2) + '" stroke-dashoffset="' + (-cum).toFixed(2) + '" ' +
-        'transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
-      cum += rawLen;
-    });
-  } else {
-    segments = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#E4E1EA" stroke-width="' + strokeW + '"/>';
+  var top = positiveShares[0];
+  var centerColor = top ? ((CATEGORY_META[top.cat] || {}).pop || fallbackColor || "#7C3AED") : (fallbackColor || "#7C3AED");
+  var arc = "";
+  if(top){
+    var len = Math.max(circumference * top.pct / 100, strokeW * 0.6);
+    arc = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + centerColor + '" stroke-width="' + strokeW + '" stroke-linecap="round" ' +
+      'stroke-dasharray="' + len.toFixed(2) + ' ' + (circumference - len).toFixed(2) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
   }
   return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
-    segments +
-    '<circle cx="50" cy="50" r="31" fill="#ffffff"/>' +
+    '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="var(--line-soft)" stroke-width="' + strokeW + '"/>' +
+    arc +
+    '<circle cx="50" cy="50" r="32" fill="#ffffff"/>' +
     '<text x="50" y="62" text-anchor="middle" font-family="\'Baloo 2\', ui-rounded, sans-serif" font-weight="800" font-size="34" fill="' + centerColor + '">' + level + '</text>' +
     '</svg>';
 }
