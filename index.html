@@ -2251,7 +2251,6 @@ var FAQ_ITEMS = [
    (partagés par tous les profils de ce navigateur).
    ============================================================ */
 var LS_PROFILES = "votona.profiles.v1";
-var LS_OVERRIDES = "votona.overrides.v1";
 var LS_ACTIVE = "votona.active.v1";
 var LS_PENDING_KIT = "votona.pendingKit.v1";
 var LS_PENDING_OPTIN = "votona.pendingOptIn.v1";
@@ -2271,9 +2270,8 @@ function safeSet(key, val){
 function loadProfiles(){ return safeGet(LS_PROFILES, {}); }
 function saveProfiles(p){ safeSet(LS_PROFILES, p); }
 function loadOverrides(){
-  return safeGet(LS_OVERRIDES, {candidateOverrides:{}, newCandidates:[], newTopics:[]});
+  return cloudOverrides || {candidateOverrides:{}, newCandidates:[], newTopics:[]};
 }
-function saveOverrides(o){ safeSet(LS_OVERRIDES, o); }
 
 function uid(prefix){ return prefix + "-" + Math.random().toString(36).slice(2,9); }
 function daysSince(iso){
@@ -2403,6 +2401,24 @@ var authMessage = null;
 function isLoggedIn(){ return !!(authSession && authSession.user); }
 function isValidUUID(s){ return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(s)); }
 function newProfileId(){ return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : uid("p"); }
+
+/* Corrections admin — partagées avec tous les visiteurs via Supabase.
+   Lecture publique, écriture réservée par RLS à l'email admin. */
+var cloudOverrides = null;
+var cloudOverridesError = null;
+async function fetchCloudOverrides(){
+  if(!sb) return;
+  try{
+    var res = await sb.from("content_overrides").select("data").eq("id", "main").maybeSingle();
+    if(!res.error && res.data){ cloudOverrides = res.data.data; render(); }
+  }catch(e){}
+}
+async function saveOverridesToCloud(o){
+  if(!sb || !isLoggedIn()) return {error: "not_logged_in"};
+  var res = await sb.from("content_overrides").update({data: o}).eq("id", "main");
+  if(!res.error) cloudOverrides = o;
+  return res;
+}
 
 async function fetchCloudProfiles(){
   if(!sb || !isLoggedIn()) return {};
@@ -3962,8 +3978,9 @@ function renderAdmin(){
     '<button class="admin-tab' + (state.adminTab==="topics"?" active":"") + '" data-tab="topics">Sujets</button>' +
   '</div>';
 
+  var loginHint = !isLoggedIn() ? ' <strong>Connecte-toi (Mon compte) avec ton email admin pour pouvoir enregistrer.</strong>' : '';
   var disclaimer = state.adminTab === "candidates"
-    ? '<div class="disclaimer">Seule la veille automatique quotidienne ajoute de nouveaux candidats. Tu peux corriger une position ici si elle te semble erronée ; ces corrections restent propres à ce navigateur.</div>'
+    ? '<div class="disclaimer">Seule la veille automatique quotidienne ajoute de nouveaux candidats. Tu peux corriger une position ici si elle te semble erronée ; publiée, la correction s\'applique à tous les visiteurs du site.' + loginHint + '</div>'
     : '<div class="disclaimer">Seule la veille automatique quotidienne ajoute de nouveaux sujets, lorsqu\'un thème de campagne majeur émerge.</div>';
 
   var body = "";
@@ -4021,7 +4038,8 @@ function renderAdmin(){
       };
     });
     document.querySelectorAll("[data-save]").forEach(function(btn){
-      btn.onclick = function(){
+      btn.onclick = async function(){
+        if(!isLoggedIn()){ alert("Connecte-toi (Mon compte) avec ton email admin pour publier une correction pour tout le monde."); return; }
         var id = btn.getAttribute("data-save");
         var item = document.querySelector('.admin-item[data-cand="' + id + '"]');
         var name = item.querySelector('[data-field="name"]').value.trim();
@@ -4046,18 +4064,25 @@ function renderAdmin(){
           ov.candidateOverrides = ov.candidateOverrides || {};
           ov.candidateOverrides[id] = {name:name, party:party, withdrawn:withdrawn, positions:positions};
         }
-        saveOverrides(ov);
+        btn.disabled = true;
+        var res = await saveOverridesToCloud(ov);
+        btn.disabled = false;
+        if(res && res.error){ alert("Échec de la publication : " + res.error.message); return; }
         state.adminOpenId = null;
         render();
       };
     });
     document.querySelectorAll("[data-delete]").forEach(function(btn){
-      btn.onclick = function(){
+      btn.onclick = async function(){
+        if(!isLoggedIn()){ alert("Connecte-toi (Mon compte) avec ton email admin pour publier une correction pour tout le monde."); return; }
         var id = btn.getAttribute("data-delete");
         var ov = loadOverrides();
         ov.newCandidates = (ov.newCandidates||[]).filter(function(c){return c.id!==id;});
         delete (ov.candidateOverrides||{})[id];
-        saveOverrides(ov);
+        btn.disabled = true;
+        var res = await saveOverridesToCloud(ov);
+        btn.disabled = false;
+        if(res && res.error){ alert("Échec de la publication : " + res.error.message); return; }
         state.adminOpenId = null;
         render();
       };
@@ -4175,6 +4200,7 @@ if(sb){
     authSession = session;
     if(session){ syncAfterLogin(); } else { render(); }
   });
+  fetchCloudOverrides();
 }
 render();
 })();
