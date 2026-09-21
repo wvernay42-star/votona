@@ -333,22 +333,6 @@
   .skip-link{ display:block; text-align:center; margin-top:14px; font-size:12.5px; color:var(--ink-faint); background:none; border:none; cursor:pointer; }
 
   /* ---------- Results ---------- */
-  .portrait-ring-card{
-    display:flex; align-items:center; gap:16px; background:var(--bg-raised); border:1px solid var(--line);
-    border-radius:20px; padding:16px; margin:18px 0;
-  }
-  .portrait-ring{
-    position:relative; width:84px; height:84px; flex:none; border-radius:50%;
-  }
-  .portrait-ring-hole{
-    position:absolute; top:12px; left:12px; width:60px; height:60px; border-radius:50%;
-    background:var(--bg-raised); display:flex; align-items:center; justify-content:center;
-    font-family:var(--mono); font-size:16px; font-weight:700;
-  }
-  .portrait-ring-info{ display:flex; flex-direction:column; gap:2px; }
-  .portrait-ring-info .eyebrow{ margin-bottom:0; }
-  .portrait-ring-title{ font-family:var(--display); font-size:16px; font-weight:700; }
-  .portrait-ring-sub{ font-size:12px; color:var(--ink-faint); }
   .results-action-bar{
     position:fixed; left:0; right:0; bottom:0; z-index:30; display:flex; gap:10px;
     padding:12px clamp(20px,4vw,40px) calc(12px + env(safe-area-inset-bottom));
@@ -2369,6 +2353,34 @@ function levelMedalSvg(level, color, size){
     '</svg>';
 }
 
+function levelRingSvg(level, shares, fallbackColor, size){
+  size = size || 56;
+  var r = 41, cx = 50, cy = 50, strokeW = 16;
+  var circumference = 2 * Math.PI * r;
+  var segments = "";
+  var centerColor = fallbackColor || "#7C3AED";
+  var positiveShares = (shares || []).filter(function(s){ return s.pct > 0; });
+  if(positiveShares.length){
+    centerColor = (CATEGORY_META[positiveShares[0].cat] || {}).pop || centerColor;
+    var cum = 0;
+    positiveShares.forEach(function(s){
+      var color = (CATEGORY_META[s.cat] || {}).pop || fallbackColor || "#7C3AED";
+      var len = circumference * s.pct / 100;
+      segments += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + strokeW + '" ' +
+        'stroke-dasharray="' + len.toFixed(2) + ' ' + (circumference - len).toFixed(2) + '" stroke-dashoffset="' + (-cum).toFixed(2) + '" ' +
+        'transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
+      cum += len;
+    });
+  } else {
+    segments = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + centerColor + '" stroke-width="' + strokeW + '"/>';
+  }
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    segments +
+    '<circle cx="50" cy="50" r="30" fill="' + centerColor + '"/>' +
+    '<text x="50" y="62" text-anchor="middle" font-family="\'Baloo 2\', ui-rounded, sans-serif" font-weight="800" font-size="34" fill="#14121F">' + level + '</text>' +
+    '</svg>';
+}
+
 /* ============================================================
    COMPTE — connexion par lien magique (Supabase), synchronisation
    des profils et réponses pour les retrouver sur un autre appareil.
@@ -2652,30 +2664,6 @@ function computeCategoryShares(profile){
   return CATEGORIES.map(function(cat){
     return {cat: cat, pct: (weights[cat] || 0) / total * 100};
   }).sort(function(a, b){ return b.pct - a.pct; });
-}
-
-function portraitRingHtml(profile){
-  var shares = computeCategoryShares(profile);
-  if(!shares.length) return "";
-  var cum = 0;
-  var stops = shares.filter(function(s){ return s.pct > 0; }).map(function(s){
-    var color = (CATEGORY_META[s.cat] || {}).pop || "#7C3AED";
-    var start = cum;
-    cum += s.pct;
-    return color + " " + start.toFixed(2) + "% " + cum.toFixed(2) + "%";
-  }).join(", ");
-  var top = shares[0];
-  var topPop = (CATEGORY_META[top.cat] || {}).pop || "#7C3AED";
-  return '<div class="portrait-ring-card">' +
-    '<div class="portrait-ring" style="background:conic-gradient(' + stops + ');">' +
-      '<div class="portrait-ring-hole" style="color:' + topPop + ';">' + Math.round(top.pct) + '%</div>' +
-    '</div>' +
-    '<div class="portrait-ring-info">' +
-      '<div class="eyebrow">Ton portrait politique</div>' +
-      '<div class="portrait-ring-title">Dominante ' + escapeHtml(top.cat) + '</div>' +
-      '<div class="portrait-ring-sub">7 thèmes pondérés par ton importance</div>' +
-    '</div>' +
-  '</div>';
 }
 
 var ENGAGEMENT_LEVELS = [
@@ -3187,7 +3175,7 @@ function renderDashboard(){
     '</div>' +
     '<button class="btn btn-accent btn-block" id="btn-vote">' + (answered === 0 ? "Commencer le questionnaire" : answered < topics.length ? "Continuer (" + (topics.length-answered) + " restants)" : "Revoir mes réponses") + '</button>' +
     (answered > 0 ? '<div style="margin-top:10px;"><button class="btn btn-ghost btn-block" id="btn-results">Voir mes résultats</button></div>' : '') +
-    (answered > 0 ? '<div style="margin-top:10px;"><button class="btn btn-ghost btn-block" id="btn-kit">Voir mon kit</button></div>' : '') +
+    (answered > 0 ? '<div style="margin-top:10px;"><button class="btn btn-ghost btn-block" id="btn-kit">Voir mon Starter Pack</button></div>' : '') +
     '</div>' +
     '<section class="block" style="margin-top:22px;"><h2>Top ' + topPolledCandidates.length + ' selon les sondages</h2><div class="sub">Basé sur les sondages d\'intentions de vote (dernière mise à jour : ' + escapeHtml(CANDIDATE_POLL_UPDATED_AT) + '). Ton classement personnel (page Résultats) prend en compte tous les candidats, pas seulement ceux-ci.</div>' +
       (topPolledCandidates.length > 6 ? '<input type="text" id="cand-search" placeholder="Rechercher un candidat ou un parti…" style="margin-top:12px;" />' : '') +
@@ -3469,13 +3457,11 @@ function renderResults(){
   }).join("");
 
   var signupCta = signupCtaHtml();
-  var ringHtml = portraitRingHtml(profile);
 
   var html = '<div id="sponsor-slot-results" style="margin-bottom:16px;"></div>' +
     '<span class="eyebrow">' + answered + ' / ' + topics.length + ' sujets pris en compte</span>' +
     '<h1>Tes affinités</h1>' +
     '<p class="intro-copy">Classement pondéré par l\'importance que tu as donnée à chaque sujet.</p>' +
-    ringHtml +
     podiumHtml +
     signupCta +
     '<div class="results-subhead" style="margin-top:22px;">Classement complet — touche un candidat pour le détail</div>' +
@@ -3594,7 +3580,7 @@ function renderKit(){
       '</button>';
   }).join("");
   var medalSlot = '<button class="blister-slot blister-slot-3 blister-item blister-medal" data-cat="level" title="Ton niveau">' +
-    levelMedalSvg(level.level, pop, 64) +
+    levelRingSvg(level.level, computeCategoryShares(profile), pop, 64) +
     '</button>';
 
   var blisterLogoImg = '<img src="assets/ui/logo-head.png" alt="Votona" />';
