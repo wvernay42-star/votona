@@ -333,6 +333,29 @@
   .skip-link{ display:block; text-align:center; margin-top:14px; font-size:12.5px; color:var(--ink-faint); background:none; border:none; cursor:pointer; }
 
   /* ---------- Results ---------- */
+  .portrait-ring-card{
+    display:flex; align-items:center; gap:16px; background:var(--bg-raised); border:1px solid var(--line);
+    border-radius:20px; padding:16px; margin:18px 0;
+  }
+  .portrait-ring{
+    position:relative; width:84px; height:84px; flex:none; border-radius:50%;
+  }
+  .portrait-ring-hole{
+    position:absolute; top:12px; left:12px; width:60px; height:60px; border-radius:50%;
+    background:var(--bg-raised); display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:16px; font-weight:700;
+  }
+  .portrait-ring-info{ display:flex; flex-direction:column; gap:2px; }
+  .portrait-ring-info .eyebrow{ margin-bottom:0; }
+  .portrait-ring-title{ font-family:var(--display); font-size:16px; font-weight:700; }
+  .portrait-ring-sub{ font-size:12px; color:var(--ink-faint); }
+  .results-action-bar{
+    position:fixed; left:0; right:0; bottom:0; z-index:30; display:flex; gap:10px;
+    padding:12px clamp(20px,4vw,40px) calc(12px + env(safe-area-inset-bottom));
+    background:color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter:blur(8px);
+    border-top:1px solid var(--line-soft); max-width:680px; margin:0 auto;
+  }
+  .results-action-bar .btn{ flex:1; }
   .podium{ display:flex; align-items:flex-end; gap:10px; margin:22px 0 28px; }
   .podium-step{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; min-width:0; }
   .podium-step.rank-1{ order:2; }
@@ -2612,6 +2635,49 @@ function computeTopCategories(profile){
   return ranked.slice(0,3);
 }
 
+function computeCategoryShares(profile){
+  var topics = getTopics();
+  var topicsById = {}; topics.forEach(function(t){ topicsById[t.id] = t; });
+  var answers = profile.answers || {};
+  var weights = {};
+  var total = 0;
+  Object.keys(answers).forEach(function(tid){
+    var t = topicsById[tid];
+    if(!t) return;
+    var imp = answers[tid].importance || 1;
+    weights[t.cat] = (weights[t.cat] || 0) + imp;
+    total += imp;
+  });
+  if(!total) return [];
+  return CATEGORIES.map(function(cat){
+    return {cat: cat, pct: (weights[cat] || 0) / total * 100};
+  }).sort(function(a, b){ return b.pct - a.pct; });
+}
+
+function portraitRingHtml(profile){
+  var shares = computeCategoryShares(profile);
+  if(!shares.length) return "";
+  var cum = 0;
+  var stops = shares.filter(function(s){ return s.pct > 0; }).map(function(s){
+    var color = (CATEGORY_META[s.cat] || {}).pop || "#7C3AED";
+    var start = cum;
+    cum += s.pct;
+    return color + " " + start.toFixed(2) + "% " + cum.toFixed(2) + "%";
+  }).join(", ");
+  var top = shares[0];
+  var topPop = (CATEGORY_META[top.cat] || {}).pop || "#7C3AED";
+  return '<div class="portrait-ring-card">' +
+    '<div class="portrait-ring" style="background:conic-gradient(' + stops + ');">' +
+      '<div class="portrait-ring-hole" style="color:' + topPop + ';">' + Math.round(top.pct) + '%</div>' +
+    '</div>' +
+    '<div class="portrait-ring-info">' +
+      '<div class="eyebrow">Ton portrait politique</div>' +
+      '<div class="portrait-ring-title">Dominante ' + escapeHtml(top.cat) + '</div>' +
+      '<div class="portrait-ring-sub">7 thèmes pondérés par ton importance</div>' +
+    '</div>' +
+  '</div>';
+}
+
 var ENGAGEMENT_LEVELS = [
   {min:0, name:"Citoyen en éveil"},
   {min:0.2, name:"Citoyen informé"},
@@ -3403,20 +3469,32 @@ function renderResults(){
   }).join("");
 
   var signupCta = signupCtaHtml();
+  var ringHtml = portraitRingHtml(profile);
 
   var html = '<div id="sponsor-slot-results" style="margin-bottom:16px;"></div>' +
     '<span class="eyebrow">' + answered + ' / ' + topics.length + ' sujets pris en compte</span>' +
     '<h1>Tes affinités</h1>' +
     '<p class="intro-copy">Classement pondéré par l\'importance que tu as donnée à chaque sujet.</p>' +
+    ringHtml +
     podiumHtml +
-    '<button class="btn btn-ghost btn-block" id="btn-goto-kit" style="margin-top:8px;">Voir mon kit</button>' +
-    (podiumOrder.length ? '<button class="btn btn-ghost btn-block" id="btn-share" style="margin-top:8px;">Partager mon classement</button>' : '') +
     signupCta +
     '<div class="results-subhead" style="margin-top:22px;">Classement complet — touche un candidat pour le détail</div>' +
-    '<div>' + rows + '</div>' +
+    '<div style="padding-bottom:76px;">' + rows + '</div>' +
     (answered < topics.length ? '<button class="btn btn-ghost btn-block" id="btn-more" style="margin-top:8px;">Répondre aux ' + (topics.length-answered) + ' sujets restants</button>' : '');
 
   document.getElementById("app").innerHTML = html;
+
+  var actionBar = document.getElementById("results-action-bar");
+  if(!actionBar){
+    actionBar = document.createElement("div");
+    actionBar.id = "results-action-bar";
+    actionBar.className = "results-action-bar";
+    document.body.appendChild(actionBar);
+  }
+  actionBar.innerHTML =
+    '<button class="btn btn-ghost" id="btn-goto-kit">Mon Starter Pack</button>' +
+    (podiumOrder.length ? '<button class="btn btn-accent" id="btn-share">📤 Partager</button>' : '');
+  document.getElementById("btn-goto-kit").onclick = function(){ state.screen = "kit"; render(); };
 
   document.querySelectorAll(".result-row").forEach(function(row){
     row.addEventListener("click", function(){
@@ -3446,9 +3524,6 @@ function renderResults(){
   var more = document.getElementById("btn-more");
   if(more) more.onclick = startVoteFlow;
 
-  var gotoKit = document.getElementById("btn-goto-kit");
-  if(gotoKit) gotoKit.onclick = function(){ state.screen = "kit"; render(); };
-
   wireSignupCta();
 
   var shareBtn = document.getElementById("btn-share");
@@ -3462,8 +3537,8 @@ function renderResults(){
     } else if(navigator.clipboard){
       navigator.clipboard.writeText(text).then(function(){
         trackShareEvent("results_clipboard_copy");
-        shareBtn.textContent = "Copié dans le presse-papiers !";
-        setTimeout(function(){ shareBtn.textContent = "Partager mon classement"; }, 2200);
+        shareBtn.textContent = "Copié !";
+        setTimeout(function(){ shareBtn.textContent = "📤 Partager"; }, 2200);
       }).catch(function(){});
     }
   };
@@ -4073,6 +4148,8 @@ function renderSponsor(){
 
 function render(){
   renderTopbar();
+  var existingActionBar = document.getElementById("results-action-bar");
+  if(existingActionBar && state.screen !== "results") existingActionBar.remove();
   document.getElementById("app").classList.toggle("app-wide", state.screen === "profiles" || state.screen === "dashboard" || state.screen === "kit");
   if(state.screen === "profiles") renderProfiles();
   else if(state.screen === "dashboard") renderDashboard();
