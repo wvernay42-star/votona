@@ -638,12 +638,29 @@
   }
   .step-item .t{ font-size:14.5px; font-weight:700; }
   .step-item .d{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; line-height:1.5; }
-  .faq-item{ padding:0; }
-  .faq-contact-card{ display:flex; align-items:center; gap:12px; background:var(--accent-tint); border-radius:16px; padding:14px; margin-top:16px; }
-  .faq-contact-mascot{ width:40px; height:40px; flex:none; }
+  .faq-list{ display:flex; flex-direction:column; gap:10px; margin-top:18px; }
+  .faq-card{ background:var(--bg-raised); border:1px solid var(--line); border-radius:18px; padding:16px 18px; transition:border-color .15s ease; }
+  .faq-card.open{ border-color:var(--accent); }
+  .faq-q{ display:flex; align-items:center; gap:12px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .faq-q-ic{
+    width:30px; height:30px; border-radius:10px; background:var(--accent-tint); color:var(--accent);
+    display:flex; align-items:center; justify-content:center; flex:none;
+  }
+  .faq-q-text{ font-family:var(--display); font-size:16px; font-weight:700; color:var(--ink); flex-grow:1; line-height:1.3; }
+  .faq-chev{ flex:none; color:var(--ink-faint); transition:transform .15s ease; }
+  .faq-card.open .faq-chev{ transform:rotate(180deg); color:var(--accent); }
+  .faq-a{ display:none; margin-top:12px; padding-top:12px; padding-left:42px; border-top:1px solid var(--line-soft); font-size:14px; line-height:1.6; color:var(--ink-soft); }
+  .faq-card.open .faq-a{ display:block; }
+  .faq-contact-card{ display:flex; align-items:center; gap:14px; background:var(--accent-tint); border-radius:18px; padding:16px 18px; margin-top:18px; }
+  .faq-contact-mascot{ width:44px; height:44px; flex:none; }
   .faq-contact-text{ flex-grow:1; }
-  .faq-contact-title{ font-size:13px; font-weight:700; }
-  .faq-contact-sub{ font-size:11px; color:var(--ink-faint); margin-top:1px; }
+  .faq-contact-title{ font-family:var(--display); font-size:15px; font-weight:700; color:var(--ink); }
+  .faq-contact-sub{ font-size:12.5px; color:var(--ink-faint); margin-top:2px; }
+  @media (max-width:480px){
+    .faq-a{ padding-left:0; }
+    .faq-contact-card{ flex-wrap:wrap; }
+    .faq-contact-card .btn{ flex:1 0 100%; margin-top:4px; }
+  }
   .editorial-block{ font-size:13.5px; color:var(--ink-soft); line-height:1.65; max-width:640px; }
   .editorial-block p{ margin:0 0 12px; }
   .editorial-block p:last-child{ margin-bottom:0; }
@@ -3229,16 +3246,16 @@ function howItWorksHtml(){
   }).join("");
 }
 function faqHtml(){
-  return FAQ_ITEMS.map(function(item, i){
-    return '<div class="theme-detail-item faq-item" data-faq="' + i + '">' +
-      '<div class="theme-detail-head">' +
-        '<div class="theme-detail-ic" style="background:var(--accent-tint); color:var(--accent);">' + topbarIconSvg("faq", 14) + '</div>' +
-        '<div class="theme-detail-name">' + escapeHtml(item.q) + '</div>' +
-        '<svg class="theme-detail-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>' +
+  return '<div class="faq-list">' + FAQ_ITEMS.map(function(item, i){
+    return '<div class="faq-card faq-item" data-faq="' + i + '">' +
+      '<div class="faq-q">' +
+        '<div class="faq-q-ic">' + topbarIconSvg("faq", 15) + '</div>' +
+        '<div class="faq-q-text">' + escapeHtml(item.q) + '</div>' +
+        '<svg class="faq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>' +
       '</div>' +
-      '<div class="theme-detail-body">' + escapeHtml(item.a) + '</div>' +
+      '<div class="faq-a">' + escapeHtml(item.a) + '</div>' +
     '</div>';
-  }).join("");
+  }).join("") + '</div>';
 }
 function wireFaqToggles(){
   document.querySelectorAll("[data-faq]").forEach(function(el){
@@ -4095,14 +4112,14 @@ function renderContact(){
    ============================================================ */
 function renderFaq(){
   var contactHtml = '<div class="faq-contact-card">' +
-    '<div class="faq-contact-mascot">' + mascotSvg("#7C3AED", 40) + '</div>' +
+    '<div class="faq-contact-mascot">' + mascotSvg("#7C3AED", 44) + '</div>' +
     '<div class="faq-contact-text"><div class="faq-contact-title">Toujours bloqué ?</div><div class="faq-contact-sub">On répond en général sous 24h.</div></div>' +
     '<button class="btn btn-accent btn-sm" id="faq-contact-btn">Nous écrire</button>' +
   '</div>';
   var html = '<span class="eyebrow">Questions fréquentes</span>' +
     '<h1>Tout comprendre sur Votona</h1>' +
     '<p class="intro-copy">Fonctionnement du classement, données, candidats, mises à jour : les réponses aux questions les plus posées.</p>' +
-    '<div style="margin-top:10px;">' + faqHtml() + '</div>' +
+    faqHtml() +
     contactHtml;
   document.getElementById("app").innerHTML = html;
   wireFaqToggles();
