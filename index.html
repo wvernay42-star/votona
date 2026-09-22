@@ -355,7 +355,7 @@
   }
   .results-action-bar .btn{ flex:1; }
   .podium{ display:flex; align-items:flex-end; gap:10px; margin:22px 0 28px; }
-  .podium-step{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; min-width:0; }
+  .podium-step{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; min-width:0; cursor:pointer; }
   .podium-step.rank-1{ order:2; }
   .podium-step.rank-2{ order:1; }
   .podium-step.rank-3{ order:3; }
@@ -3604,7 +3604,7 @@ function renderResults(){
   var podiumHtml = "";
   if(podiumOrder.length){
     podiumHtml = '<div class="podium">' + podiumOrder.map(function(r, i){
-      return '<div class="podium-step rank-' + (i+1) + '">' +
+      return '<div class="podium-step rank-' + (i+1) + '" data-cand="' + r.candidate.id + '">' +
         '<span class="podium-medal">' + medalLabel[i] + '</span>' +
         '<div class="podium-avatar" style="background:' + r.candidate.color + '">' + escapeHtml(initials(r.candidate.name)) + '</div>' +
         '<div class="podium-name">' + escapeHtml(r.candidate.name) + '</div>' +
@@ -3615,7 +3615,9 @@ function renderResults(){
     }).join("") + '</div>';
   }
 
-  var rows = results.map(function(r, i){
+  var top8 = results.slice(0, 8);
+  var restRows = top8.slice(podiumOrder.length).map(function(r, idx){
+    var i = podiumOrder.length + idx;
     var pct = r.pct === null ? 0 : r.pct;
     return '<div class="result-row" data-cand="' + r.candidate.id + '">' +
       '<div class="result-top">' +
@@ -3679,8 +3681,8 @@ function renderResults(){
     portraitHtml +
     podiumHtml +
     signupCta +
-    '<div class="results-subhead" style="margin-top:22px;">Classement complet — touche un candidat pour le détail</div>' +
-    '<div>' + rows + '</div>' +
+    (restRows ? '<div class="results-subhead" style="margin-top:22px;">Top 8 — touche un candidat pour le détail</div>' : '') +
+    '<div>' + restRows + '</div>' +
     (answered < topics.length ? '<button class="btn btn-ghost btn-block" id="btn-more" style="margin-top:8px;">Répondre aux ' + (topics.length-answered) + ' sujets restants</button>' : '') +
     '<div style="padding-bottom:76px;">' + themeDetailHtml + '</div>';
 
@@ -3698,6 +3700,21 @@ function renderResults(){
     (podiumOrder.length ? '<button class="btn btn-accent" id="btn-share">📤 Partager</button>' : '');
   document.getElementById("btn-goto-kit").onclick = function(){ state.screen = "kit"; render(); };
 
+  function candidateDetailItemsHtml(cand){
+    return Object.keys(profile.answers).map(function(tid){
+      var t = topics.filter(function(x){return x.id===tid;})[0];
+      var pos = cand.positions[tid];
+      if(!t || !pos) return null;
+      var userA = profile.answers[tid];
+      var agree = matchScore(userA.stance, pos.stance);
+      return {t: t, pos: pos, agree: agree};
+    }).filter(Boolean).sort(function(a, b){ return b.agree - a.agree; }).map(function(item){
+      var agree = item.agree;
+      var ic = agree === 1 ? '<span style="color:var(--good)">✓</span>' : agree === 0 ? '<span style="color:var(--bad)">✕</span>' : '<span style="color:var(--neutral)">–</span>';
+      return '<div class="rd-item"><span class="ic">' + ic + '</span><div class="txt"><b>' + escapeHtml(item.t.statement) + '</b><br>' + escapeHtml(item.pos.detail) + '</div></div>';
+    }).join("");
+  }
+
   document.querySelectorAll(".result-row").forEach(function(row){
     row.addEventListener("click", function(){
       var wasOpen = row.classList.contains("open");
@@ -3707,19 +3724,32 @@ function renderResults(){
       var id = row.getAttribute("data-cand");
       var cand = getCandidates().filter(function(c){return c.id===id;})[0];
       var det = document.getElementById("detail-" + id);
-      var items = Object.keys(profile.answers).map(function(tid){
-        var t = topics.filter(function(x){return x.id===tid;})[0];
-        var pos = cand.positions[tid];
-        if(!t || !pos) return null;
-        var userA = profile.answers[tid];
-        var agree = matchScore(userA.stance, pos.stance);
-        return {t: t, pos: pos, agree: agree};
-      }).filter(Boolean).sort(function(a, b){ return b.agree - a.agree; }).map(function(item){
-        var agree = item.agree;
-        var ic = agree === 1 ? '<span style="color:var(--good)">✓</span>' : agree === 0 ? '<span style="color:var(--bad)">✕</span>' : '<span style="color:var(--neutral)">–</span>';
-        return '<div class="rd-item"><span class="ic">' + ic + '</span><div class="txt"><b>' + escapeHtml(item.t.statement) + '</b><br>' + escapeHtml(item.pos.detail) + '</div></div>';
-      }).join("");
-      det.innerHTML = items;
+      det.innerHTML = candidateDetailItemsHtml(cand);
+    });
+  });
+
+  document.querySelectorAll(".podium-step").forEach(function(step){
+    step.addEventListener("click", function(){
+      var id = step.getAttribute("data-cand");
+      var cand = getCandidates().filter(function(c){return c.id===id;})[0];
+      if(!cand) return;
+      var existing = document.getElementById("cand-modal-overlay");
+      if(existing) existing.remove();
+      var overlay = document.createElement("div");
+      overlay.className = "kit-modal-overlay";
+      overlay.id = "cand-modal-overlay";
+      overlay.innerHTML =
+        '<div class="kit-modal-card">' +
+          '<button class="kit-modal-close" id="cand-modal-close">✕</button>' +
+          '<div class="kit-modal-header">' +
+            '<div class="kit-modal-icon" style="background:color-mix(in srgb, ' + cand.color + ' 20%, transparent); color:' + cand.color + '; font-size:16px; font-weight:700;">' + escapeHtml(initials(cand.name)) + '</div>' +
+            '<div><div class="kit-modal-title">' + escapeHtml(cand.name) + '</div><div class="kit-modal-desc" style="margin:2px 0 0;">' + escapeHtml(cand.party) + '</div></div>' +
+          '</div>' +
+          '<div style="margin-top:14px;">' + candidateDetailItemsHtml(cand) + '</div>' +
+        '</div>';
+      document.body.appendChild(overlay);
+      overlay.addEventListener("click", function(e){ if(e.target === overlay) overlay.remove(); });
+      document.getElementById("cand-modal-close").onclick = function(){ overlay.remove(); };
     });
   });
 
