@@ -3675,8 +3675,7 @@ function renderResults(){
     podiumHtml +
     signupCta +
     (restRows ? '<div class="results-subhead" style="margin-top:22px;">Top 8 — touche un candidat pour le détail</div>' : '') +
-    '<div style="padding-bottom:76px;">' + restRows + '</div>' +
-    (answered < topics.length ? '<button class="btn btn-ghost btn-block" id="btn-more" style="margin-top:8px;">Répondre aux ' + (topics.length-answered) + ' sujets restants</button>' : '');
+    '<div style="padding-bottom:76px;">' + restRows + '</div>';
 
   document.getElementById("app").innerHTML = html;
 
@@ -3687,9 +3686,11 @@ function renderResults(){
     actionBar.className = "results-action-bar";
     document.body.appendChild(actionBar);
   }
+  var remaining = topics.length - answered;
   actionBar.innerHTML =
     '<button class="btn btn-ghost" id="btn-goto-kit">Mon Starter Pack</button>' +
-    (podiumOrder.length ? '<button class="btn btn-accent" id="btn-share">📤 Partager</button>' : '');
+    (remaining > 0 ? '<button class="btn btn-accent" id="btn-share">Répondre aux ' + remaining + ' sujet' + (remaining > 1 ? "s" : "") + ' restant' + (remaining > 1 ? "s" : "") + '</button>'
+      : podiumOrder.length ? '<button class="btn btn-accent" id="btn-share">📤 Partager</button>' : '');
   document.getElementById("btn-goto-kit").onclick = function(){ state.screen = "kit"; render(); };
 
   function candidateDetailItemsHtml(cand){
@@ -3745,13 +3746,13 @@ function renderResults(){
     });
   });
 
-  var more = document.getElementById("btn-more");
-  if(more) more.onclick = startVoteFlow;
-
   wireSignupCta();
 
   var shareBtn = document.getElementById("btn-share");
-  if(shareBtn) shareBtn.onclick = function(){
+  if(shareBtn && remaining > 0){
+    shareBtn.onclick = startVoteFlow;
+  } else if(shareBtn){
+    shareBtn.onclick = function(){
     var lines = podiumOrder.map(function(r, i){
       return (i+1) + ". " + r.candidate.name + " (" + r.pct + "%)";
     });
@@ -3765,7 +3766,8 @@ function renderResults(){
         setTimeout(function(){ shareBtn.textContent = "📤 Partager"; }, 2200);
       }).catch(function(){});
     }
-  };
+    };
+  }
 }
 
 /* ============================================================
