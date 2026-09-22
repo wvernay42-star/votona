@@ -3109,7 +3109,7 @@ async function generateShareCardImage(profile){
   ctx.globalAlpha = 1;
 
   y += 56;
-  var ctaText = "Fais le test → votona.vercel.app", ctaPad = 30;
+  var ctaText = "Fais le test → votona.fr", ctaPad = 30;
   ctx.font = "700 20px 'IBM Plex Mono', monospace";
   var ctaW = Math.min(ctx.measureText(ctaText).width + ctaPad * 2, W - pad * 2), ctaH = 64;
   ctx.save();
@@ -4319,7 +4319,7 @@ function renderAdmin(){
             '<div><label class="field-label">Texte court (optionnel)</label><input type="text" class="queue-body" data-target="' + target + '" placeholder="Une phrase d\'accroche" /></div>' +
             '<div><label class="field-label">Image (optionnel — URL directe vers un .jpg/.png/.webp)</label><input type="text" class="queue-image" data-target="' + target + '" placeholder="https://..." /></div>' +
             '<div><label class="field-label">Texte du bouton (optionnel, défaut "Voir sur Votona")</label><input type="text" class="queue-cta-label" data-target="' + target + '" placeholder="Ex. Voir le nouveau sujet" /></div>' +
-            '<div><label class="field-label">Lien du bouton (optionnel, défaut la page d\'accueil)</label><input type="text" class="queue-cta-url" data-target="' + target + '" placeholder="https://votona.vercel.app/..." /></div>' +
+            '<div><label class="field-label">Lien du bouton (optionnel, défaut la page d\'accueil)</label><input type="text" class="queue-cta-url" data-target="' + target + '" placeholder="https://votona.fr/..." /></div>' +
             '<div class="form-actions"><button class="btn btn-primary btn-sm" data-queue-add="' + target + '">Ajouter à la file</button></div>' +
           '</div>' +
         '</section>';
