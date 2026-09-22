@@ -543,7 +543,7 @@
   .media-type-tag.podcast{ background:color-mix(in srgb, var(--accent) 18%, transparent); color:var(--accent); }
   .media-type-tag.docu{ background:color-mix(in srgb, var(--gold) 22%, transparent); color:var(--gold); }
 
-  .pop-share-btn{ background:#14121F; color:#fff; border-radius:16px; font-weight:700; margin-top:18px; }
+  .pop-share-btn{ background:var(--accent); color:#fff; border-radius:16px; font-weight:700; margin-top:18px; }
 
   .practical-list{ display:flex; flex-direction:column; gap:10px; margin-top:16px; }
   .practical-item{
@@ -3900,20 +3900,13 @@ function renderKit(){
     '<h1>Ton kit pour la présidentielle</h1>' +
     '<p class="intro-copy">Un résumé de ton profil politique, et tout ce qu\'il faut savoir pour voter le moment venu.</p>' +
     blisterCardHtml +
-    levelProgressCardHtml(profile) +
     signupCtaHtml() +
-    '<div style="margin-top:24px;"><button class="btn btn-accent btn-block" id="kit-continue">Voir mon tableau de bord</button></div>' +
     modalHtml;
 
   document.getElementById("app").innerHTML = html;
   wireMascotFallbacks();
   wirePropFallbacks();
   wireSignupCta();
-  document.getElementById("kit-continue").onclick = function(){
-    state.kitModalCat = null;
-    state.screen = "dashboard";
-    render();
-  };
   var shareBtn = document.getElementById("kit-share-btn");
   if(shareBtn) shareBtn.onclick = function(){
     state.kitModalCat = null;
