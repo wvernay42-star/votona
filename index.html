@@ -3125,9 +3125,6 @@ async function generateShareCardImage(profile){
 
   y += ctaH + 40;
   var qrBoxSize = 190, qrPad = 18;
-  drawRoundedRect(ctx, (W - qrBoxSize) / 2, y, qrBoxSize, qrBoxSize, 20);
-  ctx.fillStyle = "#ffffff";
-  ctx.fill();
   drawQrCode(ctx, buildReferralUrl(profile), (W - qrBoxSize) / 2 + qrPad, y + qrPad, qrBoxSize - qrPad * 2, "#14121F");
   y += qrBoxSize + 22;
   ctx.globalAlpha = 0.65;
