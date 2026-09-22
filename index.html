@@ -4038,13 +4038,8 @@ function renderLegal(){
       '<p><strong>Hébergement</strong><br>Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis — <a href="https://vercel.com" target="_blank" rel="noopener">vercel.com</a></p>' +
       '<p><strong>Données personnelles</strong><br>Les comptes et réponses sont stockés via Supabase. Aucune donnée n\'est vendue ni partagée avec des tiers à des fins commerciales. Tu peux supprimer l\'intégralité de tes données à tout moment depuis « Mon compte » → « Supprimer toutes mes données ».</p>' +
       '<p><strong>Contenu éditorial</strong><br>Les positions des candidats sont établies à partir de déclarations publiques, sourcées quand possible, et mises à jour régulièrement. Elles sont fournies à titre indicatif et peuvent contenir des approximations — voir la FAQ pour plus de détails.</p>' +
-    '</div>' +
-    '<button class="btn btn-ghost btn-block" id="btn-legal-back" style="margin-top:22px;">← Retour</button>';
+    '</div>';
   document.getElementById("app").innerHTML = html;
-  document.getElementById("btn-legal-back").onclick = function(){
-    state.screen = activeProfile() ? "dashboard" : "profiles";
-    render();
-  };
 }
 
 /* ============================================================
@@ -4057,13 +4052,8 @@ function renderContact(){
     '<h1>Contact</h1>' +
     '<p class="intro-copy">Une suggestion, un bug rencontré, une erreur sur une position de candidat ? Écris-moi directement, je lis tout.</p>' +
     '<a href="mailto:w.vernay42@gmail.com?subject=' + subject + '&body=' + body + '" class="btn btn-accent btn-block" style="margin-top:16px; text-decoration:none; display:block; text-align:center;">✉️ Envoyer un email</a>' +
-    '<p class="intro-copy" style="margin-top:14px; font-size:12.5px;">Ou directement à <a href="mailto:w.vernay42@gmail.com">w.vernay42@gmail.com</a></p>' +
-    '<button class="btn btn-ghost btn-block" id="btn-contact-back" style="margin-top:22px;">← Retour</button>';
+    '<p class="intro-copy" style="margin-top:14px; font-size:12.5px;">Ou directement à <a href="mailto:w.vernay42@gmail.com">w.vernay42@gmail.com</a></p>';
   document.getElementById("app").innerHTML = html;
-  document.getElementById("btn-contact-back").onclick = function(){
-    state.screen = activeProfile() ? "dashboard" : "profiles";
-    render();
-  };
 }
 
 /* ============================================================
