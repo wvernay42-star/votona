@@ -3094,11 +3094,6 @@ function goToFaq(){
 }
 
 var TOPBAR_HUB_SCREENS = ["profiles", "dashboard"];
-var SCREEN_TITLES = {
-  results: "Résultats", kit: "Starter Pack", kitShare: "Partager",
-  vote: "Questionnaire", account: "Mon compte", faq: "FAQ",
-  legal: "Mentions légales", contact: "Contact", admin: "Admin"
-};
 function screenBackTarget(){
   if(state.screen === "kitShare") return "kit";
   return activeProfile() ? "dashboard" : "profiles";
@@ -3106,7 +3101,7 @@ function screenBackTarget(){
 function renderTopbar(){
   var brandSlot = document.getElementById("brand-slot");
   if(TOPBAR_HUB_SCREENS.indexOf(state.screen) === -1){
-    var title = SCREEN_TITLES[state.screen] || "Retour";
+    var title = "Retour";
     brandSlot.innerHTML =
       '<button class="topbar-back" id="topbar-back" type="button">' +
         '<span class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></span>' +
