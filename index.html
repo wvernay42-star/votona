@@ -3093,7 +3093,7 @@ function goToFaq(){
   render();
 }
 
-var TOPBAR_HUB_SCREENS = ["profiles", "dashboard"];
+var TOPBAR_HUB_SCREENS = ["profiles", "dashboard", "faq", "account"];
 function screenBackTarget(){
   if(state.screen === "kitShare") return "kit";
   return activeProfile() ? "dashboard" : "profiles";
@@ -4049,15 +4049,10 @@ function renderFaq(){
     '<h1>Tout comprendre sur Votona</h1>' +
     '<p class="intro-copy">Fonctionnement du classement, données, candidats, mises à jour : les réponses aux questions les plus posées.</p>' +
     '<div style="margin-top:10px;">' + faqHtml() + '</div>' +
-    contactHtml +
-    '<button class="btn btn-ghost btn-block" id="btn-faq-back" style="margin-top:22px;">← Retour</button>';
+    contactHtml;
   document.getElementById("app").innerHTML = html;
   wireFaqToggles();
   document.getElementById("faq-contact-btn").onclick = function(){ state.screen = "contact"; render(); };
-  document.getElementById("btn-faq-back").onclick = function(){
-    state.screen = activeProfile() ? "dashboard" : "profiles";
-    render();
-  };
 }
 
 /* ============================================================
@@ -4114,7 +4109,6 @@ function renderAccount(){
       '<button class="btn btn-accent btn-block" id="btn-send-link" style="margin-top:12px;">Envoyer le lien magique</button>' +
       (authMessage ? '<div class="auth-message' + (authMessage.indexOf("Lien envoyé") === 0 ? " ok" : "") + '" style="margin-top:12px;">' + escapeHtml(authMessage) + '</div>' : '');
   }
-  html += '<button class="btn btn-ghost btn-block" id="btn-account-back" style="margin-top:22px;">← Retour</button>';
   document.getElementById("app").innerHTML = html;
 
   var optinToggle = document.getElementById("account-optin");
@@ -4209,11 +4203,6 @@ function renderAccount(){
       deleteAccountBtn.disabled = false;
       deleteAccountBtn.textContent = "Supprimer toutes mes données";
     });
-  };
-  document.getElementById("btn-account-back").onclick = function(){
-    authMessage = null;
-    state.screen = activeProfile() ? "dashboard" : "profiles";
-    render();
   };
 }
 
