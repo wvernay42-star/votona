@@ -3027,10 +3027,15 @@ async function generateShareCardImage(profile){
   var blisterX = (W - blisterW) / 2, blisterY = 156;
   if(templateImg) ctx.drawImage(templateImg, blisterX, blisterY, blisterW, blisterH);
 
+  // Le kit "live" a une largeur de blister fixe (.blister-outer max-width:280px) ;
+  // les décalages en px (transform: translate()) de son CSS sont donc convertis
+  // ici proportionnellement à la largeur du blister dessiné sur le canvas.
+  var slotShift = (3 / 280) * blisterW;
+
   var mainBox = {x: blisterX + 0.042*blisterW, y: blisterY + 0.196*blisterH, w: 0.528*blisterW, h: 0.615*blisterH};
   if(mascotImg){
     var mainSubW = mainBox.w * 0.74, mainSubH = mainBox.h * 0.74;
-    var mainSubX = mainBox.x + (mainBox.w - mainSubW) / 2 + 0.04 * mainBox.w;
+    var mainSubX = mainBox.x + (mainBox.w - mainSubW) / 2 + 0.04 * mainSubW;
     var mainSubY = mainBox.y + (mainBox.h - mainSubH) / 2;
     drawImageContain(ctx, mascotImg, mainSubX, mainSubY, mainSubW, mainSubH);
   }
@@ -3042,7 +3047,7 @@ async function generateShareCardImage(profile){
   function drawInSlot(img, box){
     if(!img) return;
     var subW = box.w * 0.78, subH = box.h * 0.78;
-    drawImageContain(ctx, img, box.x + (box.w - subW) / 2, box.y + (box.h - subH) / 2, subW, subH);
+    drawImageContain(ctx, img, box.x + (box.w - subW) / 2 + slotShift, box.y + (box.h - subH) / 2 + slotShift, subW, subH);
   }
   accessoryImgs.forEach(function(img, i){ drawInSlot(img, slotBoxes[i]); });
   drawInSlot(ringImg, slotBoxes[2]);
@@ -3951,14 +3956,9 @@ function renderKitShare(){
     '<div id="share-actions" style="display:none; max-width:340px; margin:0 auto;">' +
       '<button class="btn btn-accent btn-block" id="kit-share-native" style="margin-top:16px;">📤 Partager</button>' +
       '<button class="btn btn-ghost btn-block" id="kit-share-download" style="margin-top:10px;">⬇️ Télécharger l\'image</button>' +
-    '</div>' +
-    '<button class="btn btn-ghost btn-block" id="share-back" style="margin-top:14px; max-width:340px; margin-left:auto; margin-right:auto;">← Retour au kit</button>';
+    '</div>';
 
   document.getElementById("app").innerHTML = html;
-  document.getElementById("share-back").onclick = function(){
-    state.screen = "kit";
-    render();
-  };
 
   generateShareCardImage(profile).then(function(canvas){
     var wrap = document.getElementById("share-canvas-wrap");
