@@ -134,6 +134,13 @@
   .brand .name{ font-family:var(--display); font-weight:700; font-size:18px; letter-spacing:.2px; color:var(--masthead-ink); white-space:nowrap; transition:color .15s ease; }
   .brand .year{ font-family:var(--mono); font-size:11px; color:var(--accent); letter-spacing:.06em; white-space:nowrap; }
   @media (max-width:420px){ .brand .year{ display:none; } }
+  .topbar-back{
+    display:flex; align-items:center; gap:8px; background:none; border:none; padding:0;
+    cursor:pointer; font:inherit; -webkit-tap-highlight-color:transparent; color:var(--masthead-ink);
+  }
+  .topbar-back:hover{ color:var(--accent); }
+  .topbar-back .arrow{ flex:none; display:flex; }
+  .topbar-back .title{ font-family:var(--display); font-weight:700; font-size:17px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:52vw; }
   .topbar-actions{ display:flex; align-items:center; gap:6px; }
   .icon-btn{
     width:34px; height:34px; border-radius:50%; border:1px solid var(--masthead-line);
@@ -716,15 +723,7 @@
 
 <div id="shell">
   <header class="topbar">
-    <div class="brand">
-      <button class="brand-home" id="brand-home" type="button">
-        <div class="mark">
-          <img src="assets/ui/logo-head.webp" alt="Votona" />
-        </div>
-        <div><div class="name">Votona</div></div>
-      </button>
-      <div class="year">PRÉSIDENTIELLE 2027</div>
-    </div>
+    <div class="brand" id="brand-slot"></div>
     <div class="topbar-actions" id="topbar-actions"></div>
   </header>
   <main id="app"></main>
@@ -2189,7 +2188,6 @@ function categoryIconDataUrl(cat, size, color){
 }
 
 var TOPBAR_ICON_PATHS = {
-  home: '<circle cx="12" cy="12" r="9"/><polygon points="15.5 8.5 13.3 13.3 8.5 15.5 10.7 10.7 15.5 8.5"/>',
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>',
   faq: '<circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 1 1 3.9 2.4c-1 .5-1.7 1.1-1.7 2.4"/><line x1="12" y1="17.2" x2="12" y2="17.21"/>',
   admin: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.6 1H21a2 2 0 1 1 0 4h-.2a1.7 1.7 0 0 0-1.5 1z"/>'
@@ -3095,19 +3093,42 @@ function goToFaq(){
   render();
 }
 
-var TOPBAR_HOME_HIDDEN_SCREENS = ["profiles", "dashboard"];
+var TOPBAR_HUB_SCREENS = ["profiles", "dashboard"];
+var SCREEN_TITLES = {
+  results: "Résultats", kit: "Starter Pack", kitShare: "Partager",
+  vote: "Questionnaire", account: "Mon compte", faq: "FAQ",
+  legal: "Mentions légales", contact: "Contact", admin: "Admin"
+};
+function screenBackTarget(){
+  if(state.screen === "kitShare") return "kit";
+  return activeProfile() ? "dashboard" : "profiles";
+}
 function renderTopbar(){
+  var brandSlot = document.getElementById("brand-slot");
+  if(TOPBAR_HUB_SCREENS.indexOf(state.screen) === -1){
+    var title = SCREEN_TITLES[state.screen] || "Retour";
+    brandSlot.innerHTML =
+      '<button class="topbar-back" id="topbar-back" type="button">' +
+        '<span class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></span>' +
+        '<span class="title">' + escapeHtml(title) + '</span>' +
+      '</button>';
+    document.getElementById("topbar-back").onclick = function(){ state.screen = screenBackTarget(); render(); };
+  } else {
+    brandSlot.innerHTML =
+      '<button class="brand-home" id="brand-home" type="button">' +
+        '<div class="mark"><img src="assets/ui/logo-head.webp" alt="Votona" /></div>' +
+        '<div><div class="name">Votona</div></div>' +
+      '</button>' +
+      '<div class="year">PRÉSIDENTIELLE 2027</div>';
+    document.getElementById("brand-home").onclick = function(){ state.screen = "profiles"; render(); };
+  }
+
   var el = document.getElementById("topbar-actions");
   var html = "";
-  if(TOPBAR_HOME_HIDDEN_SCREENS.indexOf(state.screen) === -1){
-    html += '<button class="icon-btn" id="btn-home" title="Accueil">' + topbarIconSvg("home") + '</button>';
-  }
   html += '<button class="icon-btn" id="btn-account" title="' + (isLoggedIn() ? "Mon compte" : "Se connecter") + '">' + topbarIconSvg("user") + '</button>';
   html += '<button class="icon-btn" id="btn-faq" title="Questions fréquentes">' + topbarIconSvg("faq") + '</button>';
   if(ADMIN_MODE){ html += '<button class="icon-btn" id="btn-admin" title="Gérer candidats et sujets">' + topbarIconSvg("admin") + '</button>'; }
   el.innerHTML = html;
-  var home = document.getElementById("btn-home");
-  if(home) home.onclick = function(){ state.screen = "dashboard"; render(); };
   document.getElementById("btn-account").onclick = function(){ state.screen = "account"; render(); };
   document.getElementById("btn-faq").onclick = goToFaq;
   var adminBtn = document.getElementById("btn-admin");
@@ -3117,9 +3138,6 @@ function renderTopbar(){
   pl.innerHTML = activeProfile() ? ' · <a id="switch-link">changer de profil</a>' : "";
   var sw = document.getElementById("switch-link");
   if(sw) sw.onclick = function(){ state.screen = "profiles"; render(); };
-
-  var brandHome = document.getElementById("brand-home");
-  if(brandHome) brandHome.onclick = function(){ state.screen = "profiles"; render(); };
 
   var legalLink = document.getElementById("footer-legal-link");
   if(legalLink) legalLink.onclick = function(e){ e.preventDefault(); state.screen = "legal"; render(); };
