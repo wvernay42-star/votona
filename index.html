@@ -193,6 +193,8 @@
     border:2px solid color-mix(in srgb, var(--bad) 30%, var(--line-soft));
   }
   .acct-danger-zone .field-label{ color:var(--bad); }
+  .auth-message{ font-size:13px; line-height:1.5; color:var(--ink-soft); padding:12px 14px; border-radius:14px; background:var(--bg-raised); border:1px solid var(--line); }
+  .auth-message.ok{ color:var(--good); background:color-mix(in srgb, var(--good) 10%, transparent); border-color:color-mix(in srgb, var(--good) 35%, transparent); font-weight:600; }
   .new-profile-form{
     margin-top:16px; padding:16px; border:1px dashed var(--line); border-radius:var(--radius);
     display:none; gap:10px; flex-direction:column; max-width:420px;
@@ -297,7 +299,6 @@
   }
   .context-panel.open{ display:block; }
   .context-theme{ font-weight:700; color:var(--pop, var(--blue)); margin-bottom:4px; }
-  .swipe-hint{ display:flex; justify-content:space-between; margin-top:20px; font-size:12px; color:var(--ink-faint); }
 
   .stance-buttons{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:16px; }
   .stance-btn{
@@ -318,7 +319,9 @@
   .imp-btn:hover{ border-color:var(--blue); color:var(--blue); }
   .imp-btn.picked{ border-color:var(--blue); background:var(--blue-soft); color:var(--blue); }
 
-  .reveal-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:18px; }
+  .reveal-group{ margin-top:14px; }
+  .reveal-group-label{ font-size:11px; font-weight:700; color:var(--ink-soft); margin-bottom:6px; }
+  .reveal-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:0; }
   .reveal-chip{
     display:flex; align-items:center; gap:5px; font-size:11.5px; padding:5px 8px 5px 6px; border-radius:99px;
     background:var(--line-soft); color:var(--ink-soft);
@@ -377,10 +380,40 @@
   .result-bar-fill{ height:100%; border-radius:99px; }
   .result-detail{ display:none; margin-top:14px; padding-top:12px; border-top:1px solid var(--line-soft); }
   .result-row.open .result-detail{ display:block; }
+  .level-progress-card{ background:var(--bg-raised); border:1px solid var(--line); border-radius:16px; padding:14px; margin-top:14px; }
+  .level-progress-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .level-progress-eyebrow{ font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; color:var(--ink-faint); }
+  .level-progress-current{ font-size:13px; font-weight:700; color:var(--accent); }
+  .level-progress-track{ position:relative; height:8px; background:var(--line-soft); border-radius:4px; margin:0 7px; }
+  .level-progress-fill{ height:100%; background:var(--accent); border-radius:4px; }
+  .level-progress-dot{ position:absolute; top:-3px; width:14px; height:14px; border-radius:50%; background:var(--line-soft); border:2px solid var(--bg-raised); transform:translateX(-50%); }
+  .level-progress-dot.reached{ background:var(--accent); }
+  .level-progress-dot.current{ width:16px; height:16px; top:-4px; background:var(--bg-raised); border:3px solid var(--accent); }
+  .level-progress-next{ display:flex; align-items:center; gap:10px; margin-top:12px; padding-top:12px; border-top:1px solid var(--line-soft); }
+  .level-next-avatar{ width:34px; height:42px; flex:none; }
+  .level-next-avatar img{ width:100%; height:100%; object-fit:contain; }
+  .level-next-text{ font-size:12px; color:var(--ink-soft); line-height:1.4; }
+  .level-next-text b{ color:var(--ink); }
+
   .rd-item{ display:flex; gap:8px; padding:6px 0; font-size:12.5px; align-items:flex-start; }
   .rd-item .ic{ flex:none; margin-top:1px; }
   .rd-item .txt{ color:var(--ink-soft); }
   .rd-item .txt b{ color:var(--ink); }
+
+  .portrait-card{ display:flex; align-items:center; gap:14px; background:var(--bg-raised); border:1px solid var(--line); border-radius:18px; padding:14px; margin-top:16px; }
+  .portrait-info{ display:flex; flex-direction:column; gap:2px; }
+  .portrait-eyebrow{ font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; color:var(--ink-faint); }
+  .portrait-title{ font-size:15px; font-weight:700; }
+  .portrait-sub{ font-size:11.5px; color:var(--ink-faint); }
+
+  .theme-detail-item{ background:var(--bg-raised); border:1px solid var(--line); border-radius:14px; padding:12px; margin-top:8px; }
+  .theme-detail-head{ display:flex; align-items:center; gap:10px; cursor:pointer; }
+  .theme-detail-ic{ width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex:none; }
+  .theme-detail-name{ font-size:13px; font-weight:700; flex-grow:1; }
+  .theme-detail-chev{ transition:transform .15s ease; flex:none; }
+  .theme-detail-item.open .theme-detail-chev{ transform:rotate(180deg); }
+  .theme-detail-body{ display:none; margin-top:10px; padding-top:10px; border-top:1px solid var(--line-soft); }
+  .theme-detail-item.open .theme-detail-body{ display:block; }
 
   /* ---------- Admin ---------- */
   .admin-tabs{ display:flex; gap:6px; margin-bottom:16px; border-bottom:1px solid var(--line-soft); }
@@ -575,15 +608,12 @@
   }
   .step-item .t{ font-size:14.5px; font-weight:700; }
   .step-item .d{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; line-height:1.5; }
-  .faq-item{
-    border-bottom:1px solid var(--line-soft); padding:13px 0; cursor:pointer;
-  }
-  .faq-item:first-child{ border-top:1px solid var(--line-soft); }
-  .faq-q{ display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:13.5px; font-weight:600; }
-  .faq-q .chev{ color:var(--ink-faint); transition:transform .15s ease; flex:none; }
-  .faq-item.open .faq-q .chev{ transform:rotate(180deg); }
-  .faq-a{ display:none; font-size:13px; color:var(--ink-soft); line-height:1.55; margin-top:9px; }
-  .faq-item.open .faq-a{ display:block; }
+  .faq-item{ padding:0; }
+  .faq-contact-card{ display:flex; align-items:center; gap:12px; background:var(--accent-tint); border-radius:16px; padding:14px; margin-top:16px; }
+  .faq-contact-mascot{ width:40px; height:40px; flex:none; }
+  .faq-contact-text{ flex-grow:1; }
+  .faq-contact-title{ font-size:13px; font-weight:700; }
+  .faq-contact-sub{ font-size:11px; color:var(--ink-faint); margin-top:1px; }
   .editorial-block{ font-size:13.5px; color:var(--ink-soft); line-height:1.65; max-width:640px; }
   .editorial-block p{ margin:0 0 12px; }
   .editorial-block p:last-child{ margin-bottom:0; }
@@ -2401,6 +2431,26 @@ function levelRingSvg(level, pct, color, size){
     '</svg>';
 }
 
+function categoryDominanceRingSvg(cat, pct, size){
+  size = size || 76;
+  var meta = CATEGORY_META[cat] || {};
+  var color = meta.pop || "#7C3AED";
+  var r = 41, cx = 50, cy = 50, strokeW = 10;
+  var circumference = 2 * Math.PI * r;
+  var arc = "";
+  if(pct > 0){
+    var len = Math.max(circumference * Math.min(pct, 100) / 100, strokeW * 0.6);
+    arc = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + strokeW + '" stroke-linecap="round" ' +
+      'stroke-dasharray="' + len.toFixed(2) + ' ' + (circumference - len).toFixed(2) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
+  }
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="var(--line-soft)" stroke-width="' + strokeW + '"/>' +
+    arc +
+    '<circle cx="50" cy="50" r="32" fill="#ffffff"/>' +
+    '<text x="50" y="60" text-anchor="middle" font-family="\'IBM Plex Mono\', monospace" font-weight="700" font-size="26" fill="' + color + '">' + Math.round(pct) + '%</text>' +
+    '</svg>';
+}
+
 /* ============================================================
    COMPTE — connexion par lien magique (Supabase), synchronisation
    des profils et réponses pour les retrouver sur un autre appareil.
@@ -2793,7 +2843,24 @@ function buildReferralUrl(profile){
   var params = [];
   if(meta.slug) params.push("ref_cat=" + encodeURIComponent(meta.slug));
   params.push("ref_lvl=" + encodeURIComponent(level.level));
+  if(isValidUUID(state.activeProfileId)) params.push("ref_pid=" + encodeURIComponent(state.activeProfileId));
   return location.origin + location.pathname + "?" + params.join("&");
+}
+
+var LS_REFERRER_PID = "votona.referrerPid.v1";
+var referralCompletionSent = false;
+async function maybeNotifyReferralCompletion(referredName){
+  if(referralCompletionSent) return;
+  var referrerPid = safeGet(LS_REFERRER_PID, null);
+  if(!referrerPid || !sb) return;
+  referralCompletionSent = true;
+  safeSet(LS_REFERRER_PID, null);
+  try{
+    await sb.from("referral_completions").insert({
+      referrer_profile_id: referrerPid,
+      referred_name: referredName
+    });
+  }catch(e){}
 }
 
 async function trackReferralLanding(refCat, refLevel){
@@ -2816,6 +2883,8 @@ function maybeTrackReferralLanding(){
   referralLanded = true;
   var refLevelRaw = parseInt(params.get("ref_lvl"), 10);
   trackReferralLanding(refCat, isNaN(refLevelRaw) ? null : refLevelRaw);
+  var refPid = params.get("ref_pid");
+  if(refPid && isValidUUID(refPid)) safeSet(LS_REFERRER_PID, refPid);
 }
 
 function drawRoundedRect(ctx, x, y, w, h, r){
@@ -3055,9 +3124,14 @@ function howItWorksHtml(){
 }
 function faqHtml(){
   return FAQ_ITEMS.map(function(item, i){
-    return '<div class="faq-item" data-faq="' + i + '">' +
-      '<div class="faq-q"><span>' + escapeHtml(item.q) + '</span><span class="chev">⌄</span></div>' +
-      '<div class="faq-a">' + escapeHtml(item.a) + '</div></div>';
+    return '<div class="theme-detail-item faq-item" data-faq="' + i + '">' +
+      '<div class="theme-detail-head">' +
+        '<div class="theme-detail-ic" style="background:var(--accent-tint); color:var(--accent);">' + topbarIconSvg("faq", 14) + '</div>' +
+        '<div class="theme-detail-name">' + escapeHtml(item.q) + '</div>' +
+        '<svg class="theme-detail-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>' +
+      '</div>' +
+      '<div class="theme-detail-body">' + escapeHtml(item.a) + '</div>' +
+    '</div>';
   }).join("");
 }
 function wireFaqToggles(){
@@ -3235,11 +3309,28 @@ function renderDashboard(){
   }).join("");
 
   var badgeHtml = "";
+  var levelProgressHtml = "";
   if(answered > 0){
     var topCats = computeTopCategories(profile);
     var topMeta = topCats.length ? (CATEGORY_META[topCats[0]] || {}) : {};
     var level = computeEngagementLevel(profile);
     var pop = topMeta.pop || "#7C3AED";
+    var dotsHtml = ENGAGEMENT_LEVELS.map(function(lv, i){
+      var reached = level.pct >= lv.min * 100;
+      var isCurrent = (i + 1) === level.level;
+      return '<div class="level-progress-dot' + (reached?" reached":"") + (isCurrent?" current":"") + '" style="left:' + (lv.min*100) + '%;"></div>';
+    }).join("");
+    var nextHtml = level.nextAt ? (
+      '<div class="level-progress-next">' +
+        '<div class="level-next-avatar">' + (topCats.length ? mascotImgHtml(topCats[0], level.level+1, "100%", "100%", pop) : "") + '</div>' +
+        '<div class="level-next-text">Encore <b>' + (level.nextAt - level.answered) + ' réponse' + ((level.nextAt-level.answered)>1?"s":"") + '</b> pour débloquer la tenue <b>' + escapeHtml(level.nextName) + '</b>.</div>' +
+      '</div>'
+    ) : '';
+    levelProgressHtml = '<div class="level-progress-card">' +
+      '<div class="level-progress-head"><div class="level-progress-eyebrow">NIVEAU D\'ENGAGEMENT</div><div class="level-progress-current">' + escapeHtml(level.name) + '</div></div>' +
+      '<div class="level-progress-track"><div class="level-progress-fill" style="width:' + level.pct + '%"></div>' + dotsHtml + '</div>' +
+      nextHtml +
+    '</div>';
     badgeHtml = '<div class="dash-badge-row">' +
       '<button class="dash-starter-badge" id="dash-starter-badge" style="--pop:' + pop + ';" title="Voir mon Starter Pack">' +
         (topCats.length ? mascotImgHtml(topCats[0], level.level, "100%", "100%", pop) : "") +
@@ -3258,6 +3349,7 @@ function renderDashboard(){
   var html = '<div class="dash-head"><div id="sponsor-slot-dash" style="margin-bottom:16px;"></div>' +
     bannerHtml +
     badgeHtml +
+    levelProgressHtml +
     '<div class="stat-row">' +
       '<div class="stat-tile"><div class="num">' + answered + ' / ' + topics.length + '</div><div class="lbl">Sujets répondus</div>' +
         '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div></div>' +
@@ -3375,7 +3467,6 @@ function renderVote(){
     bodyHtml =
       '<div class="vote-card" id="vote-card">' +
         topicHeaderHtml(topic) +
-        '<div class="swipe-hint"><span>← glisser : pas d\'accord</span><span>glisser : d\'accord →</span></div>' +
       '</div>' +
       '<div class="stance-buttons">' +
         '<button class="stance-btn contre" data-stance="contre"><span class="ic">✕</span>Pas d\'accord</button>' +
@@ -3397,16 +3488,23 @@ function renderVote(){
   } else {
     var stance = state.pendingStance;
     var candidates = getCandidates().filter(function(c){ return !c.withdrawn; });
-    var chips = candidates
+    var items = candidates
       .map(function(c){
         var pos = c.positions[topic.id];
         return pos ? {c: c, pos: pos, agree: matchScore(stance, pos.stance)} : null;
       })
-      .filter(Boolean)
-      .sort(function(a, b){ return b.agree - a.agree; })
-      .map(function(item){
+      .filter(Boolean);
+    var groups = [
+      {agree:1, label:"Comme toi", chips: items.filter(function(it){return it.agree===1;})},
+      {agree:0.5, label:"Neutres", chips: items.filter(function(it){return it.agree===0.5;})},
+      {agree:0, label:"À l'opposé", chips: items.filter(function(it){return it.agree===0;})}
+    ].filter(function(g){ return g.chips.length; });
+    var groupsHtml = groups.map(function(g){
+      var chipsHtml = g.chips.map(function(item){
         return '<div class="reveal-chip"><span class="ic" style="color:var(' + STANCE_COLORVAR[item.pos.stance] + ')">' + STANCE_ICON[item.pos.stance] + '</span>' + escapeHtml(item.c.name.split(" ").slice(-1)[0]) + '</div>';
       }).join("");
+      return '<div class="reveal-group"><div class="reveal-group-label">' + g.label + ' · ' + g.chips.length + '</div><div class="reveal-row">' + chipsHtml + '</div></div>';
+    }).join("");
     bodyHtml =
       '<div class="vote-card">' +
         topicHeaderHtml(topic) +
@@ -3414,7 +3512,7 @@ function renderVote(){
       '</div>' +
       '<button class="btn btn-primary btn-block" id="next-topic" style="margin-top:20px;">Sujet suivant</button>' +
       '<div style="margin-top:20px; font-size:12px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.05em; font-family:var(--mono);">Position des candidats</div>' +
-      '<div class="reveal-row">' + chips + '</div>';
+      groupsHtml;
   }
 
   var html =
@@ -3438,15 +3536,19 @@ function wireVoteInteractions(topic, existing){
     });
     var skip = document.getElementById("skip-topic");
     if(skip) skip.onclick = function(){ advanceVote(); };
-    wireSwipe();
   } else if(state.voteStep === "importance"){
     document.querySelectorAll(".imp-btn").forEach(function(btn){
       btn.onclick = function(){
         var imp = parseInt(btn.getAttribute("data-imp"), 10);
+        var wasFirstAnswer = Object.keys((activeProfile()||{}).answers || {}).length === 0;
         updateActiveProfile(function(p){
           p.answers = p.answers || {};
           p.answers[topic.id] = {stance: state.pendingStance, importance: imp};
         });
+        if(wasFirstAnswer){
+          var p2 = activeProfile();
+          if(p2) maybeNotifyReferralCompletion(p2.name);
+        }
         state.voteStep = "reveal";
         render();
       };
@@ -3462,47 +3564,6 @@ function advanceVote(){
   state.voteStep = "stance";
   state.pendingStance = null;
   render();
-}
-
-function wireSwipe(){
-  var card = document.getElementById("vote-card");
-  if(!card) return;
-  var startX=0, startY=0, dx=0, dragging=false;
-  function onDown(e){
-    dragging = true;
-    var p = e.touches ? e.touches[0] : e;
-    startX = p.clientX; startY = p.clientY;
-    card.style.transition = "none";
-  }
-  function onMove(e){
-    if(!dragging) return;
-    var p = e.touches ? e.touches[0] : e;
-    dx = p.clientX - startX;
-    var dy = p.clientY - startY;
-    if(Math.abs(dx) > Math.abs(dy)){ e.preventDefault(); }
-    card.style.transform = "translate(" + dx + "px," + (dy*0.15) + "px) rotate(" + (dx/22) + "deg)";
-  }
-  function onUp(){
-    if(!dragging) return;
-    dragging = false;
-    card.style.transition = "transform .2s ease";
-    if(dx > 90){
-      state.pendingStance = "pour"; card.style.transform = "translate(600px,-40px) rotate(18deg)";
-      setTimeout(function(){ state.voteStep="importance"; render(); }, 140);
-    } else if(dx < -90){
-      state.pendingStance = "contre"; card.style.transform = "translate(-600px,-40px) rotate(-18deg)";
-      setTimeout(function(){ state.voteStep="importance"; render(); }, 140);
-    } else {
-      card.style.transform = "translate(0,0) rotate(0)";
-    }
-    dx = 0;
-  }
-  card.addEventListener("mousedown", onDown);
-  window.addEventListener("mousemove", onMove);
-  window.addEventListener("mouseup", onUp);
-  card.addEventListener("touchstart", onDown, {passive:true});
-  card.addEventListener("touchmove", onMove, {passive:false});
-  card.addEventListener("touchend", onUp);
 }
 
 /* ============================================================
@@ -3553,15 +3614,59 @@ function renderResults(){
 
   var signupCta = signupCtaHtml();
 
+  var catShares = computeCategoryShares(profile);
+  var dominant = catShares[0];
+  var portraitHtml = dominant ? (
+    '<div class="portrait-card">' +
+      categoryDominanceRingSvg(dominant.cat, dominant.pct, 76) +
+      '<div class="portrait-info">' +
+        '<div class="portrait-eyebrow">TON PORTRAIT POLITIQUE</div>' +
+        '<div class="portrait-title">Dominante ' + escapeHtml((CATEGORY_META[dominant.cat]||{}).word || dominant.cat) + '</div>' +
+        '<div class="portrait-sub">Pondérée par l\'importance donnée à chaque sujet</div>' +
+      '</div>' +
+    '</div>'
+  ) : '';
+
+  var topCatsForDetail = computeTopCategories(profile);
+  var topCandidateForDetail = podiumOrder[0] ? podiumOrder[0].candidate : null;
+  var themeDetailHtml = "";
+  if(topCatsForDetail.length && topCandidateForDetail){
+    themeDetailHtml = '<div class="results-subhead" style="margin-top:22px;">Détail par thème — vs ' + escapeHtml(topCandidateForDetail.name) + '</div>' +
+      topCatsForDetail.map(function(cat){
+        var meta = CATEGORY_META[cat] || {};
+        var catTopics = topics.filter(function(t){ return t.cat === cat; });
+        var itemsHtml = catTopics.map(function(t){
+          var userA = profile.answers[t.id];
+          if(!userA) return null;
+          var pos = topCandidateForDetail.positions[t.id];
+          if(!pos) return null;
+          var agree = matchScore(userA.stance, pos.stance);
+          var ic = agree === 1 ? '<span style="color:var(--good)">✓</span>' : agree === 0 ? '<span style="color:var(--bad)">✕</span>' : '<span style="color:var(--neutral)">–</span>';
+          return '<div class="rd-item"><span class="ic">' + ic + '</span><div class="txt">' + escapeHtml(t.statement) + '</div></div>';
+        }).filter(Boolean).join("");
+        if(!itemsHtml) return "";
+        return '<div class="theme-detail-item" data-theme-cat="' + escapeHtml(cat) + '">' +
+          '<div class="theme-detail-head">' +
+            '<div class="theme-detail-ic" style="background:color-mix(in srgb, ' + (meta.pop||"#7C3AED") + ' 16%, transparent); color:' + (meta.pop||"#7C3AED") + ';">' + categoryIconSvg(cat, 15) + '</div>' +
+            '<div class="theme-detail-name">' + escapeHtml(cat) + '</div>' +
+            '<svg class="theme-detail-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>' +
+          '</div>' +
+          '<div class="theme-detail-body">' + itemsHtml + '</div>' +
+        '</div>';
+      }).join("");
+  }
+
   var html = '<div id="sponsor-slot-results" style="margin-bottom:16px;"></div>' +
     '<span class="eyebrow">' + answered + ' / ' + topics.length + ' sujets pris en compte</span>' +
     '<h1>Tes affinités</h1>' +
     '<p class="intro-copy">Classement pondéré par l\'importance que tu as donnée à chaque sujet.</p>' +
+    portraitHtml +
     podiumHtml +
     signupCta +
     '<div class="results-subhead" style="margin-top:22px;">Classement complet — touche un candidat pour le détail</div>' +
-    '<div style="padding-bottom:76px;">' + rows + '</div>' +
-    (answered < topics.length ? '<button class="btn btn-ghost btn-block" id="btn-more" style="margin-top:8px;">Répondre aux ' + (topics.length-answered) + ' sujets restants</button>' : '');
+    '<div>' + rows + '</div>' +
+    (answered < topics.length ? '<button class="btn btn-ghost btn-block" id="btn-more" style="margin-top:8px;">Répondre aux ' + (topics.length-answered) + ' sujets restants</button>' : '') +
+    '<div style="padding-bottom:76px;">' + themeDetailHtml + '</div>';
 
   document.getElementById("app").innerHTML = html;
 
@@ -3600,6 +3705,12 @@ function renderResults(){
       }).join("");
       det.innerHTML = items;
     });
+  });
+
+  document.querySelectorAll(".theme-detail-head").forEach(function(head){
+    head.onclick = function(){
+      head.parentElement.classList.toggle("open");
+    };
   });
 
   var more = document.getElementById("btn-more");
@@ -3903,13 +4014,20 @@ function renderContact(){
    SCREEN — FAQ
    ============================================================ */
 function renderFaq(){
+  var contactHtml = '<div class="faq-contact-card">' +
+    '<div class="faq-contact-mascot">' + mascotSvg("#7C3AED", 40) + '</div>' +
+    '<div class="faq-contact-text"><div class="faq-contact-title">Toujours bloqué ?</div><div class="faq-contact-sub">On répond en général sous 24h.</div></div>' +
+    '<button class="btn btn-accent btn-sm" id="faq-contact-btn">Nous écrire</button>' +
+  '</div>';
   var html = '<span class="eyebrow">Questions fréquentes</span>' +
     '<h1>Tout comprendre sur Votona</h1>' +
     '<p class="intro-copy">Fonctionnement du classement, données, candidats, mises à jour : les réponses aux questions les plus posées.</p>' +
     '<div style="margin-top:10px;">' + faqHtml() + '</div>' +
+    contactHtml +
     '<button class="btn btn-ghost btn-block" id="btn-faq-back" style="margin-top:22px;">← Retour</button>';
   document.getElementById("app").innerHTML = html;
   wireFaqToggles();
+  document.getElementById("faq-contact-btn").onclick = function(){ state.screen = "contact"; render(); };
   document.getElementById("btn-faq-back").onclick = function(){
     state.screen = activeProfile() ? "dashboard" : "profiles";
     render();
@@ -3947,8 +4065,9 @@ function renderAccount(){
 
     html = '<h1>Mon compte</h1>' +
       '<p class="intro-copy">Connecté avec <strong>' + escapeHtml(authSession.user.email) + '</strong>. Reconnecte-toi avec cet email sur n\'importe quel appareil pour retrouver tes profils et réponses.</p>' +
-      (active ? '<label class="field-label" style="display:flex; align-items:center; gap:7px; cursor:pointer; font-weight:400; margin-top:16px;">' +
-        '<input type="checkbox" id="account-optin"' + (active.newsOptIn ? " checked" : "") + ' style="width:auto;" /> Recevoir les emails de nouveautés pour le profil « ' + escapeHtml(active.name) + ' »' +
+      (active ? '<label class="field-label" style="display:flex; align-items:flex-start; gap:9px; cursor:pointer; font-weight:400; margin-top:16px;">' +
+        '<input type="checkbox" id="account-optin"' + (active.newsOptIn ? " checked" : "") + ' style="width:auto; margin-top:2px;" />' +
+        '<span>Recevoir un email quand un nouveau sujet ou candidat est ajouté pour « ' + escapeHtml(active.name) + ' », et une relance occasionnelle si tu es inactif. Jamais plus de quelques emails par mois.</span>' +
       '</label>' : '') +
       '<div class="results-subhead" style="margin-top:22px;">Profils liés à ce compte</div>' +
       '<div class="profile-grid" style="margin-top:10px;">' + profilesHtml + '</div>' +
@@ -3964,7 +4083,7 @@ function renderAccount(){
       '<div style="margin-top:16px;"><label class="field-label">Adresse email</label>' +
       '<input type="email" id="account-email" placeholder="toi@exemple.fr" /></div>' +
       '<button class="btn btn-accent btn-block" id="btn-send-link" style="margin-top:12px;">Envoyer le lien magique</button>' +
-      (authMessage ? '<p class="intro-copy" style="margin-top:12px;">' + escapeHtml(authMessage) + '</p>' : '');
+      (authMessage ? '<div class="auth-message' + (authMessage.indexOf("Lien envoyé") === 0 ? " ok" : "") + '" style="margin-top:12px;">' + escapeHtml(authMessage) + '</div>' : '');
   }
   html += '<button class="btn btn-ghost btn-block" id="btn-account-back" style="margin-top:22px;">← Retour</button>';
   document.getElementById("app").innerHTML = html;
