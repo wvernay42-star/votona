@@ -4268,8 +4268,10 @@ function renderAdmin(){
         var label = target === "email1" ? "Email 1 — 1re relance (inactifs depuis 1 semaine)" : "Email 2 — dernière relance (inactifs depuis 1 mois)";
         var itemsHtml = items.length ? items.map(function(it){
           return '<div class="admin-item" data-queue-id="' + it.id + '">' +
+            (it.image_url ? '<img src="' + escapeHtml(it.image_url) + '" alt="" style="width:100%; max-height:120px; object-fit:cover; border-radius:10px; margin-bottom:8px;" />' : '') +
             '<div class="admin-item-head"><span class="t">' + escapeHtml(it.headline) + '</span></div>' +
             (it.body ? '<div class="meta" style="margin-top:4px;">' + escapeHtml(it.body) + '</div>' : '') +
+            (it.cta_url ? '<div class="meta" style="margin-top:4px;">🔗 ' + escapeHtml(it.cta_label || "Voir sur Votona") + ' → ' + escapeHtml(it.cta_url) + '</div>' : '') +
             '<div class="form-actions"><button class="danger-link" data-queue-delete="' + it.id + '">Retirer</button></div>' +
           '</div>';
         }).join("") : '<p class="empty-state">Rien en attente pour cet email.</p>';
@@ -4278,6 +4280,9 @@ function renderAdmin(){
           '<div class="admin-form" style="margin-top:10px;">' +
             '<div><label class="field-label">Titre de l\'actu</label><input type="text" class="queue-headline" data-target="' + target + '" placeholder="Ex. Nouveau sujet : la fin des véhicules thermiques" /></div>' +
             '<div><label class="field-label">Texte court (optionnel)</label><input type="text" class="queue-body" data-target="' + target + '" placeholder="Une phrase d\'accroche" /></div>' +
+            '<div><label class="field-label">Image (optionnel — URL directe vers un .jpg/.png/.webp)</label><input type="text" class="queue-image" data-target="' + target + '" placeholder="https://..." /></div>' +
+            '<div><label class="field-label">Texte du bouton (optionnel, défaut "Voir sur Votona")</label><input type="text" class="queue-cta-label" data-target="' + target + '" placeholder="Ex. Voir le nouveau sujet" /></div>' +
+            '<div><label class="field-label">Lien du bouton (optionnel, défaut la page d\'accueil)</label><input type="text" class="queue-cta-url" data-target="' + target + '" placeholder="https://votona.vercel.app/..." /></div>' +
             '<div class="form-actions"><button class="btn btn-primary btn-sm" data-queue-add="' + target + '">Ajouter à la file</button></div>' +
           '</div>' +
         '</section>';
@@ -4340,11 +4345,20 @@ function renderAdmin(){
         var target = btn.getAttribute("data-queue-add");
         var headlineEl = document.querySelector('.queue-headline[data-target="' + target + '"]');
         var bodyEl = document.querySelector('.queue-body[data-target="' + target + '"]');
+        var imageEl = document.querySelector('.queue-image[data-target="' + target + '"]');
+        var ctaLabelEl = document.querySelector('.queue-cta-label[data-target="' + target + '"]');
+        var ctaUrlEl = document.querySelector('.queue-cta-url[data-target="' + target + '"]');
         var headline = headlineEl.value.trim();
         if(!headline) return;
         var text = bodyEl.value.trim();
+        var image = imageEl.value.trim();
+        var ctaLabel = ctaLabelEl.value.trim();
+        var ctaUrl = ctaUrlEl.value.trim();
         btn.disabled = true;
-        var res = await sb.from("relance_news_queue").insert({target: target, headline: headline, body: text || null});
+        var res = await sb.from("relance_news_queue").insert({
+          target: target, headline: headline, body: text || null,
+          image_url: image || null, cta_label: ctaLabel || null, cta_url: ctaUrl || null
+        });
         btn.disabled = false;
         if(res && res.error){ alert("Échec de l'ajout : " + res.error.message); return; }
         await loadRelanceQueue();
