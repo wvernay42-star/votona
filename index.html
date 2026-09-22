@@ -2294,16 +2294,16 @@ var GLOSSARY_BY_CATEGORY = {
 var HOW_IT_WORKS = [
   {t:"Prends position", d:"Pour chaque sujet, indique si tu es plutôt pour, plutôt contre, ou neutre — puis précise à quel point ce sujet compte pour toi."},
   {t:"L'importance pèse dans le calcul", d:"Les sujets que tu juges les plus importants comptent davantage dans le calcul de ton affinité avec chaque candidat."},
-  {t:"Reviens au fil de la campagne", d:"Un nouveau sujet, et parfois un nouveau candidat, s'ajoute chaque jour ; ton classement se met à jour au fur et à mesure."}
+  {t:"Reviens au fil de la campagne", d:"De nouveaux sujets et candidats s'ajoutent au fil de la campagne ; ton classement se met à jour au fur et à mesure."}
 ];
 
 var FAQ_ITEMS = [
   {q:"Qu'est-ce que Votona ?", a:"Un outil pour comparer tes positions à celles des candidats déclarés à la présidentielle 2027, sujet par sujet, avec un classement pondéré par ce qui compte le plus pour toi."},
   {q:"Comment le classement est-il calculé ?", a:"Pour chaque sujet auquel tu as répondu, ta position (pour / neutre / contre) est comparée à celle du candidat, pondérée par l'importance que tu lui as donnée. Le score final est une moyenne pondérée sur l'ensemble des sujets répondus."},
   {q:"Combien de candidats sont comparés ?", a:"Tous les candidats officiellement déclarés sont intégrés dès leur déclaration, sans limite de nombre ni tri par notoriété — le total exact est affiché en haut de cette page."},
-  {q:"En quoi ce test diffère-t-il d'un test politique classique ?", a:"Il ne se limite pas à une poignée de grands partis : chaque candidature officiellement déclarée y figure, un nouveau sujet enrichit le questionnaire chaque jour jusqu'au scrutin, et les candidatures retirées restent visibles plutôt que d'être effacées."},
-  {q:"Mes réponses sont-elles envoyées quelque part ?", a:"Non. Tes profils, tes réponses et tes résultats restent stockés dans ton navigateur, sur cet appareil — rien n'est transmis à un serveur."},
-  {q:"Comment supprimer mes données ?", a:"Tout est stocké uniquement dans ton navigateur, dans aucun compte ni serveur. Efface les données de navigation de ce site pour tout supprimer définitivement, à tout moment."},
+  {q:"En quoi ce test diffère-t-il d'un test politique classique ?", a:"Il ne se limite pas à une poignée de grands partis : chaque candidature officiellement déclarée y figure, le questionnaire s'enrichit de nouveaux sujets au fil de la campagne jusqu'au scrutin, et les candidatures retirées restent visibles plutôt que d'être effacées."},
+  {q:"Mes réponses sont-elles envoyées quelque part ?", a:"Par défaut, non : tes profils, tes réponses et tes résultats restent stockés uniquement dans ton navigateur, sur cet appareil. Si tu crées un compte (facultatif, par simple lien email) pour les retrouver sur un autre appareil, ils sont alors aussi synchronisés sur nos serveurs."},
+  {q:"Comment supprimer mes données ?", a:"Sans compte, tout est stocké uniquement dans ton navigateur : efface les données de navigation de ce site pour tout supprimer définitivement, à tout moment. Avec un compte, utilise « Supprimer toutes mes données » depuis Mon compte pour tout effacer, y compris sur nos serveurs."},
   {q:"D'où viennent les positions affichées ?", a:"Chaque position est établie à partir de déclarations, votes ou programmes publics, vérifiés quotidiennement. Un détail sourcé accompagne chaque position dans le détail de tes résultats."},
   {q:"Que se passe-t-il si un candidat retire sa candidature ?", a:"Il est marqué « Retiré » et sorti du classement, mais ses réponses et son historique restent conservés — rien n'est supprimé, pour garder une trace complète de la campagne."},
   {q:"Puis-je revenir sur une réponse déjà donnée ?", a:"Oui. Depuis ton tableau de bord, choisis « Revoir mes réponses » : tu repasses sur les sujets déjà répondus et peux changer ta position ou l'importance donnée à tout moment."},
@@ -3253,7 +3253,7 @@ function renderProfiles(){
     '</div>' +
     '<div class="trust-row">' +
       '<span class="trust-chip">' + candidates.length + ' candidats suivis</span>' +
-      '<span class="trust-chip">+1 sujet ajouté chaque jour</span>' +
+      '<span class="trust-chip">Sujets mis à jour en continu</span>' +
       '<span class="trust-chip">Aucun compte requis</span>' +
       '<span class="trust-chip">Données gardées sur cet appareil</span>' +
     '</div>' +
