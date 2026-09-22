@@ -428,12 +428,6 @@
   .rd-item .txt{ color:var(--ink-soft); }
   .rd-item .txt b{ color:var(--ink); }
 
-  .portrait-card{ display:flex; align-items:center; gap:14px; background:var(--bg-raised); border:1px solid var(--line); border-radius:18px; padding:14px; margin-top:16px; }
-  .portrait-info{ display:flex; flex-direction:column; gap:2px; }
-  .portrait-eyebrow{ font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; color:var(--ink-faint); }
-  .portrait-title{ font-size:15px; font-weight:700; }
-  .portrait-sub{ font-size:11.5px; color:var(--ink-faint); }
-
   .theme-detail-item{ background:var(--bg-raised); border:1px solid var(--line); border-radius:14px; padding:12px; margin-top:8px; }
   .theme-detail-head{ display:flex; align-items:center; gap:10px; cursor:pointer; }
   .theme-detail-ic{ width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex:none; }
@@ -2459,26 +2453,6 @@ function levelRingSvg(level, pct, color, size){
     '</svg>';
 }
 
-function categoryDominanceRingSvg(cat, pct, size){
-  size = size || 76;
-  var meta = CATEGORY_META[cat] || {};
-  var color = meta.pop || "#7C3AED";
-  var r = 41, cx = 50, cy = 50, strokeW = 10;
-  var circumference = 2 * Math.PI * r;
-  var arc = "";
-  if(pct > 0){
-    var len = Math.max(circumference * Math.min(pct, 100) / 100, strokeW * 0.6);
-    arc = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + strokeW + '" stroke-linecap="round" ' +
-      'stroke-dasharray="' + len.toFixed(2) + ' ' + (circumference - len).toFixed(2) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
-  }
-  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
-    '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="var(--line-soft)" stroke-width="' + strokeW + '"/>' +
-    arc +
-    '<circle cx="50" cy="50" r="32" fill="#ffffff"/>' +
-    '<text x="50" y="60" text-anchor="middle" font-family="\'IBM Plex Mono\', monospace" font-weight="700" font-size="26" fill="' + color + '">' + Math.round(pct) + '%</text>' +
-    '</svg>';
-}
-
 /* ============================================================
    COMPTE — connexion par lien magique (Supabase), synchronisation
    des profils et réponses pour les retrouver sur un autre appareil.
@@ -3121,7 +3095,7 @@ function goToFaq(){
   render();
 }
 
-var TOPBAR_HOME_HIDDEN_SCREENS = ["profiles", "dashboard", "results", "kit"];
+var TOPBAR_HOME_HIDDEN_SCREENS = ["profiles", "dashboard"];
 function renderTopbar(){
   var el = document.getElementById("topbar-actions");
   var html = "";
@@ -3681,59 +3655,15 @@ function renderResults(){
 
   var signupCta = signupCtaHtml();
 
-  var catShares = computeCategoryShares(profile);
-  var dominant = catShares[0];
-  var portraitHtml = dominant ? (
-    '<div class="portrait-card">' +
-      categoryDominanceRingSvg(dominant.cat, dominant.pct, 76) +
-      '<div class="portrait-info">' +
-        '<div class="portrait-eyebrow">TON PORTRAIT POLITIQUE</div>' +
-        '<div class="portrait-title">Dominante ' + escapeHtml((CATEGORY_META[dominant.cat]||{}).word || dominant.cat) + '</div>' +
-        '<div class="portrait-sub">Pondérée par l\'importance donnée à chaque sujet</div>' +
-      '</div>' +
-    '</div>'
-  ) : '';
-
-  var topCatsForDetail = computeTopCategories(profile);
-  var topCandidateForDetail = podiumOrder[0] ? podiumOrder[0].candidate : null;
-  var themeDetailHtml = "";
-  if(topCatsForDetail.length && topCandidateForDetail){
-    themeDetailHtml = '<div class="results-subhead" style="margin-top:22px;">Détail par thème — vs ' + escapeHtml(topCandidateForDetail.name) + '</div>' +
-      topCatsForDetail.map(function(cat){
-        var meta = CATEGORY_META[cat] || {};
-        var catTopics = topics.filter(function(t){ return t.cat === cat; });
-        var itemsHtml = catTopics.map(function(t){
-          var userA = profile.answers[t.id];
-          if(!userA) return null;
-          var pos = topCandidateForDetail.positions[t.id];
-          if(!pos) return null;
-          var agree = matchScore(userA.stance, pos.stance);
-          var ic = agree === 1 ? '<span style="color:var(--good)">✓</span>' : agree === 0 ? '<span style="color:var(--bad)">✕</span>' : '<span style="color:var(--neutral)">–</span>';
-          return '<div class="rd-item"><span class="ic">' + ic + '</span><div class="txt">' + escapeHtml(t.statement) + '</div></div>';
-        }).filter(Boolean).join("");
-        if(!itemsHtml) return "";
-        return '<div class="theme-detail-item" data-theme-cat="' + escapeHtml(cat) + '">' +
-          '<div class="theme-detail-head">' +
-            '<div class="theme-detail-ic" style="background:color-mix(in srgb, ' + (meta.pop||"#7C3AED") + ' 16%, transparent); color:' + (meta.pop||"#7C3AED") + ';">' + categoryIconSvg(cat, 15) + '</div>' +
-            '<div class="theme-detail-name">' + escapeHtml(cat) + '</div>' +
-            '<svg class="theme-detail-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>' +
-          '</div>' +
-          '<div class="theme-detail-body">' + itemsHtml + '</div>' +
-        '</div>';
-      }).join("");
-  }
-
   var html = '<div id="sponsor-slot-results" style="margin-bottom:16px;"></div>' +
     '<span class="eyebrow">' + answered + ' / ' + topics.length + ' sujets pris en compte</span>' +
     '<h1>Tes affinités</h1>' +
     '<p class="intro-copy">Classement pondéré par l\'importance que tu as donnée à chaque sujet.</p>' +
-    portraitHtml +
     podiumHtml +
     signupCta +
     (restRows ? '<div class="results-subhead" style="margin-top:22px;">Top 8 — touche un candidat pour le détail</div>' : '') +
-    '<div>' + restRows + '</div>' +
-    (answered < topics.length ? '<button class="btn btn-ghost btn-block" id="btn-more" style="margin-top:8px;">Répondre aux ' + (topics.length-answered) + ' sujets restants</button>' : '') +
-    '<div style="padding-bottom:76px;">' + themeDetailHtml + '</div>';
+    '<div style="padding-bottom:76px;">' + restRows + '</div>' +
+    (answered < topics.length ? '<button class="btn btn-ghost btn-block" id="btn-more" style="margin-top:8px;">Répondre aux ' + (topics.length-answered) + ' sujets restants</button>' : '');
 
   document.getElementById("app").innerHTML = html;
 
@@ -3800,12 +3730,6 @@ function renderResults(){
       overlay.addEventListener("click", function(e){ if(e.target === overlay) overlay.remove(); });
       document.getElementById("cand-modal-close").onclick = function(){ overlay.remove(); };
     });
-  });
-
-  document.querySelectorAll(".theme-detail-head").forEach(function(head){
-    head.onclick = function(){
-      head.parentElement.classList.toggle("open");
-    };
   });
 
   var more = document.getElementById("btn-more");
