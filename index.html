@@ -442,7 +442,7 @@
   .theme-detail-name{ font-size:13px; font-weight:700; flex-grow:1; }
   .theme-detail-chev{ transition:transform .15s ease; flex:none; }
   .theme-detail-item.open .theme-detail-chev{ transform:rotate(180deg); }
-  .theme-detail-body{ display:none; margin-top:10px; padding-top:10px; border-top:1px solid var(--line-soft); }
+  .theme-detail-body{ display:none; margin-top:10px; padding-top:10px; border-top:1px solid var(--line-soft); font-size:13.5px; line-height:1.55; color:var(--ink-soft); }
   .theme-detail-item.open .theme-detail-body{ display:block; }
 
   /* ---------- Admin ---------- */
@@ -738,6 +738,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script type="module">
+  import * as QR from "https://cdn.jsdelivr.net/npm/qrcode@1.5.3/+esm";
+  window.QRCode = QR;
+</script>
 <script>
 (function(){
 "use strict";
@@ -3014,7 +3018,7 @@ async function generateShareCardImage(profile){
   '</svg>';
   var ringImg = await loadImageSafe("data:image/svg+xml;charset=utf-8," + encodeURIComponent(ringSvg));
 
-  var W = 640, H = 1160, pad = 56, radius = 48;
+  var W = 640, H = 1360, pad = 56, radius = 48;
   var canvas = document.createElement("canvas");
   canvas.width = W; canvas.height = H;
   var ctx = canvas.getContext("2d");
@@ -3102,7 +3106,37 @@ async function generateShareCardImage(profile){
   ctx.fillStyle = "#ffffff";
   ctx.fillText(ctaText, W / 2, y + ctaH / 2 + 7);
 
+  y += ctaH + 40;
+  var qrBoxSize = 190, qrPad = 18;
+  drawRoundedRect(ctx, (W - qrBoxSize) / 2, y, qrBoxSize, qrBoxSize, 20);
+  ctx.fillStyle = "#ffffff";
+  ctx.fill();
+  drawQrCode(ctx, buildReferralUrl(profile), (W - qrBoxSize) / 2 + qrPad, y + qrPad, qrBoxSize - qrPad * 2, "#14121F");
+  y += qrBoxSize + 22;
+  ctx.globalAlpha = 0.65;
+  ctx.font = "500 14px 'Work Sans', sans-serif";
+  ctx.fillStyle = "#14121F";
+  ctx.fillText("ou scanne pour faire le test", W / 2, y);
+  ctx.globalAlpha = 1;
+
   return canvas;
+}
+
+function drawQrCode(ctx, text, x, y, size, color){
+  if(!window.QRCode) return;
+  try{
+    var qr = window.QRCode.create(text, {errorCorrectionLevel: "M"});
+    var count = qr.modules.size;
+    var cell = size / count;
+    ctx.fillStyle = color;
+    for(var row = 0; row < count; row++){
+      for(var col = 0; col < count; col++){
+        if(qr.modules.get(row, col)){
+          ctx.fillRect(x + col * cell, y + row * cell, Math.ceil(cell), Math.ceil(cell));
+        }
+      }
+    }
+  }catch(e){}
 }
 
 function hexToRgb(hex){
