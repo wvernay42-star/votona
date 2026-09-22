@@ -713,6 +713,7 @@
     .axis-grid{ grid-template-columns:repeat(3,1fr); }
     .profile-grid{ grid-template-columns:1fr 1fr; }
     .candidate-list{ grid-template-columns:1fr 1fr; }
+    h1 .spin-a-back{ transform:translateY(3px) rotateX(180deg); }
   }
   @media (min-width:980px){
     .axis-grid{ grid-template-columns:repeat(4,1fr); }
@@ -2638,10 +2639,30 @@ async function syncAfterLogin(){
   render();
 }
 
-/* Merge base data with local admin overrides */
+/* Merge base data with local admin overrides, puis plafonne le
+   questionnaire à MAX_TOPICS questions. Au-delà de la limite, les
+   questions gardées sont celles avec le plus de prises de position
+   de candidats (un sujet peu couvert par les candidats a moins de
+   valeur pour le classement qu'un sujet bien renseigné). */
+var MAX_TOPICS = 40;
+function topicCandidateScore(topic, candidates){
+  var score = 0;
+  for(var i = 0; i < candidates.length; i++){
+    if(candidates[i].positions && candidates[i].positions[topic.id]) score++;
+  }
+  return score;
+}
 function getTopics(){
   var ov = loadOverrides();
-  return TOPICS.concat(ov.newTopics || []);
+  var all = TOPICS.concat(ov.newTopics || []);
+  if(all.length <= MAX_TOPICS) return all;
+  var candidates = getCandidates();
+  var ranked = all.map(function(t, idx){ return {t: t, idx: idx, score: topicCandidateScore(t, candidates)}; })
+    .sort(function(a, b){ return b.score - a.score || a.idx - b.idx; })
+    .slice(0, MAX_TOPICS);
+  var keepIds = {};
+  ranked.forEach(function(r){ keepIds[r.t.id] = true; });
+  return all.filter(function(t){ return keepIds[t.id]; });
 }
 function getCandidates(){
   var ov = loadOverrides();
@@ -3963,6 +3984,12 @@ function renderKitShare(){
   generateShareCardImage(profile).then(function(canvas){
     var wrap = document.getElementById("share-canvas-wrap");
     wrap.innerHTML = "";
+    canvas.style.cursor = "pointer";
+    canvas.title = "Aller sur Votona";
+    canvas.onclick = function(){
+      state.screen = "profiles";
+      render();
+    };
     wrap.appendChild(canvas);
     document.getElementById("share-actions").style.display = "block";
 
