@@ -2770,10 +2770,14 @@ var state = {
 };
 
 /* Lien profond depuis une page statique externe (ex. candidats/) vers
-   un écran précis, uniquement quand un profil existe déjà — sinon on
-   garde le picker de profils par défaut. */
-if(new URLSearchParams(location.search).get("screen") === "dashboard" && state.activeProfileId && loadProfiles()[state.activeProfileId]){
+   un écran précis. "dashboard" ne saute que si un profil existe déjà
+   (sinon rien à y afficher, on garde le picker de profils par
+   défaut) ; "faq"/"account" sont toujours accessibles. */
+var requestedScreen = new URLSearchParams(location.search).get("screen");
+if(requestedScreen === "dashboard" && state.activeProfileId && loadProfiles()[state.activeProfileId]){
   state.screen = "dashboard";
+} else if(requestedScreen === "faq" || requestedScreen === "account"){
+  state.screen = requestedScreen;
 }
 
 function activeProfile(){
@@ -3520,7 +3524,7 @@ function renderDashboard(){
     var isNew = daysSince(c.addedDate) <= NEW_WINDOW_DAYS;
     var searchKey = (c.name + " " + c.party).toLowerCase();
     var pollPct = CANDIDATE_POLL_PCT[c.id];
-    return '<a class="candidate-row' + (c.withdrawn ? ' withdrawn' : '') + '" data-search="' + escapeHtml(searchKey) + '" href="' + location.origin + '/candidats/' + escapeHtml(c.id) + '/" target="_blank" rel="noopener"><div class="cand-dot" style="background:' + c.color + '"></div>' +
+    return '<a class="candidate-row' + (c.withdrawn ? ' withdrawn' : '') + '" data-search="' + escapeHtml(searchKey) + '" href="' + location.origin + '/candidats/' + escapeHtml(c.id) + '/"><div class="cand-dot" style="background:' + c.color + '"></div>' +
       '<div class="cand-name">' + escapeHtml(c.name) + '<div class="cand-party">' + escapeHtml(c.party) + '</div></div>' +
       (c.withdrawn ? '<span class="badge-withdrawn">Retiré</span>' : isNew ? '<span class="badge-new">Nouveau</span>' : '<span class="cand-poll-pct mono">' + pollPct.toFixed(1).replace(".0","") + '%</span>') + '</a>';
   }).join("");
