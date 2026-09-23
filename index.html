@@ -1,5 +1,22 @@
 <title>Votona — Donne le ton à ton vote</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Compare tes positions à celles de tous les candidats déclarés à la présidentielle 2027, sujet par sujet, et découvre ton classement personnel. Gratuit, sans compte, données gardées sur ton appareil." />
+<link rel="canonical" href="https://votona.fr/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Votona" />
+<meta property="og:url" content="https://votona.fr/" />
+<meta property="og:title" content="Votona — Donne le ton à ton vote" />
+<meta property="og:description" content="Compare tes positions à celles de tous les candidats déclarés à la présidentielle 2027, sujet par sujet, et découvre ton classement personnel." />
+<meta property="og:image" content="https://votona.fr/assets/ui/logo-head.png" />
+<meta property="og:locale" content="fr_FR" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Votona — Donne le ton à ton vote" />
+<meta name="twitter:description" content="Compare tes positions à celles de tous les candidats déclarés à la présidentielle 2027, sujet par sujet, et découvre ton classement personnel." />
+<meta name="twitter:image" content="https://votona.fr/assets/ui/logo-head.png" />
+
 <link rel="icon" type="image/png" href="assets/ui/favicon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3291,6 +3308,35 @@ function faqHtml(){
     '</div>';
   }).join("") + '</div>';
 }
+
+/* Données structurées SEO (schema.org), générées depuis les mêmes
+   sources que le contenu affiché pour rester en phase avec la FAQ. */
+function injectStructuredData(){
+  var website = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Votona",
+    "url": "https://votona.fr/",
+    "description": "Compare tes positions à celles de tous les candidats déclarés à la présidentielle 2027, sujet par sujet, et découvre ton classement personnel."
+  };
+  var faqPage = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": FAQ_ITEMS.map(function(item){
+      return {
+        "@type": "Question",
+        "name": item.q,
+        "acceptedAnswer": { "@type": "Answer", "text": item.a }
+      };
+    })
+  };
+  [website, faqPage].forEach(function(data){
+    var tag = document.createElement("script");
+    tag.type = "application/ld+json";
+    tag.textContent = JSON.stringify(data);
+    document.head.appendChild(tag);
+  });
+}
 function wireFaqToggles(){
   document.querySelectorAll("[data-faq]").forEach(function(el){
     el.onclick = function(){ el.classList.toggle("open"); };
@@ -4631,6 +4677,7 @@ if(sb){
   });
   fetchCloudOverrides();
 }
+injectStructuredData();
 render();
 })();
 </script>
