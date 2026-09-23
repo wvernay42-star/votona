@@ -361,8 +361,6 @@
   }
   .imp-btn:hover{ border-color:var(--blue); color:var(--blue); }
   .imp-btn.picked{ border-color:var(--blue); background:var(--blue-soft); color:var(--blue); }
-  .imp-btn-max{ border-color:var(--pop, var(--accent)); background:var(--pop, var(--accent)); color:#fff; font-weight:700; }
-  .imp-btn-max:hover{ border-color:var(--pop, var(--accent)); color:#fff; opacity:.92; }
 
   .reveal-group{ margin-top:14px; }
   .reveal-group-label{ font-size:11px; font-weight:700; color:var(--ink-soft); margin-bottom:6px; }
@@ -751,7 +749,7 @@
     .axis-grid{ grid-template-columns:repeat(3,1fr); }
     .profile-grid{ grid-template-columns:1fr 1fr; }
     .candidate-list{ grid-template-columns:1fr 1fr; }
-    h1 .spin-a-back{ transform:translateY(3px) rotateX(180deg); }
+    h1 .spin-a-back{ transform:translateY(6px) rotateX(180deg); }
   }
   @media (min-width:980px){
     .axis-grid{ grid-template-columns:repeat(4,1fr); }
@@ -3701,7 +3699,6 @@ function renderVote(){
       '</div>' +
       '<button class="skip-link" id="skip-topic">Passer ce sujet</button>';
   } else if(state.voteStep === "importance"){
-    var impPop = (CATEGORY_META[topic.cat] || {}).pop;
     bodyHtml =
       '<div class="vote-card">' +
         topicHeaderHtml(topic) +
@@ -3709,8 +3706,7 @@ function renderVote(){
       '<div style="margin-top:16px; font-size:13.5px; color:var(--ink-soft);">Quelle importance ce sujet a-t-il pour toi ?</div>' +
       '<div class="importance-row">' +
         [1,2,3].map(function(v){
-          var style = (v === 3 && impPop) ? ' style="--pop:' + impPop + ';"' : '';
-          return '<button class="imp-btn' + (v===3?" imp-btn-max":"") + '" data-imp="' + v + '"' + style + '>' + IMPORTANCE_LABEL[v] + '</button>';
+          return '<button class="imp-btn" data-imp="' + v + '">' + IMPORTANCE_LABEL[v] + '</button>';
         }).join("") +
       '</div>';
   } else {
