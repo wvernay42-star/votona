@@ -195,6 +195,12 @@
   .btn-block{ width:100%; }
   .btn-sm{ padding:8px 14px; font-size:13px; border-radius:14px; }
   .btn[disabled]{ opacity:.4; cursor:not-allowed; }
+  .link-btn{
+    display:block; width:100%; text-align:center; background:transparent; border:none; cursor:pointer;
+    font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--ink-soft);
+    padding:14px 0 0; text-decoration:underline; text-underline-offset:3px;
+  }
+  .link-btn:hover{ color:var(--ink); }
 
   /* ---------- Profile picker ---------- */
   .profile-grid{ display:grid; gap:12px; margin-top:18px; max-width:760px; margin-left:auto; margin-right:auto; }
@@ -3408,6 +3414,7 @@ function renderProfiles(){
         '<input type="text" id="new-profile-name" maxlength="30" placeholder="ex. Camille" /></div>' +
         '<button class="btn btn-accent" id="confirm-new-profile">Commencer</button>' +
       '</div>' +
+      '<button class="link-btn" id="btn-existing-account">Tu as déjà un profil ? Connecte-toi</button>' +
     '</div>' +
     '<section class="landing-section"><h2>Sept familles de sujets</h2>' +
       '<div class="sub">Les questions couvrent l\'ensemble de ces thèmes, sans se limiter aux gros titres du moment.</div>' +
@@ -3445,6 +3452,10 @@ function renderProfiles(){
   document.getElementById("btn-new-profile").onclick = function(){
     document.getElementById("new-profile-form").classList.add("open");
     document.getElementById("new-profile-name").focus();
+  };
+  document.getElementById("btn-existing-account").onclick = function(){
+    state.screen = "account";
+    render();
   };
   document.getElementById("confirm-new-profile").onclick = function(){
     var input = document.getElementById("new-profile-name");
