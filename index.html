@@ -4541,6 +4541,12 @@ function renderAdmin(){
             '</div>' +
           '</div>' +
           '<iframe class="relance-preview" id="relance-preview-' + target + '" style="display:none; width:100%; height:640px; border:1px solid var(--line); border-radius:14px; margin-top:12px; background:#f3efe6;"></iframe>' +
+          (items.length ? (
+            '<div class="form-actions" style="margin-top:12px;">' +
+              '<button class="btn btn-accent btn-sm" data-queue-send="' + target + '">Envoyer aux utilisateurs inactifs</button>' +
+            '</div>' +
+            '<div class="meta" id="relance-send-result-' + target + '" style="margin-top:6px;"></div>'
+          ) : '') +
         '</section>';
       }).join("");
     }
@@ -4645,6 +4651,33 @@ function renderAdmin(){
           frame.srcdoc = buildRelanceEmailHtml(target, relanceQueueItems[target] || []);
           frame.style.display = "block";
           btn.textContent = "Masquer l'aperçu";
+        }
+      };
+    });
+    document.querySelectorAll("[data-queue-send]").forEach(function(btn){
+      btn.onclick = async function(){
+        if(!isLoggedIn()){ alert("Connecte-toi (Mon compte) avec ton email admin pour envoyer une relance."); return; }
+        var target = btn.getAttribute("data-queue-send");
+        var label = target === "email1" ? "les utilisateurs inactifs depuis 1 semaine (n'ayant pas déjà reçu l'email 1)" : "les utilisateurs inactifs depuis 1 mois (ayant déjà reçu l'email 1)";
+        if(!confirm("Envoyer cette relance à " + label + " ? Une copie te sera aussi envoyée. Cette action est irréversible.")) return;
+        var resultEl = document.getElementById("relance-send-result-" + target);
+        btn.disabled = true;
+        resultEl.textContent = "Envoi en cours…";
+        try{
+          var session = (await sb.auth.getSession()).data.session;
+          var res = await fetch("/api/send-relance", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({target: target, accessToken: session ? session.access_token : null})
+          });
+          var out = await res.json();
+          if(!res.ok){ resultEl.textContent = "Échec : " + (out.error || res.status); btn.disabled = false; return; }
+          resultEl.textContent = out.sent + " email(s) envoyé(s) (+ 1 copie à ton adresse admin).";
+          await loadRelanceQueue();
+          render();
+        }catch(e){
+          resultEl.textContent = "Échec de l'envoi : " + e.message;
+          btn.disabled = false;
         }
       };
     });
