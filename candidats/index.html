@@ -13,92 +13,115 @@
   :root{ --bg:#fbfaf7; --ink:#191d2b; --ink-soft:#4d5468; --ink-faint:#8790a3; --line:#e4dfd0; --accent:#7C3AED; }
   *{box-sizing:border-box;}
   body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Work Sans',Arial,sans-serif; }
+  header.top{ display:flex; align-items:center; padding:16px clamp(20px,4vw,40px); border-bottom:3px solid var(--accent); background:#f3eefd; }
+  .brand{ display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--ink); }
+  .brand img{ border-radius:50%; display:block; }
+  .brand span{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:18px; }
   main{ max-width:640px; margin:0 auto; padding:32px 20px 64px; }
-  a.back{ display:inline-block; margin-bottom:20px; color:var(--ink-soft); text-decoration:none; font-size:14px; }
-  h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:0 0 8px; }
+  h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:28px 0 8px; }
   p.intro{ color:var(--ink-soft); line-height:1.6; }
-  ul{ list-style:none; padding:0; margin:24px 0; }
+  input#q{ width:100%; padding:12px 16px; border-radius:14px; border:1px solid var(--line); font-size:14px; font-family:inherit; margin-top:18px; background:#fff; color:var(--ink); }
+  input#q:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  ul{ list-style:none; padding:0; margin:20px 0; }
   li{ padding:14px 0; border-top:1px solid var(--line); }
+  li.hidden{ display:none; }
   li a{ color:var(--ink); text-decoration:none; font-weight:700; font-size:15.5px; }
   li a:hover{ color:var(--accent); }
   .party{ color:var(--ink-faint); font-weight:400; font-size:13.5px; }
   .withdrawn-tag{ color:var(--ink-faint); font-weight:400; font-size:12.5px; }
+  #empty{ display:none; color:var(--ink-faint); font-size:13.5px; padding:14px 0; }
 </style>
 </head>
 <body>
+<header class="top"><a class="brand" href="../"><img src="/assets/ui/logo-head.png" width="28" height="28" alt="" /><span>Votona</span></a></header>
 <main>
-  <a class="back" href="../">← Retour à Votona</a>
   <h1>Tous les candidats à la présidentielle 2027</h1>
   <p class="intro">Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet — retraits de la course inclus.</p>
-  <ul>
-    <li><a href="bardella/">Jordan Bardella <span class="party">— Rassemblement National</span></a></li>
+  <input id="q" type="text" placeholder="Rechercher un candidat ou un parti…" />
+  <ul id="list">
+    <li data-search="jordan bardella rassemblement national"><a href="bardella/">Jordan Bardella <span class="party">— Rassemblement National</span></a></li>
 
-    <li><a href="philippe/">Édouard Philippe <span class="party">— Horizons</span></a></li>
+    <li data-search="édouard philippe horizons"><a href="philippe/">Édouard Philippe <span class="party">— Horizons</span></a></li>
 
-    <li><a href="attal/">Gabriel Attal <span class="party">— Renaissance</span></a></li>
+    <li data-search="gabriel attal renaissance"><a href="attal/">Gabriel Attal <span class="party">— Renaissance</span></a></li>
 
-    <li><a href="retailleau/">Bruno Retailleau <span class="party">— Les Républicains</span></a></li>
+    <li data-search="bruno retailleau les républicains"><a href="retailleau/">Bruno Retailleau <span class="party">— Les Républicains</span></a></li>
 
-    <li><a href="melenchon/">Jean-Luc Mélenchon <span class="party">— La France Insoumise</span></a></li>
+    <li data-search="jean-luc mélenchon la france insoumise"><a href="melenchon/">Jean-Luc Mélenchon <span class="party">— La France Insoumise</span></a></li>
 
-    <li><a href="glucksmann/">Raphaël Glucksmann <span class="party">— Place Publique</span></a></li>
+    <li data-search="raphaël glucksmann place publique"><a href="glucksmann/">Raphaël Glucksmann <span class="party">— Place Publique</span></a></li>
 
-    <li><a href="tondelier/">Marine Tondelier <span class="party">— Les Écologistes</span></a></li>
+    <li data-search="marine tondelier les écologistes"><a href="tondelier/">Marine Tondelier <span class="party">— Les Écologistes</span></a></li>
 
-    <li><a href="bertrand/">Xavier Bertrand <span class="party">— Les Républicains (indépendant)</span></a></li>
+    <li data-search="xavier bertrand les républicains (indépendant)"><a href="bertrand/">Xavier Bertrand <span class="party">— Les Républicains (indépendant)</span></a></li>
 
-    <li><a href="lepen/">Marine Le Pen <span class="party">— Rassemblement National</span></a></li>
+    <li data-search="marine le pen rassemblement national"><a href="lepen/">Marine Le Pen <span class="party">— Rassemblement National</span></a></li>
 
-    <li><a href="lisnard/">David Lisnard <span class="party">— Nouvelle Énergie</span></a></li>
+    <li data-search="david lisnard nouvelle énergie"><a href="lisnard/">David Lisnard <span class="party">— Nouvelle Énergie</span></a></li>
 
-    <li><a href="dupont-aignan/">Nicolas Dupont-Aignan <span class="party">— Debout la France</span></a></li>
+    <li data-search="nicolas dupont-aignan debout la france"><a href="dupont-aignan/">Nicolas Dupont-Aignan <span class="party">— Debout la France</span></a></li>
 
-    <li><a href="guedj/">Jérôme Guedj <span class="party">— Parti socialiste</span></a></li>
+    <li data-search="jérôme guedj parti socialiste"><a href="guedj/">Jérôme Guedj <span class="party">— Parti socialiste</span></a></li>
 
-    <li><a href="faure/">Olivier Faure <span class="party">— Parti socialiste</span></a></li>
+    <li data-search="olivier faure parti socialiste"><a href="faure/">Olivier Faure <span class="party">— Parti socialiste</span></a></li>
 
-    <li><a href="arthaud/">Nathalie Arthaud <span class="party">— Lutte Ouvrière</span></a></li>
+    <li data-search="nathalie arthaud lutte ouvrière"><a href="arthaud/">Nathalie Arthaud <span class="party">— Lutte Ouvrière</span></a></li>
 
-    <li><a href="philippot/">Florian Philippot <span class="party">— Les Patriotes</span></a></li>
+    <li data-search="florian philippot les patriotes"><a href="philippot/">Florian Philippot <span class="party">— Les Patriotes</span></a></li>
 
-    <li><a href="asselineau/">François Asselineau <span class="party">— Union Populaire Républicaine</span></a></li>
+    <li data-search="françois asselineau union populaire républicaine"><a href="asselineau/">François Asselineau <span class="party">— Union Populaire Républicaine</span></a></li>
 
-    <li><a href="egger/">Clara Egger <span class="party">— Solution Démocratique</span></a></li>
+    <li data-search="clara egger solution démocratique"><a href="egger/">Clara Egger <span class="party">— Solution Démocratique</span></a></li>
 
-    <li><a href="kazib/">Anasse Kazib <span class="party">— Révolution Permanente</span></a></li>
+    <li data-search="anasse kazib révolution permanente"><a href="kazib/">Anasse Kazib <span class="party">— Révolution Permanente</span></a></li>
 
-    <li><a href="branco/">Juan Branco <span class="party">— Les Ruches</span></a></li>
+    <li data-search="juan branco les ruches"><a href="branco/">Juan Branco <span class="party">— Les Ruches</span></a></li>
 
-    <li><a href="labib/">Selma Labib <span class="party">— NPA-Révolutionnaires</span></a></li>
+    <li data-search="selma labib npa-révolutionnaires"><a href="labib/">Selma Labib <span class="party">— NPA-Révolutionnaires</span></a></li>
 
-    <li><a href="ruffin/">François Ruffin <span class="party">— Debout !</span></a></li>
+    <li data-search="françois ruffin debout !"><a href="ruffin/">François Ruffin <span class="party">— Debout !</span></a></li>
 
-    <li><a href="mikolajczak/">Antoine Mikolajczak <span class="party">— Équinoxe</span></a></li>
+    <li data-search="antoine mikolajczak équinoxe"><a href="mikolajczak/">Antoine Mikolajczak <span class="party">— Équinoxe</span></a></li>
 
-    <li><a href="brun/">Philippe Brun <span class="party">— Parti socialiste</span></a></li>
+    <li data-search="philippe brun parti socialiste"><a href="brun/">Philippe Brun <span class="party">— Parti socialiste</span></a></li>
 
-    <li><a href="royal/">Ségolène Royal <span class="party">— Parti socialiste</span></a></li>
+    <li data-search="ségolène royal parti socialiste"><a href="royal/">Ségolène Royal <span class="party">— Parti socialiste</span></a></li>
 
-    <li><a href="massard/">Lydie Massard <span class="party">— Union démocratique bretonne</span></a></li>
+    <li data-search="lydie massard union démocratique bretonne"><a href="massard/">Lydie Massard <span class="party">— Union démocratique bretonne</span></a></li>
 
-    <li><a href="lalanne/">Francis Lalanne <span class="party">— France Libre</span></a></li>
+    <li data-search="francis lalanne france libre"><a href="lalanne/">Francis Lalanne <span class="party">— France Libre</span></a></li>
 
-    <li><a href="mathieu/">Benoît Mathieu <span class="party">— Sans étiquette</span></a></li>
+    <li data-search="benoît mathieu sans étiquette"><a href="mathieu/">Benoît Mathieu <span class="party">— Sans étiquette</span></a></li>
 
-    <li><a href="cazeneuve/">Bernard Cazeneuve <span class="party">— La Convention</span></a></li>
+    <li data-search="bernard cazeneuve la convention"><a href="cazeneuve/">Bernard Cazeneuve <span class="party">— La Convention</span></a></li>
 
-    <li><a href="batho/">Delphine Batho <span class="party">— Génération Écologie</span></a></li>
+    <li data-search="delphine batho génération écologie"><a href="batho/">Delphine Batho <span class="party">— Génération Écologie</span></a></li>
 
-    <li><a href="bouamrane/">Karim Bouamrane <span class="party">— La France Humaine et Forte</span></a></li>
+    <li data-search="karim bouamrane la france humaine et forte"><a href="bouamrane/">Karim Bouamrane <span class="party">— La France Humaine et Forte</span></a></li>
 
-    <li><a href="verdier/">Fabien Verdier <span class="party">— Gauche socialiste et démocratique</span></a></li>
+    <li data-search="fabien verdier gauche socialiste et démocratique"><a href="verdier/">Fabien Verdier <span class="party">— Gauche socialiste et démocratique</span></a></li>
 
-    <li><a href="maurel/">Emmanuel Maurel <span class="party">— Gauche républicaine et socialiste</span></a></li>
+    <li data-search="emmanuel maurel gauche républicaine et socialiste"><a href="maurel/">Emmanuel Maurel <span class="party">— Gauche républicaine et socialiste</span></a></li>
 
-    <li><a href="roussel/">Fabien Roussel <span class="party">— Parti communiste français</span></a></li>
+    <li data-search="fabien roussel parti communiste français"><a href="roussel/">Fabien Roussel <span class="party">— Parti communiste français</span></a></li>
 
-    <li><a href="zemmour/">Éric Zemmour <span class="party">— Reconquête</span></a></li>
+    <li data-search="éric zemmour reconquête"><a href="zemmour/">Éric Zemmour <span class="party">— Reconquête</span></a></li>
   </ul>
+  <p id="empty">Aucun candidat ne correspond à cette recherche.</p>
+  <script>
+    var q = document.getElementById("q");
+    var items = Array.prototype.slice.call(document.querySelectorAll("#list li"));
+    q.addEventListener("input", function(){
+      var term = q.value.trim().toLowerCase();
+      var visible = 0;
+      items.forEach(function(li){
+        var match = !term || li.getAttribute("data-search").indexOf(term) !== -1;
+        li.classList.toggle("hidden", !match);
+        if(match) visible++;
+      });
+      document.getElementById("empty").style.display = visible ? "none" : "block";
+    });
+  </script>
 </main>
 </body>
 </html>
