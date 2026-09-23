@@ -3520,7 +3520,7 @@ function renderDashboard(){
     var isNew = daysSince(c.addedDate) <= NEW_WINDOW_DAYS;
     var searchKey = (c.name + " " + c.party).toLowerCase();
     var pollPct = CANDIDATE_POLL_PCT[c.id];
-    return '<a class="candidate-row' + (c.withdrawn ? ' withdrawn' : '') + '" data-search="' + escapeHtml(searchKey) + '" href="https://votona.fr/candidats/' + escapeHtml(c.id) + '/" target="_blank" rel="noopener"><div class="cand-dot" style="background:' + c.color + '"></div>' +
+    return '<a class="candidate-row' + (c.withdrawn ? ' withdrawn' : '') + '" data-search="' + escapeHtml(searchKey) + '" href="' + location.origin + '/candidats/' + escapeHtml(c.id) + '/" target="_blank" rel="noopener"><div class="cand-dot" style="background:' + c.color + '"></div>' +
       '<div class="cand-name">' + escapeHtml(c.name) + '<div class="cand-party">' + escapeHtml(c.party) + '</div></div>' +
       (c.withdrawn ? '<span class="badge-withdrawn">Retiré</span>' : isNew ? '<span class="badge-new">Nouveau</span>' : '<span class="cand-poll-pct mono">' + pollPct.toFixed(1).replace(".0","") + '%</span>') + '</a>';
   }).join("");
