@@ -260,6 +260,13 @@
   .dash-badge-info h1{ font-size:clamp(22px,3vw + 12px,30px); text-align:left; margin-bottom:2px; }
   .dash-badge-info .sub-line{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); }
   .new-profile-form.open{ display:flex; }
+  .consent-row{
+    display:flex; align-items:flex-start; gap:8px; font-size:12.5px; line-height:1.45;
+    color:var(--ink-soft); text-align:left; cursor:pointer;
+  }
+  .consent-row input[type="checkbox"]{ margin-top:2px; flex:none; }
+  .consent-row a{ color:var(--ink-soft); text-decoration:underline; text-underline-offset:2px; }
+  .consent-row a:hover{ color:var(--ink); }
   input[type="text"], input[type="email"], select, textarea{
     font-family:var(--sans); font-size:14.5px; padding:11px 14px; border-radius:16px;
     border:2px solid color-mix(in srgb, var(--accent) 18%, var(--line)); background:var(--bg); color:var(--ink); width:100%;
@@ -775,7 +782,7 @@
     <div id="sponsor-slot"></div>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques — ni exhaustives ni officielles.
     <span id="profile-switch-link"></span>
-    <div class="footer-links"><a href="#" id="footer-legal-link">Mentions légales</a> · <a href="#" id="footer-contact-link">Contact</a></div>
+    <div class="footer-links"><a href="#" id="footer-legal-link">Mentions légales</a> · <a href="#" id="footer-privacy-link">Confidentialité</a> · <a href="#" id="footer-contact-link">Contact</a></div>
   </footer>
 </div>
 
@@ -2780,7 +2787,7 @@ var state = {
 var requestedScreen = new URLSearchParams(location.search).get("screen");
 if(requestedScreen === "dashboard" && state.activeProfileId && loadProfiles()[state.activeProfileId]){
   state.screen = "dashboard";
-} else if(requestedScreen === "faq" || requestedScreen === "account"){
+} else if(requestedScreen === "faq" || requestedScreen === "account" || requestedScreen === "legal" || requestedScreen === "privacy"){
   state.screen = requestedScreen;
 }
 
@@ -3282,6 +3289,8 @@ function renderTopbar(){
 
   var legalLink = document.getElementById("footer-legal-link");
   if(legalLink) legalLink.onclick = function(e){ e.preventDefault(); state.screen = "legal"; render(); };
+  var privacyLink = document.getElementById("footer-privacy-link");
+  if(privacyLink) privacyLink.onclick = function(e){ e.preventDefault(); state.screen = "privacy"; render(); };
   var contactLink = document.getElementById("footer-contact-link");
   if(contactLink) contactLink.onclick = function(e){ e.preventDefault(); state.screen = "contact"; render(); };
 }
@@ -3412,7 +3421,11 @@ function renderProfiles(){
       '<div class="new-profile-form" id="new-profile-form">' +
         '<div><label class="field-label">Prénom ou pseudo</label>' +
         '<input type="text" id="new-profile-name" maxlength="30" placeholder="ex. Camille" /></div>' +
-        '<button class="btn btn-accent" id="confirm-new-profile">Commencer</button>' +
+        '<label class="consent-row">' +
+          '<input type="checkbox" id="new-profile-consent" />' +
+          '<span>J\'accepte que mes réponses (mes opinions politiques) soient traitées pour comparer mes positions à celles des candidats, conformément à la <a href="' + location.origin + location.pathname + '?screen=privacy" target="_blank" rel="noopener">politique de confidentialité</a>.</span>' +
+        '</label>' +
+        '<button class="btn btn-accent" id="confirm-new-profile" disabled>Commencer</button>' +
       '</div>' +
       '<button class="link-btn" id="btn-existing-account">Tu as déjà un profil ? Connecte-toi</button>' +
     '</div>' +
@@ -3456,6 +3469,9 @@ function renderProfiles(){
   document.getElementById("btn-existing-account").onclick = function(){
     state.screen = "account";
     render();
+  };
+  document.getElementById("new-profile-consent").onchange = function(){
+    document.getElementById("confirm-new-profile").disabled = !this.checked;
   };
   document.getElementById("confirm-new-profile").onclick = function(){
     var input = document.getElementById("new-profile-name");
@@ -4192,8 +4208,40 @@ function renderLegal(){
       '<p><strong>Directeur de la publication</strong><br>William Vernay.</p>' +
       '<p><strong>Conception et développement</strong><br>Site conçu et développé par William Vernay, avec l\'assistance technique de Claude (Anthropic) pour l\'écriture du code et la maintenance.</p>' +
       '<p><strong>Hébergement</strong><br>Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis — <a href="https://vercel.com" target="_blank" rel="noopener">vercel.com</a></p>' +
-      '<p><strong>Données personnelles</strong><br>Les comptes et réponses sont stockés via Supabase. Aucune donnée n\'est vendue ni partagée avec des tiers à des fins commerciales. Tu peux supprimer l\'intégralité de tes données à tout moment depuis « Mon compte » → « Supprimer toutes mes données ».</p>' +
+      '<p><strong>Données personnelles</strong><br>Les comptes et réponses sont stockés via Supabase. Aucune donnée n\'est vendue ni partagée avec des tiers à des fins commerciales. Tu peux supprimer l\'intégralité de tes données à tout moment depuis « Mon compte » → « Supprimer toutes mes données ». Détail complet dans notre <a href="#" id="legal-privacy-link">politique de confidentialité</a>.</p>' +
       '<p><strong>Contenu éditorial</strong><br>Les positions des candidats sont établies à partir de déclarations publiques, sourcées quand possible, et mises à jour régulièrement. Elles sont fournies à titre indicatif et peuvent contenir des approximations — voir la FAQ pour plus de détails.</p>' +
+    '</div>';
+  document.getElementById("app").innerHTML = html;
+  var privacyLink = document.getElementById("legal-privacy-link");
+  if(privacyLink) privacyLink.onclick = function(e){ e.preventDefault(); state.screen = "privacy"; render(); };
+}
+
+/* ============================================================
+   SCREEN — POLITIQUE DE CONFIDENTIALITÉ
+   ============================================================ */
+function renderPrivacy(){
+  var html = '<span class="eyebrow">Tes données</span>' +
+    '<h1>Politique de confidentialité</h1>' +
+    '<div class="editorial-block" style="margin-top:16px;">' +
+      '<p>Votona est édité par William Vernay, à titre personnel (contact : <a href="mailto:w.vernay42@gmail.com">w.vernay42@gmail.com</a>), responsable du traitement des données décrites ci-dessous.</p>' +
+
+      '<h3>Quelles données, et pourquoi</h3>' +
+      '<p><strong>Tes réponses au questionnaire</strong> (position et importance sur chaque sujet) reflètent tes opinions politiques : il s\'agit d\'une catégorie de données considérée comme sensible par le RGPD. Elles ne sont traitées qu\'avec ton consentement explicite, donné à la création de ton profil, dans le seul but de comparer tes positions à celles des candidats et de calculer tes résultats. Tu peux retirer ce consentement à tout moment en supprimant ton profil.</p>' +
+      '<p><strong>Le nom ou pseudo</strong> que tu choisis pour ton profil — il n\'a pas besoin d\'être ton identité réelle.</p>' +
+      '<p><strong>Ton email</strong>, uniquement si tu crées un compte pour retrouver tes profils sur un autre appareil (connexion par lien magique, sans mot de passe).</p>' +
+      '<p><strong>Un identifiant technique aléatoire</strong> (non lié à ton identité tant que tu n\'as pas de compte) utilisé pour des statistiques anonymes de partage — jamais accompagné de tes réponses.</p>' +
+
+      '<h3>Où vivent ces données</h3>' +
+      '<p>Sans compte, tout reste uniquement dans ton navigateur (stockage local) : rien n\'est envoyé à nos serveurs, à l\'exception des statistiques anonymes de partage mentionnées ci-dessus. Avec un compte, ton profil, tes réponses et ton email sont synchronisés sur les serveurs de Supabase (base de données et authentification) pour te permettre de les retrouver sur un autre appareil.</p>' +
+
+      '<h3>Qui y a accès</h3>' +
+      '<p>Personne d\'autre que toi. Aucune donnée n\'est vendue ni partagée à des fins commerciales. Elle transite uniquement par nos sous-traitants techniques, chacun lié par ses propres engagements de confidentialité : <strong>Vercel</strong> (hébergement du site, États-Unis), <strong>Supabase</strong> (base de données et authentification), <strong>Brevo</strong> (envoi de l\'email de connexion). Lorsqu\'un transfert a lieu hors de l\'Union européenne, il s\'appuie sur les clauses contractuelles types de la Commission européenne ou un mécanisme équivalent prévu par ces prestataires. Le site affiche aussi des publicités via <strong>Google AdSense</strong>, qui peut déposer ses propres cookies publicitaires : un bandeau dédié te permet de les accepter ou de les refuser.</p>' +
+
+      '<h3>Combien de temps</h3>' +
+      '<p>Tant que ton profil existe. Le supprimer (« Mon compte » ou directement sur un profil) efface immédiatement tes réponses de nos serveurs ; sans compte, effacer les données de navigation de ce site suffit.</p>' +
+
+      '<h3>Tes droits</h3>' +
+      '<p>Conformément au RGPD, tu disposes d\'un droit d\'accès, de rectification, d\'effacement, de limitation, d\'opposition et de portabilité sur tes données, ainsi que du droit de retirer ton consentement à tout moment. Le moyen le plus rapide reste le self-service depuis « Mon compte » ; tu peux aussi nous écrire à <a href="mailto:w.vernay42@gmail.com">w.vernay42@gmail.com</a>. Tu as également le droit d\'introduire une réclamation auprès de la CNIL (<a href="https://www.cnil.fr" target="_blank" rel="noopener">cnil.fr</a>).</p>' +
     '</div>';
   document.getElementById("app").innerHTML = html;
 }
@@ -4687,6 +4735,7 @@ function render(){
   else if(state.screen === "account") renderAccount();
   else if(state.screen === "admin") renderAdmin();
   else if(state.screen === "legal") renderLegal();
+  else if(state.screen === "privacy") renderPrivacy();
   else if(state.screen === "contact") renderContact();
   renderSponsor();
   var actionBar = document.getElementById("results-action-bar");
