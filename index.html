@@ -2577,41 +2577,31 @@ async function saveOverridesToCloud(o){
   return res;
 }
 
-var relanceQueueItems = {email1: [], email2: []};
+var relanceQueueItems = [];
 var relanceQueueLoaded = false;
 async function loadRelanceQueue(){
   if(!sb) return;
   try{
     var res = await sb.from("relance_news_queue").select("*").is("consumed_at", null).order("created_at", {ascending:true});
-    var rows = res.data || [];
-    relanceQueueItems = {
-      email1: rows.filter(function(r){return r.target==="email1";}),
-      email2: rows.filter(function(r){return r.target==="email2";})
-    };
+    relanceQueueItems = res.data || [];
   }catch(e){}
   relanceQueueLoaded = true;
 }
 
 /* ============================================================
    TEMPLATE EMAIL DE RELANCE — même trame que la routine cloud
-   d'envoi (curl + Brevo). Utilisé ici uniquement pour l'aperçu
-   admin ; ne modifie rien côté envoi réel.
+   d'envoi (curl + Brevo). Un seul email, envoyé à la fois aux
+   inactifs 7 jours (premier rappel) et 30 jours (dernier rappel) ;
+   utilisé ici uniquement pour l'aperçu admin, ne modifie rien
+   côté envoi réel.
    ============================================================ */
 var RELANCE_DASHBOARD_URL = "https://votona.fr/?screen=dashboard";
 var RELANCE_LOGO_URL = "https://votona.fr/assets/ui/logo-head.png";
 var RELANCE_COPY = {
-  email1: {
-    subject: "Votona — on a gardé ta place",
-    title: function(name){ return "On a gardé ta place, " + name + " !"; },
-    intro: "Ça fait un moment que tu n'es pas revenu sur Votona.",
-    ctaLabel: "Continuer mon profil →"
-  },
-  email2: {
-    subject: "Votona — dernier rappel",
-    title: function(name){ return "Dernière chance de finir ton profil, " + name; },
-    intro: "Dernière relance de notre part : ton classement sur Votona t'est toujours accessible.",
-    ctaLabel: "Voir mon classement →"
-  }
+  subject: "Votona — on a gardé ta place",
+  title: function(name){ return "On a gardé ta place, " + name + " !"; },
+  intro: "Ça fait un moment que tu n'es pas revenu sur Votona.",
+  ctaLabel: "Continuer mon profil →"
 };
 
 function relanceCardHtml(it){
@@ -2627,8 +2617,7 @@ function relanceCardHtml(it){
   '</div>';
 }
 
-function buildRelanceEmailHtml(target, items, sampleName){
-  var copy = RELANCE_COPY[target];
+function buildRelanceEmailHtml(items, sampleName){
   var name = sampleName || "Camille";
   var cardsHtml = (items || []).map(relanceCardHtml).join("");
   return '<!DOCTYPE html><html><body style="margin:0;padding:0;background:#f3efe6;font-family:Arial,Helvetica,sans-serif;">' +
@@ -2639,11 +2628,11 @@ function buildRelanceEmailHtml(target, items, sampleName){
         '<span style="font-family:Georgia,serif;font-size:22px;font-weight:700;color:#ffffff;">Votona</span>' +
       '</td></tr>' +
       '<tr><td style="padding:32px 32px 28px;">' +
-        '<p style="margin:0 0 14px;font-size:20px;font-weight:700;color:#14121F;">' + escapeHtml(copy.title(name)) + '</p>' +
-        '<p style="margin:0 0 14px;font-size:14.5px;line-height:1.6;color:#4b4a55;">' + escapeHtml(copy.intro) + '</p>' +
+        '<p style="margin:0 0 14px;font-size:20px;font-weight:700;color:#14121F;">' + escapeHtml(RELANCE_COPY.title(name)) + '</p>' +
+        '<p style="margin:0 0 14px;font-size:14.5px;line-height:1.6;color:#4b4a55;">' + escapeHtml(RELANCE_COPY.intro) + '</p>' +
         cardsHtml +
         '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;"><tr><td style="background:#7C3AED;border-radius:99px;">' +
-          '<a href="' + RELANCE_DASHBOARD_URL + '" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">' + escapeHtml(copy.ctaLabel) + '</a>' +
+          '<a href="' + RELANCE_DASHBOARD_URL + '" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">' + escapeHtml(RELANCE_COPY.ctaLabel) + '</a>' +
         '</td></tr></table>' +
       '</td></tr>' +
       '<tr><td style="padding:0 32px 28px;border-top:1px solid #ece6d8;">' +
@@ -4509,46 +4498,43 @@ function renderAdmin(){
     ? '<div class="disclaimer">Seule la veille automatique quotidienne ajoute de nouveaux candidats. Tu peux corriger une position ici si elle te semble erronée ; publiée, la correction s\'applique à tous les visiteurs du site.' + loginHint + '</div>'
     : state.adminTab === "topics"
     ? '<div class="disclaimer">Seule la veille automatique quotidienne ajoute de nouveaux sujets, lorsqu\'un thème de campagne majeur émerge.</div>'
-    : '<div class="disclaimer">Empile ici les actus à inclure dans le prochain email de relance envoyé aux utilisateurs inactifs. Rien n\'est envoyé tant que cette liste est vide pour un email donné.' + loginHint + '</div>';
+    : '<div class="disclaimer">Empile ici les actus à inclure dans le prochain email de relance. Le même email est envoyé aux utilisateurs inactifs depuis 1 semaine (premier rappel) et depuis 1 mois (dernier rappel, avec désinscription automatique ensuite). Rien n\'est envoyé tant que cette liste est vide.' + loginHint + '</div>';
 
   var body = "";
   if(state.adminTab === "relances"){
     if(!relanceQueueLoaded){
       body = '<p class="empty-state">Chargement…</p>';
     } else {
-      body = ["email1","email2"].map(function(target){
-        var items = relanceQueueItems[target] || [];
-        var label = target === "email1" ? "Email 1 — 1re relance (inactifs depuis 1 semaine)" : "Email 2 — dernière relance (inactifs depuis 1 mois)";
-        var itemsHtml = items.length ? items.map(function(it){
-          return '<div class="admin-item" data-queue-id="' + it.id + '">' +
-            (it.image_url ? '<img src="' + escapeHtml(it.image_url) + '" alt="" style="width:100%; max-height:120px; object-fit:cover; border-radius:10px; margin-bottom:8px;" />' : '') +
-            '<div class="admin-item-head"><span class="t">' + escapeHtml(it.headline) + '</span></div>' +
-            (it.body ? '<div class="meta" style="margin-top:4px;">' + escapeHtml(it.body) + '</div>' : '') +
-            (it.cta_url ? '<div class="meta" style="margin-top:4px;">🔗 ' + escapeHtml(it.cta_label || "Voir sur Votona") + ' → ' + escapeHtml(it.cta_url) + '</div>' : '') +
-            '<div class="form-actions"><button class="danger-link" data-queue-delete="' + it.id + '">Retirer</button></div>' +
-          '</div>';
-        }).join("") : '<p class="empty-state">Rien en attente pour cet email.</p>';
-        return '<section class="block" style="margin-top:16px;"><h2 style="font-size:15px;">' + label + '</h2>' +
-          itemsHtml +
-          '<div class="admin-form" style="margin-top:10px;">' +
-            '<div><label class="field-label">Titre de l\'actu</label><input type="text" class="queue-headline" data-target="' + target + '" placeholder="Ex. Nouveau sujet : la fin des véhicules thermiques" /></div>' +
-            '<div><label class="field-label">Texte court (optionnel)</label><input type="text" class="queue-body" data-target="' + target + '" placeholder="Une phrase d\'accroche" /></div>' +
-            '<div><label class="field-label">Image (optionnel — URL directe vers un .jpg/.png/.webp)</label><input type="text" class="queue-image" data-target="' + target + '" placeholder="https://..." /></div>' +
-            '<div><label class="field-label">Texte du bouton (optionnel, défaut "Voir mon tableau de bord")</label><input type="text" class="queue-cta-label" data-target="' + target + '" placeholder="Ex. Voir le nouveau sujet" /></div>' +
-            '<div><label class="field-label">Lien du bouton (optionnel, défaut le tableau de bord)</label><input type="text" class="queue-cta-url" data-target="' + target + '" placeholder="https://votona.fr/..." /></div>' +
-            '<div class="form-actions"><button class="btn btn-primary btn-sm" data-queue-add="' + target + '">Ajouter à la file</button>' +
-              '<button class="btn btn-ghost btn-sm" data-queue-preview="' + target + '" style="margin-left:auto;">Aperçu de l\'email</button>' +
-            '</div>' +
+      var items = relanceQueueItems;
+      var itemsHtml = items.length ? items.map(function(it){
+        return '<div class="admin-item" data-queue-id="' + it.id + '">' +
+          (it.image_url ? '<img src="' + escapeHtml(it.image_url) + '" alt="" style="width:100%; max-height:120px; object-fit:cover; border-radius:10px; margin-bottom:8px;" />' : '') +
+          '<div class="admin-item-head"><span class="t">' + escapeHtml(it.headline) + '</span></div>' +
+          (it.body ? '<div class="meta" style="margin-top:4px;">' + escapeHtml(it.body) + '</div>' : '') +
+          (it.cta_url ? '<div class="meta" style="margin-top:4px;">🔗 ' + escapeHtml(it.cta_label || "Voir sur Votona") + ' → ' + escapeHtml(it.cta_url) + '</div>' : '') +
+          '<div class="form-actions"><button class="danger-link" data-queue-delete="' + it.id + '">Retirer</button></div>' +
+        '</div>';
+      }).join("") : '<p class="empty-state">Rien en attente.</p>';
+      body = '<section class="block" style="margin-top:16px;"><h2 style="font-size:15px;">Actus en attente</h2>' +
+        itemsHtml +
+        '<div class="admin-form" style="margin-top:10px;">' +
+          '<div><label class="field-label">Titre de l\'actu</label><input type="text" class="queue-headline" placeholder="Ex. Nouveau sujet : la fin des véhicules thermiques" /></div>' +
+          '<div><label class="field-label">Texte court (optionnel)</label><input type="text" class="queue-body" placeholder="Une phrase d\'accroche" /></div>' +
+          '<div><label class="field-label">Image (optionnel — URL directe vers un .jpg/.png/.webp)</label><input type="text" class="queue-image" placeholder="https://..." /></div>' +
+          '<div><label class="field-label">Texte du bouton (optionnel, défaut "Voir mon tableau de bord")</label><input type="text" class="queue-cta-label" placeholder="Ex. Voir le nouveau sujet" /></div>' +
+          '<div><label class="field-label">Lien du bouton (optionnel, défaut le tableau de bord)</label><input type="text" class="queue-cta-url" placeholder="https://votona.fr/..." /></div>' +
+          '<div class="form-actions"><button class="btn btn-primary btn-sm" id="btn-queue-add">Ajouter à la file</button>' +
+            '<button class="btn btn-ghost btn-sm" id="btn-queue-preview" style="margin-left:auto;">Aperçu de l\'email</button>' +
           '</div>' +
-          '<iframe class="relance-preview" id="relance-preview-' + target + '" style="display:none; width:100%; height:640px; border:1px solid var(--line); border-radius:14px; margin-top:12px; background:#f3efe6;"></iframe>' +
-          (items.length ? (
-            '<div class="form-actions" style="margin-top:12px;">' +
-              '<button class="btn btn-accent btn-sm" data-queue-send="' + target + '">Envoyer aux utilisateurs inactifs</button>' +
-            '</div>' +
-            '<div class="meta" id="relance-send-result-' + target + '" style="margin-top:6px;"></div>'
-          ) : '') +
-        '</section>';
-      }).join("");
+        '</div>' +
+        '<iframe class="relance-preview" id="relance-preview" style="display:none; width:100%; height:640px; border:1px solid var(--line); border-radius:14px; margin-top:12px; background:#f3efe6;"></iframe>' +
+        (items.length ? (
+          '<div class="form-actions" style="margin-top:12px;">' +
+            '<button class="btn btn-accent btn-sm" id="btn-queue-send">Envoyer aux utilisateurs inactifs</button>' +
+          '</div>' +
+          '<div class="meta" id="relance-send-result" style="margin-top:6px;"></div>'
+        ) : '') +
+      '</section>';
     }
   } else if(state.adminTab === "candidates"){
     var ovForList = loadOverrides();
@@ -4601,32 +4587,6 @@ function renderAdmin(){
   });
 
   if(state.adminTab === "relances"){
-    document.querySelectorAll("[data-queue-add]").forEach(function(btn){
-      btn.onclick = async function(){
-        if(!isLoggedIn()){ alert("Connecte-toi (Mon compte) avec ton email admin pour ajouter une actu à la file de relance."); return; }
-        var target = btn.getAttribute("data-queue-add");
-        var headlineEl = document.querySelector('.queue-headline[data-target="' + target + '"]');
-        var bodyEl = document.querySelector('.queue-body[data-target="' + target + '"]');
-        var imageEl = document.querySelector('.queue-image[data-target="' + target + '"]');
-        var ctaLabelEl = document.querySelector('.queue-cta-label[data-target="' + target + '"]');
-        var ctaUrlEl = document.querySelector('.queue-cta-url[data-target="' + target + '"]');
-        var headline = headlineEl.value.trim();
-        if(!headline) return;
-        var text = bodyEl.value.trim();
-        var image = imageEl.value.trim();
-        var ctaLabel = ctaLabelEl.value.trim();
-        var ctaUrl = ctaUrlEl.value.trim();
-        btn.disabled = true;
-        var res = await sb.from("relance_news_queue").insert({
-          target: target, headline: headline, body: text || null,
-          image_url: image || null, cta_label: ctaLabel || null, cta_url: ctaUrl || null
-        });
-        btn.disabled = false;
-        if(res && res.error){ alert("Échec de l'ajout : " + res.error.message); return; }
-        await loadRelanceQueue();
-        render();
-      };
-    });
     document.querySelectorAll("[data-queue-delete]").forEach(function(btn){
       btn.onclick = async function(){
         if(!isLoggedIn()){ alert("Connecte-toi (Mon compte) avec ton email admin pour retirer une actu de la file de relance."); return; }
@@ -4639,48 +4599,62 @@ function renderAdmin(){
         render();
       };
     });
-    document.querySelectorAll("[data-queue-preview]").forEach(function(btn){
-      btn.onclick = function(){
-        var target = btn.getAttribute("data-queue-preview");
-        var frame = document.getElementById("relance-preview-" + target);
-        var showing = frame.style.display !== "none";
-        if(showing){
-          frame.style.display = "none";
-          btn.textContent = "Aperçu de l'email";
-        } else {
-          frame.srcdoc = buildRelanceEmailHtml(target, relanceQueueItems[target] || []);
-          frame.style.display = "block";
-          btn.textContent = "Masquer l'aperçu";
-        }
-      };
-    });
-    document.querySelectorAll("[data-queue-send]").forEach(function(btn){
-      btn.onclick = async function(){
-        if(!isLoggedIn()){ alert("Connecte-toi (Mon compte) avec ton email admin pour envoyer une relance."); return; }
-        var target = btn.getAttribute("data-queue-send");
-        var label = target === "email1" ? "les utilisateurs inactifs depuis 1 semaine (n'ayant pas déjà reçu l'email 1)" : "les utilisateurs inactifs depuis 1 mois (ayant déjà reçu l'email 1)";
-        if(!confirm("Envoyer cette relance à " + label + " ? Une copie te sera aussi envoyée. Cette action est irréversible.")) return;
-        var resultEl = document.getElementById("relance-send-result-" + target);
-        btn.disabled = true;
-        resultEl.textContent = "Envoi en cours…";
-        try{
-          var session = (await sb.auth.getSession()).data.session;
-          var res = await fetch("/api/send-relance", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({target: target, accessToken: session ? session.access_token : null})
-          });
-          var out = await res.json();
-          if(!res.ok){ resultEl.textContent = "Échec : " + (out.error || res.status); btn.disabled = false; return; }
-          resultEl.textContent = out.sent + " email(s) envoyé(s) (+ 1 copie à ton adresse admin).";
-          await loadRelanceQueue();
-          render();
-        }catch(e){
-          resultEl.textContent = "Échec de l'envoi : " + e.message;
-          btn.disabled = false;
-        }
-      };
-    });
+    var addBtn = document.getElementById("btn-queue-add");
+    if(addBtn) addBtn.onclick = async function(){
+      if(!isLoggedIn()){ alert("Connecte-toi (Mon compte) avec ton email admin pour ajouter une actu à la file de relance."); return; }
+      var headline = document.querySelector(".queue-headline").value.trim();
+      if(!headline) return;
+      var text = document.querySelector(".queue-body").value.trim();
+      var image = document.querySelector(".queue-image").value.trim();
+      var ctaLabel = document.querySelector(".queue-cta-label").value.trim();
+      var ctaUrl = document.querySelector(".queue-cta-url").value.trim();
+      addBtn.disabled = true;
+      var res = await sb.from("relance_news_queue").insert({
+        headline: headline, body: text || null,
+        image_url: image || null, cta_label: ctaLabel || null, cta_url: ctaUrl || null
+      });
+      addBtn.disabled = false;
+      if(res && res.error){ alert("Échec de l'ajout : " + res.error.message); return; }
+      await loadRelanceQueue();
+      render();
+    };
+    var previewBtn = document.getElementById("btn-queue-preview");
+    if(previewBtn) previewBtn.onclick = function(){
+      var frame = document.getElementById("relance-preview");
+      var showing = frame.style.display !== "none";
+      if(showing){
+        frame.style.display = "none";
+        previewBtn.textContent = "Aperçu de l'email";
+      } else {
+        frame.srcdoc = buildRelanceEmailHtml(relanceQueueItems);
+        frame.style.display = "block";
+        previewBtn.textContent = "Masquer l'aperçu";
+      }
+    };
+    var sendBtn = document.getElementById("btn-queue-send");
+    if(sendBtn) sendBtn.onclick = async function(){
+      if(!isLoggedIn()){ alert("Connecte-toi (Mon compte) avec ton email admin pour envoyer une relance."); return; }
+      if(!confirm("Envoyer cette relance aux utilisateurs inactifs depuis 1 semaine (premier rappel) et depuis 1 mois (dernier rappel) ? Une copie te sera aussi envoyée. Cette action est irréversible.")) return;
+      var resultEl = document.getElementById("relance-send-result");
+      sendBtn.disabled = true;
+      resultEl.textContent = "Envoi en cours…";
+      try{
+        var session = (await sb.auth.getSession()).data.session;
+        var res = await fetch("/api/send-relance", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({accessToken: session ? session.access_token : null})
+        });
+        var out = await res.json();
+        if(!res.ok){ resultEl.textContent = "Échec : " + (out.error || res.status); sendBtn.disabled = false; return; }
+        resultEl.textContent = out.sent + " email(s) envoyé(s) (" + out.eligible1 + " en premier rappel, " + out.eligible2 + " en dernier rappel) + 1 copie à ton adresse admin.";
+        await loadRelanceQueue();
+        render();
+      }catch(e){
+        resultEl.textContent = "Échec de l'envoi : " + e.message;
+        sendBtn.disabled = false;
+      }
+    };
   }
 
   if(state.adminTab === "candidates"){
