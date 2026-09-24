@@ -1,6 +1,19 @@
 const SUPABASE_URL = "https://vvvlhxniiykbdssmadbs.supabase.co";
 const ADMIN_EMAIL = "w.vernay42@gmail.com";
 
+const CATEGORY_META = {
+  "Économie & travail": { ic: "💼", pop: "#FFB703" },
+  "Protection sociale": { ic: "🤝", pop: "#3A86FF" },
+  "Sécurité & immigration": { ic: "🛡️", pop: "#FF6B6B" },
+  "Écologie": { ic: "🌱", pop: "#06D6A0" },
+  "Europe & institutions": { ic: "🇪🇺", pop: "#6C5CE7" },
+  "Société": { ic: "👥", pop: "#FF5DA2" },
+  "Défense & numérique": { ic: "🔐", pop: "#00B4D8" }
+};
+const NEUTRAL_COLOR = "#9a98a6";
+const NEUTRAL_ICON = "🗳️";
+const DASHBOARD_URL = "https://votona.fr/?screen=dashboard";
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
@@ -50,7 +63,7 @@ module.exports = async (req, res) => {
 
   // File unique d'actus, partagée entre les deux paliers.
   const queueRes = await fetch(
-    SUPABASE_URL + "/rest/v1/relance_news_queue?consumed_at=is.null&order=created_at.asc&select=id,headline,body,image_url,cta_label,cta_url",
+    SUPABASE_URL + "/rest/v1/relance_news_queue?consumed_at=is.null&order=created_at.asc&select=id,category,headline,body,cta_url,created_at",
     { headers: sbHeaders }
   );
   const queue = await queueRes.json();
@@ -83,7 +96,8 @@ module.exports = async (req, res) => {
   );
   const profiles2 = await profiles2Res.json();
 
-  const cardsHtml = queue.map(buildCardHtml).join("");
+  const rowsHtml = queue.map(buildRowHtml).join("");
+  const subject = queue.length === 1 ? "1 actu qui peut changer ton classement" : queue.length + " actus qui peuvent changer ton classement";
   let sent = 0;
   let failed = 0;
 
@@ -96,8 +110,8 @@ module.exports = async (req, res) => {
     } catch (e) {}
     if (!email) { failed++; return; }
 
-    const html = buildEmailHtml(p.name || "toi", cardsHtml);
-    const ok = await sendBrevoEmail(BREVO_API_KEY, email, "Votona — on a gardé ta place", html);
+    const html = buildEmailHtml(p.name || "toi", rowsHtml, queue.length);
+    const ok = await sendBrevoEmail(BREVO_API_KEY, email, subject, html);
     if (!ok) { failed++; return; }
     sent++;
 
@@ -115,7 +129,12 @@ module.exports = async (req, res) => {
     await sendToProfile(p, { reminder2_sent_at: new Date().toISOString(), news_opt_in: false });
   }
 
-  await sendBrevoEmail(BREVO_API_KEY, ADMIN_EMAIL, "[Copie admin] Votona — on a gardé ta place", buildEmailHtml("toi", cardsHtml));
+  await sendBrevoEmail(
+    BREVO_API_KEY,
+    ADMIN_EMAIL,
+    "[Copie admin] " + subject,
+    buildEmailHtml("toi", rowsHtml, queue.length)
+  );
 
   const ids = queue.map((it) => it.id).join(",");
   await fetch(SUPABASE_URL + "/rest/v1/relance_news_queue?id=in.(" + ids + ")", {
@@ -140,49 +159,76 @@ function esc(s) {
     .replace(/"/g, "&quot;");
 }
 
-function buildCardHtml(it) {
-  const ctaUrl = it.cta_url || "https://votona.fr/?screen=dashboard";
-  const ctaLabel = it.cta_label || (it.cta_url ? "Voir sur Votona" : "Voir mon tableau de bord");
+function relativeTime(createdAt) {
+  const d = new Date(createdAt);
+  if (isNaN(d.getTime())) return "";
+  const now = new Date();
+  const sameDay = d.toDateString() === now.toDateString();
+  if (sameDay) {
+    return d.getHours() >= 18 ? "CE SOIR " + d.getHours() + "H" : "AUJOURD'HUI";
+  }
+  const diffDays = Math.round((new Date(now).setHours(0, 0, 0, 0) - new Date(d).setHours(0, 0, 0, 0)) / 86400000);
+  if (diffDays === 1) return "HIER";
+  if (diffDays > 1 && diffDays < 7) return "IL Y A " + diffDays + " JOURS";
+  const months = ["JANV.", "FÉVR.", "MARS", "AVR.", "MAI", "JUIN", "JUIL.", "AOÛT", "SEPT.", "OCT.", "NOV.", "DÉC."];
+  return d.getDate() + " " + months[d.getMonth()];
+}
+
+function buildRowHtml(it) {
+  const meta = CATEGORY_META[it.category];
+  const color = meta ? meta.pop : NEUTRAL_COLOR;
+  const icon = meta ? meta.ic : NEUTRAL_ICON;
+  const label = (it.category ? it.category : "Actu").toUpperCase();
+  const time = relativeTime(it.created_at);
+  const link = it.cta_url || DASHBOARD_URL;
   return (
-    '<div style="margin:0 0 16px;border:1px solid #ece6d8;border-radius:16px;overflow:hidden;">' +
-    (it.image_url
-      ? '<img src="' + esc(it.image_url) + '" width="100%" style="display:block;width:100%;max-height:160px;object-fit:cover;" alt="" />'
-      : "") +
-    '<div style="padding:14px 16px;">' +
-    '<p style="margin:0 0 6px;font-size:15px;font-weight:700;color:#14121F;">' + esc(it.headline) + "</p>" +
-    (it.body ? '<p style="margin:0 0 10px;font-size:13.5px;line-height:1.5;color:#4b4a55;">' + esc(it.body) + "</p>" : "") +
-    '<a href="' + esc(ctaUrl) + '" style="display:inline-block;padding:9px 18px;font-size:13px;font-weight:700;color:#ffffff;background:#7C3AED;border-radius:99px;text-decoration:none;">' +
-    esc(ctaLabel) +
+    '<tr><td style="padding:16px 0; border-top:1px solid #ece6d8;">' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>' +
+    '<td width="36" valign="top" style="padding-right:12px;">' +
+    '<div style="width:32px;height:32px;border-radius:50%;background:' + color + ';text-align:center;line-height:32px;font-size:15px;">' + icon + "</div>" +
+    "</td>" +
+    '<td valign="top">' +
+    '<a href="' + esc(link) + '" style="text-decoration:none;">' +
+    '<p style="margin:0 0 3px;font-size:11px;font-weight:700;letter-spacing:.04em;color:' + color + ';">' + esc(label) + (time ? " · " + time : "") + "</p>" +
+    '<p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#14121F;">' + esc(it.headline) + "</p>" +
+    (it.body ? '<p style="margin:0;font-size:13.5px;line-height:1.5;color:#4b4a55;">' + esc(it.body) + "</p>" : "") +
     "</a>" +
-    "</div>" +
-    "</div>"
+    "</td>" +
+    "</tr></table>" +
+    "</td></tr>"
   );
 }
 
-function buildEmailHtml(name, cardsHtml) {
-  const title = "On a gardé ta place, " + esc(name) + " !";
-  const intro = "Ça fait un moment que tu n'es pas revenu sur Votona.";
-  const ctaLabel = "Continuer mon profil →";
+function buildEmailHtml(name, rowsHtml, count) {
+  const headline = count === 1 ? "1 actu qui peut changer ton classement" : count + " actus qui peuvent changer ton classement";
   return (
-    '<!DOCTYPE html><html><body style="margin:0;padding:0;background:#f3efe6;font-family:Arial,Helvetica,sans-serif;">' +
+    '<!DOCTYPE html><html><body style="margin:0;padding:0;background:#f3efe6;font-family:Verdana,Arial,Helvetica,sans-serif;">' +
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3efe6;padding:32px 16px;"><tr><td align="center">' +
     '<table role="presentation" width="100%" style="max-width:480px;background:#ffffff;border-radius:24px;overflow:hidden;border:1px solid #ece6d8;">' +
-    '<tr><td style="background:#7C3AED;padding:28px 32px;text-align:center;">' +
-    '<img src="https://votona.fr/assets/ui/logo-head.png" width="48" height="48" alt="Votona" style="border-radius:50%;display:block;margin:0 auto 10px;" />' +
-    '<span style="font-family:Georgia,serif;font-size:22px;font-weight:700;color:#ffffff;">Votona</span>' +
+    '<tr><td style="padding:28px 32px 0;text-align:center;">' +
+    '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;"><tr>' +
+    '<td style="width:22px;height:22px;background:#7C3AED;border-radius:6px;font-size:0;">&nbsp;</td>' +
+    '<td style="padding-left:8px;font-family:Georgia,\'Times New Roman\',serif;font-size:17px;font-weight:700;color:#14121F;">VOTONA</td>' +
+    "</tr></table>" +
     "</td></tr>" +
-    '<tr><td style="padding:32px 32px 28px;">' +
-    '<p style="margin:0 0 14px;font-size:20px;font-weight:700;color:#14121F;">' + title + "</p>" +
-    '<p style="margin:0 0 14px;font-size:14.5px;line-height:1.6;color:#4b4a55;">' + intro + "</p>" +
-    cardsHtml +
-    '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;"><tr><td style="background:#7C3AED;border-radius:99px;">' +
-    '<a href="https://votona.fr/?screen=dashboard" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">' +
-    ctaLabel +
-    "</a>" +
+    '<tr><td style="padding:10px 32px 0;text-align:center;">' +
+    '<p style="margin:0;font-size:11px;font-weight:700;letter-spacing:.06em;color:#7C3AED;">RÉCAP ACTU</p>' +
+    "</td></tr>" +
+    '<tr><td style="padding:12px 32px 0;">' +
+    '<p style="margin:0 0 4px;font-size:14.5px;color:#4b4a55;">Salut ' + esc(name) + ",</p>" +
+    '<p style="margin:0 0 8px;font-size:20px;font-weight:700;color:#14121F;line-height:1.3;">' + esc(headline) + "</p>" +
+    '<p style="margin:0;font-size:13.5px;line-height:1.5;color:#4b4a55;">Voici ce qui a bougé dans la campagne depuis ta dernière visite.</p>' +
+    "</td></tr>" +
+    '<tr><td style="padding:6px 32px 4px;">' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0">' + rowsHtml + "</table>" +
+    "</td></tr>" +
+    '<tr><td style="padding:22px 32px 28px;">' +
+    '<table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr><td style="background:#7C3AED;border-radius:99px;text-align:center;">' +
+    '<a href="' + DASHBOARD_URL + '" style="display:block;padding:14px 0;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">Voir mon classement mis à jour</a>' +
     "</td></tr></table>" +
     "</td></tr>" +
     '<tr><td style="padding:0 32px 28px;border-top:1px solid #ece6d8;">' +
-    '<p style="margin:18px 0 0;font-size:11.5px;line-height:1.6;color:#9a98a6;">Tu reçois cet email car tu as un compte sur Votona. Tu peux le supprimer à tout moment depuis « Mon compte » sur le site.</p>' +
+    '<p style="margin:18px 0 0;font-size:11.5px;line-height:1.6;color:#9a98a6;text-align:center;">Tu reçois cet email car tu as un compte sur Votona. <a href="https://votona.fr/?screen=faq" style="color:#9a98a6;">Aide</a> · <a href="https://votona.fr/?screen=privacy" style="color:#9a98a6;">Confidentialité</a> · <a href="https://votona.fr/?screen=account" style="color:#9a98a6;">Se désinscrire</a></p>' +
     "</td></tr>" +
     "</table></td></tr></table></body></html>"
   );

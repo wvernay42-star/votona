@@ -2596,47 +2596,83 @@ async function loadRelanceQueue(){
    côté envoi réel.
    ============================================================ */
 var RELANCE_DASHBOARD_URL = "https://votona.fr/?screen=dashboard";
-var RELANCE_LOGO_URL = "https://votona.fr/assets/ui/logo-head.png";
-var RELANCE_COPY = {
-  subject: "Votona — on a gardé ta place",
-  title: function(name){ return "On a gardé ta place, " + name + " !"; },
-  intro: "Ça fait un moment que tu n'es pas revenu sur Votona.",
-  ctaLabel: "Continuer mon profil →"
-};
+var RELANCE_NEUTRAL_COLOR = "#9a98a6";
+var RELANCE_NEUTRAL_ICON = "🗳️";
+
+function relanceSubjectFor(count){
+  return count === 1 ? "1 actu qui peut changer ton classement" : count + " actus qui peuvent changer ton classement";
+}
+
+function relanceRelativeTime(createdAt){
+  var d = new Date(createdAt);
+  if(isNaN(d.getTime())) return "";
+  var now = new Date();
+  var sameDay = d.toDateString() === now.toDateString();
+  if(sameDay){
+    return d.getHours() >= 18 ? "CE SOIR " + d.getHours() + "H" : "AUJOURD'HUI";
+  }
+  var diffDays = Math.round((now.setHours(0,0,0,0) - new Date(d).setHours(0,0,0,0)) / 86400000);
+  if(diffDays === 1) return "HIER";
+  if(diffDays > 1 && diffDays < 7) return "IL Y A " + diffDays + " JOURS";
+  var months = ["JANV.","FÉVR.","MARS","AVR.","MAI","JUIN","JUIL.","AOÛT","SEPT.","OCT.","NOV.","DÉC."];
+  return d.getDate() + " " + months[d.getMonth()];
+}
 
 function relanceCardHtml(it){
-  var ctaUrl = it.cta_url || RELANCE_DASHBOARD_URL;
-  var ctaLabel = it.cta_label || (it.cta_url ? "Voir sur Votona" : "Voir mon tableau de bord");
-  return '<div style="margin:0 0 16px;border:1px solid #ece6d8;border-radius:16px;overflow:hidden;">' +
-    (it.image_url ? '<img src="' + escapeHtml(it.image_url) + '" width="100%" style="display:block;width:100%;max-height:160px;object-fit:cover;" alt="" />' : '') +
-    '<div style="padding:14px 16px;">' +
-      '<p style="margin:0 0 6px;font-size:15px;font-weight:700;color:#14121F;">' + escapeHtml(it.headline || "") + '</p>' +
-      (it.body ? '<p style="margin:0 0 10px;font-size:13.5px;line-height:1.5;color:#4b4a55;">' + escapeHtml(it.body) + '</p>' : '') +
-      '<a href="' + escapeHtml(ctaUrl) + '" style="display:inline-block;padding:9px 18px;font-size:13px;font-weight:700;color:#ffffff;background:#7C3AED;border-radius:99px;text-decoration:none;">' + escapeHtml(ctaLabel) + '</a>' +
-    '</div>' +
-  '</div>';
+  var meta = CATEGORY_META[it.category];
+  var color = meta ? meta.pop : RELANCE_NEUTRAL_COLOR;
+  var icon = meta ? meta.ic : RELANCE_NEUTRAL_ICON;
+  var label = (it.category ? it.category : "Actu").toUpperCase();
+  var time = relanceRelativeTime(it.created_at);
+  var link = it.cta_url || RELANCE_DASHBOARD_URL;
+  return '<tr><td style="padding:16px 0; border-top:1px solid #ece6d8;">' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>' +
+      '<td width="36" valign="top" style="padding-right:12px;">' +
+        '<div style="width:32px;height:32px;border-radius:50%;background:' + color + ';text-align:center;line-height:32px;font-size:15px;">' + icon + '</div>' +
+      '</td>' +
+      '<td valign="top">' +
+        '<a href="' + escapeHtml(link) + '" style="text-decoration:none;">' +
+          '<p style="margin:0 0 3px;font-size:11px;font-weight:700;letter-spacing:.04em;color:' + color + ';">' + escapeHtml(label) + (time ? ' · ' + time : '') + '</p>' +
+          '<p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#14121F;">' + escapeHtml(it.headline || "") + '</p>' +
+          (it.body ? '<p style="margin:0;font-size:13.5px;line-height:1.5;color:#4b4a55;">' + escapeHtml(it.body) + '</p>' : '') +
+        '</a>' +
+      '</td>' +
+    '</tr></table>' +
+  '</td></tr>';
 }
 
 function buildRelanceEmailHtml(items, sampleName){
   var name = sampleName || "Camille";
-  var cardsHtml = (items || []).map(relanceCardHtml).join("");
-  return '<!DOCTYPE html><html><body style="margin:0;padding:0;background:#f3efe6;font-family:Arial,Helvetica,sans-serif;">' +
+  items = items || [];
+  var rowsHtml = items.map(relanceCardHtml).join("");
+  var headline = items.length === 1 ? "1 actu qui peut changer ton classement" : items.length + " actus qui peuvent changer ton classement";
+  return '<!DOCTYPE html><html><body style="margin:0;padding:0;background:#f3efe6;font-family:Verdana,Arial,Helvetica,sans-serif;">' +
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3efe6;padding:32px 16px;"><tr><td align="center">' +
     '<table role="presentation" width="100%" style="max-width:480px;background:#ffffff;border-radius:24px;overflow:hidden;border:1px solid #ece6d8;">' +
-      '<tr><td style="background:#7C3AED;padding:28px 32px;text-align:center;">' +
-        '<img src="' + RELANCE_LOGO_URL + '" width="48" height="48" alt="Votona" style="border-radius:50%;display:block;margin:0 auto 10px;" />' +
-        '<span style="font-family:Georgia,serif;font-size:22px;font-weight:700;color:#ffffff;">Votona</span>' +
+      '<tr><td style="padding:28px 32px 0;text-align:center;">' +
+        '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;"><tr>' +
+          '<td style="width:22px;height:22px;background:#7C3AED;border-radius:6px;font-size:0;">&nbsp;</td>' +
+          '<td style="padding-left:8px;font-family:Georgia,\'Times New Roman\',serif;font-size:17px;font-weight:700;color:#14121F;">VOTONA</td>' +
+        '</tr></table>' +
       '</td></tr>' +
-      '<tr><td style="padding:32px 32px 28px;">' +
-        '<p style="margin:0 0 14px;font-size:20px;font-weight:700;color:#14121F;">' + escapeHtml(RELANCE_COPY.title(name)) + '</p>' +
-        '<p style="margin:0 0 14px;font-size:14.5px;line-height:1.6;color:#4b4a55;">' + escapeHtml(RELANCE_COPY.intro) + '</p>' +
-        cardsHtml +
-        '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;"><tr><td style="background:#7C3AED;border-radius:99px;">' +
-          '<a href="' + RELANCE_DASHBOARD_URL + '" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">' + escapeHtml(RELANCE_COPY.ctaLabel) + '</a>' +
+      '<tr><td style="padding:10px 32px 0;text-align:center;">' +
+        '<p style="margin:0;font-size:11px;font-weight:700;letter-spacing:.06em;color:#7C3AED;">RÉCAP ACTU</p>' +
+      '</td></tr>' +
+      '<tr><td style="padding:12px 32px 0;">' +
+        '<p style="margin:0 0 4px;font-size:14.5px;color:#4b4a55;">Salut ' + escapeHtml(name) + ',</p>' +
+        '<p style="margin:0 0 8px;font-size:20px;font-weight:700;color:#14121F;line-height:1.3;">' + escapeHtml(headline) + '</p>' +
+        '<p style="margin:0;font-size:13.5px;line-height:1.5;color:#4b4a55;">Voici ce qui a bougé dans la campagne depuis ta dernière visite.</p>' +
+      '</td></tr>' +
+      '<tr><td style="padding:6px 32px 4px;">' +
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0">' + rowsHtml + '</table>' +
+      '</td></tr>' +
+      '<tr><td style="padding:22px 32px 28px;">' +
+        '<table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr><td style="background:#7C3AED;border-radius:99px;text-align:center;">' +
+          '<a href="' + RELANCE_DASHBOARD_URL + '" style="display:block;padding:14px 0;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">Voir mon classement mis à jour</a>' +
         '</td></tr></table>' +
       '</td></tr>' +
       '<tr><td style="padding:0 32px 28px;border-top:1px solid #ece6d8;">' +
-        '<p style="margin:18px 0 0;font-size:11.5px;line-height:1.6;color:#9a98a6;">Tu reçois cet email car tu as un compte sur Votona. Tu peux le supprimer à tout moment depuis « Mon compte » sur le site.</p>' +
+        '<p style="margin:18px 0 0;font-size:11.5px;line-height:1.6;color:#9a98a6;text-align:center;">Tu reçois cet email car tu as un compte sur Votona. <a href="https://votona.fr/?screen=faq" style="color:#9a98a6;">Aide</a> · <a href="https://votona.fr/?screen=privacy" style="color:#9a98a6;">Confidentialité</a> · <a href="https://votona.fr/?screen=account" style="color:#9a98a6;">Se désinscrire</a></p>' +
       '</td></tr>' +
     '</table></td></tr></table></body></html>';
 }
@@ -4506,23 +4542,26 @@ function renderAdmin(){
       body = '<p class="empty-state">Chargement…</p>';
     } else {
       var items = relanceQueueItems;
+      var categoryOptions = '<option value="">Sans catégorie</option>' + Object.keys(CATEGORY_META).map(function(cat){
+        return '<option value="' + escapeHtml(cat) + '">' + CATEGORY_META[cat].ic + ' ' + escapeHtml(cat) + '</option>';
+      }).join("");
       var itemsHtml = items.length ? items.map(function(it){
+        var meta = CATEGORY_META[it.category];
         return '<div class="admin-item" data-queue-id="' + it.id + '">' +
-          (it.image_url ? '<img src="' + escapeHtml(it.image_url) + '" alt="" style="width:100%; max-height:120px; object-fit:cover; border-radius:10px; margin-bottom:8px;" />' : '') +
-          '<div class="admin-item-head"><span class="t">' + escapeHtml(it.headline) + '</span></div>' +
+          '<div class="admin-item-head"><span class="t">' + (meta ? meta.ic + ' ' : '') + escapeHtml(it.headline) + '</span></div>' +
+          (it.category ? '<div class="meta" style="margin-top:2px;">' + escapeHtml(it.category) + '</div>' : '') +
           (it.body ? '<div class="meta" style="margin-top:4px;">' + escapeHtml(it.body) + '</div>' : '') +
-          (it.cta_url ? '<div class="meta" style="margin-top:4px;">🔗 ' + escapeHtml(it.cta_label || "Voir sur Votona") + ' → ' + escapeHtml(it.cta_url) + '</div>' : '') +
+          (it.cta_url ? '<div class="meta" style="margin-top:4px;">🔗 ' + escapeHtml(it.cta_url) + '</div>' : '') +
           '<div class="form-actions"><button class="danger-link" data-queue-delete="' + it.id + '">Retirer</button></div>' +
         '</div>';
       }).join("") : '<p class="empty-state">Rien en attente.</p>';
       body = '<section class="block" style="margin-top:16px;"><h2 style="font-size:15px;">Actus en attente</h2>' +
         itemsHtml +
         '<div class="admin-form" style="margin-top:10px;">' +
+          '<div><label class="field-label">Catégorie</label><select class="queue-category">' + categoryOptions + '</select></div>' +
           '<div><label class="field-label">Titre de l\'actu</label><input type="text" class="queue-headline" placeholder="Ex. Nouveau sujet : la fin des véhicules thermiques" /></div>' +
           '<div><label class="field-label">Texte court (optionnel)</label><input type="text" class="queue-body" placeholder="Une phrase d\'accroche" /></div>' +
-          '<div><label class="field-label">Image (optionnel — URL directe vers un .jpg/.png/.webp)</label><input type="text" class="queue-image" placeholder="https://..." /></div>' +
-          '<div><label class="field-label">Texte du bouton (optionnel, défaut "Voir mon tableau de bord")</label><input type="text" class="queue-cta-label" placeholder="Ex. Voir le nouveau sujet" /></div>' +
-          '<div><label class="field-label">Lien du bouton (optionnel, défaut le tableau de bord)</label><input type="text" class="queue-cta-url" placeholder="https://votona.fr/..." /></div>' +
+          '<div><label class="field-label">Lien de la carte (optionnel, défaut le tableau de bord)</label><input type="text" class="queue-cta-url" placeholder="https://votona.fr/..." /></div>' +
           '<div class="form-actions"><button class="btn btn-primary btn-sm" id="btn-queue-add">Ajouter à la file</button>' +
             '<button class="btn btn-ghost btn-sm" id="btn-queue-preview" style="margin-left:auto;">Aperçu de l\'email</button>' +
           '</div>' +
@@ -4604,14 +4643,13 @@ function renderAdmin(){
       if(!isLoggedIn()){ alert("Connecte-toi (Mon compte) avec ton email admin pour ajouter une actu à la file de relance."); return; }
       var headline = document.querySelector(".queue-headline").value.trim();
       if(!headline) return;
+      var category = document.querySelector(".queue-category").value;
       var text = document.querySelector(".queue-body").value.trim();
-      var image = document.querySelector(".queue-image").value.trim();
-      var ctaLabel = document.querySelector(".queue-cta-label").value.trim();
       var ctaUrl = document.querySelector(".queue-cta-url").value.trim();
       addBtn.disabled = true;
       var res = await sb.from("relance_news_queue").insert({
         headline: headline, body: text || null,
-        image_url: image || null, cta_label: ctaLabel || null, cta_url: ctaUrl || null
+        category: category || null, cta_url: ctaUrl || null
       });
       addBtn.disabled = false;
       if(res && res.error){ alert("Échec de l'ajout : " + res.error.message); return; }
