@@ -242,6 +242,10 @@
   .toggle-switch:checked{ background:var(--accent); }
   .toggle-switch:checked::after{ left:18px; }
   .auth-message{ font-size:13px; line-height:1.5; color:var(--ink-soft); padding:12px 14px; border-radius:14px; background:var(--bg-raised); border:1px solid var(--line); }
+  .auth-sent{ margin-top:12px; font-size:13px; line-height:1.5; color:var(--ink-soft); padding:14px; border-radius:14px; background:color-mix(in srgb, var(--good) 10%, transparent); border:1px solid color-mix(in srgb, var(--good) 35%, transparent); }
+  .auth-sent-title{ color:var(--good); font-weight:700; font-size:14px; margin-bottom:4px; }
+  .auth-sent strong{ color:var(--ink); word-break:break-all; }
+  .auth-sent-actions{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
   .auth-message.ok{ color:var(--good); background:color-mix(in srgb, var(--good) 10%, transparent); border-color:color-mix(in srgb, var(--good) 35%, transparent); font-weight:600; }
   .new-profile-form{
     margin-top:16px; padding:16px; border:1px dashed var(--line); border-radius:var(--radius);
@@ -2554,6 +2558,74 @@ var sb = (window.supabase && window.supabase.createClient)
 var authSession = null;
 var authBusy = false;
 var authMessage = null;
+var authSentTo = null;    // email auquel le dernier lien magique a été envoyé
+var authSentAt = 0;
+var authLastEmail = "";   // pour pré-remplir le champ si l'utilisateur change d'adresse
+var authResendTimer = null;
+var AUTH_RESEND_DELAY_MS = 60000; // Supabase refuse un nouvel envoi avant 60 s
+
+function sendMagicLink(email, btn){
+  authBusy = true;
+  authMessage = null;
+  authLastEmail = email;
+  if(btn){ btn.disabled = true; btn.textContent = "Envoi en cours…"; }
+  var fail = function(){
+    authBusy = false;
+    authMessage = "Une erreur est survenue, réessaie dans un instant.";
+    render();
+  };
+  sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.origin } }).then(function(res){
+    if(res.error) return fail();
+    authBusy = false;
+    authSentTo = email;
+    authSentAt = Date.now();
+    render();
+  }, fail);
+}
+function resetMagicLinkSent(){
+  authSentTo = null;
+  authSentAt = 0;
+  authMessage = null;
+}
+function magicLinkSentHtml(){
+  return '<div class="auth-sent">' +
+    '<div class="auth-sent-title">Lien envoyé !</div>' +
+    'Ouvre l\'email envoyé à <strong>' + escapeHtml(authSentTo) + '</strong> et clique sur le lien pour te connecter. Pense à regarder dans tes spams.' +
+    '<div class="auth-sent-actions">' +
+      '<button class="btn btn-ghost btn-sm" id="auth-resend">Renvoyer le lien</button>' +
+      '<button class="btn btn-ghost btn-sm" id="auth-change-email">Changer d\'adresse</button>' +
+    '</div>' +
+    (authMessage ? '<div style="margin-top:10px;">' + escapeHtml(authMessage) + '</div>' : '') +
+  '</div>';
+}
+function wireMagicLinkSent(){
+  if(authResendTimer){ clearInterval(authResendTimer); authResendTimer = null; }
+  var resend = document.getElementById("auth-resend");
+  var change = document.getElementById("auth-change-email");
+  if(change) change.onclick = function(){
+    resetMagicLinkSent();
+    render();
+  };
+  if(!resend) return;
+  var tick = function(){
+    if(!document.body.contains(resend)){ clearInterval(authResendTimer); authResendTimer = null; return; }
+    var left = Math.ceil((authSentAt + AUTH_RESEND_DELAY_MS - Date.now()) / 1000);
+    if(left > 0){
+      resend.disabled = true;
+      resend.textContent = "Renvoyer le lien (" + left + " s)";
+    } else {
+      resend.disabled = false;
+      resend.textContent = "Renvoyer le lien";
+      clearInterval(authResendTimer); authResendTimer = null;
+    }
+  };
+  tick();
+  if(resend.disabled) authResendTimer = setInterval(tick, 1000);
+  resend.onclick = function(){
+    if(authBusy || resend.disabled) return;
+    sendMagicLink(authSentTo, resend);
+  };
+}
 
 function isLoggedIn(){ return !!(authSession && authSession.user); }
 function isValidUUID(s){ return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(s)); }
@@ -4412,10 +4484,11 @@ function renderAccount(){
   } else {
     html = '<h1>Mon compte</h1>' +
       '<p class="intro-copy">Connecte-toi par email pour retrouver tes profils et réponses sur un autre appareil. Sans connexion, tout continue de fonctionner normalement, gardé uniquement sur cet appareil.</p>' +
-      '<div style="margin-top:16px;"><label class="field-label">Adresse email</label>' +
-      '<input type="email" id="account-email" placeholder="toi@exemple.fr" /></div>' +
-      '<button class="btn btn-accent btn-block" id="btn-send-link" style="margin-top:12px;">Envoyer le lien magique</button>' +
-      (authMessage ? '<div class="auth-message' + (authMessage.indexOf("Lien envoyé") === 0 ? " ok" : "") + '" style="margin-top:12px;">' + escapeHtml(authMessage) + '</div>' : '');
+      (authSentTo ? magicLinkSentHtml() :
+        '<div style="margin-top:16px;"><label class="field-label">Adresse email</label>' +
+        '<input type="email" id="account-email" placeholder="toi@exemple.fr" value="' + escapeHtml(authLastEmail) + '" /></div>' +
+        '<button class="btn btn-accent btn-block" id="btn-send-link" style="margin-top:12px;">Envoyer le lien magique</button>' +
+        (authMessage ? '<div class="auth-message" style="margin-top:12px;">' + escapeHtml(authMessage) + '</div>' : ''));
   }
   document.getElementById("app").innerHTML = html;
 
@@ -4473,6 +4546,7 @@ function renderAccount(){
   if(signout) signout.onclick = function(){
     sb.auth.signOut().then(function(){
       authSession = null;
+      resetMagicLinkSent();
       render();
     });
   };
@@ -4482,17 +4556,9 @@ function renderAccount(){
     var input = document.getElementById("account-email");
     var email = input.value.trim();
     if(!email){ input.focus(); return; }
-    authBusy = true;
-    sendLink.disabled = true;
-    sendLink.textContent = "Envoi en cours…";
-    sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.origin } }).then(function(res){
-      authBusy = false;
-      authMessage = res.error
-        ? "Une erreur est survenue, réessaie dans un instant."
-        : "Lien envoyé ! Vérifie ta boîte mail (" + email + ") et clique sur le lien pour te connecter.";
-      render();
-    });
+    sendMagicLink(email, sendLink);
   };
+  wireMagicLinkSent();
   var deleteAccountBtn = document.getElementById("btn-delete-account");
   if(deleteAccountBtn) deleteAccountBtn.onclick = function(){
     if(!confirm("Supprimer définitivement tous tes profils et réponses liés à ce compte ? Cette action est irréversible.")) return;
@@ -4504,6 +4570,7 @@ function renderAccount(){
     }).then(function(){
       saveProfiles({});
       authSession = null;
+      resetMagicLinkSent();
       setActiveProfileId(null);
       state.screen = "profiles";
       render();
@@ -4764,13 +4831,14 @@ function signupCtaHtml(){
     '<div class="sponsor-label">⚠ Pour l\'instant, gardé uniquement sur cet appareil</div>' +
     '<div class="sponsor-name">Ne perds pas ton profil</div>' +
     '<div class="sponsor-tagline">Si tu changes de téléphone, d\'ordinateur ou effaces tes données de navigation, tes réponses disparaissent. Crée un compte gratuit par email (10 secondes, pas de mot de passe) pour les retrouver n\'importe où.</div>' +
-    '<div style="margin-top:12px;"><input type="email" id="signup-email" placeholder="toi@exemple.fr" /></div>' +
-    '<label class="field-label" style="display:flex; align-items:center; gap:7px; cursor:pointer; margin-top:10px; font-weight:400;">' +
-      '<input type="checkbox" id="signup-optin" style="width:auto;" /> Me tenir informé par email des nouveaux sujets' +
-    '</label>' +
-    '<button class="btn btn-accent btn-block" id="signup-submit" style="margin-top:12px;">Créer mon compte gratuit</button>' +
-    '<button class="btn btn-ghost btn-block" id="signup-later" style="margin-top:8px;">Plus tard</button>' +
-    (authMessage ? '<p class="intro-copy" style="margin-top:10px;">' + escapeHtml(authMessage) + '</p>' : '') +
+    (authSentTo ? magicLinkSentHtml() :
+      '<div style="margin-top:12px;"><input type="email" id="signup-email" placeholder="toi@exemple.fr" value="' + escapeHtml(authLastEmail) + '" /></div>' +
+      '<label class="field-label" style="display:flex; align-items:center; gap:7px; cursor:pointer; margin-top:10px; font-weight:400;">' +
+        '<input type="checkbox" id="signup-optin" style="width:auto;" /> Me tenir informé par email des nouveaux sujets' +
+      '</label>' +
+      '<button class="btn btn-accent btn-block" id="signup-submit" style="margin-top:12px;">Créer mon compte gratuit</button>' +
+      '<button class="btn btn-ghost btn-block" id="signup-later" style="margin-top:8px;">Plus tard</button>' +
+      (authMessage ? '<p class="intro-copy" style="margin-top:10px;">' + escapeHtml(authMessage) + '</p>' : '')) +
   '</div>';
 }
 function wireSignupCta(){
@@ -4781,19 +4849,11 @@ function wireSignupCta(){
     var email = emailInput.value.trim();
     if(!email){ emailInput.focus(); return; }
     var optin = document.getElementById("signup-optin").checked;
-    authBusy = true;
-    signupSubmit.disabled = true;
-    signupSubmit.textContent = "Envoi en cours…";
     safeSet(LS_PENDING_KIT, state.activeProfileId);
     safeSet(LS_PENDING_OPTIN, optin);
-    sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.origin } }).then(function(res){
-      authBusy = false;
-      authMessage = res.error
-        ? "Une erreur est survenue, réessaie dans un instant."
-        : "Lien envoyé ! Vérifie ta boîte mail (" + email + ") et clique sur le lien pour continuer.";
-      render();
-    });
+    sendMagicLink(email, signupSubmit);
   };
+  wireMagicLinkSent();
   var signupLater = document.getElementById("signup-later");
   if(signupLater) signupLater.onclick = function(){
     state.dismissedSignupCta = true;
