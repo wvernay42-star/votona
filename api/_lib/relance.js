@@ -1,6 +1,6 @@
-// Logique commune de la relance email des inactifs, partagée entre :
-// - api/send-relance.js : bouton Admin → "Relances email" (fonction Vercel) ;
-// - scripts/relance-inactifs.js : exécution locale / planifiée (ex. 6h).
+// Logique de la relance email des inactifs, utilisée par
+// api/send-relance.js (bouton Admin → "Relances email", envoi 100 % manuel).
+// runReferralNotifications n'est appelée nulle part pour l'instant (voir CLAUDE.md).
 // Aucune clé ici : elles sont passées en paramètre par l'appelant.
 
 const SUPABASE_URL = "https://vvvlhxniiykbdssmadbs.supabase.co";

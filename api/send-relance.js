@@ -1,7 +1,7 @@
 const { SUPABASE_URL, ADMIN_EMAIL, runRelance } = require("./_lib/relance");
 
 // Bouton Admin → "Relances email" : réservé à l'admin connecté. La logique
-// d'envoi est partagée avec scripts/relance-inactifs.js (exécution locale).
+// d'envoi vit dans _lib/relance.js.
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
