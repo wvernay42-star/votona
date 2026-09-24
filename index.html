@@ -370,6 +370,13 @@
   .stance-btn.contre:hover{ border-color:var(--bad); color:var(--bad); }
   .stance-btn.neutre:hover{ border-color:var(--neutral); color:var(--neutral); }
   .stance-btn.pour:hover{ border-color:var(--good); color:var(--good); }
+  .stance-btn.current{ position:relative; }
+  .stance-btn.contre.current{ border-color:var(--bad); color:var(--bad); background:color-mix(in srgb, var(--bad) 10%, var(--bg-raised)); }
+  .stance-btn.neutre.current{ border-color:var(--neutral); color:var(--neutral); background:color-mix(in srgb, var(--neutral) 10%, var(--bg-raised)); }
+  .stance-btn.pour.current{ border-color:var(--good); color:var(--good); background:color-mix(in srgb, var(--good) 10%, var(--bg-raised)); }
+  .current-tag{ position:absolute; top:-9px; left:50%; transform:translateX(-50%); font-size:9.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; padding:2px 7px; border-radius:99px; background:currentColor; white-space:nowrap; }
+  .current-tag span{ color:var(--bg-raised); }
+  .current-answer{ margin-top:14px; font-size:13px; color:var(--ink-soft); }
 
   .importance-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:18px; }
   .imp-btn{
@@ -3871,16 +3878,22 @@ function renderVote(){
 
   var bodyHtml = "";
   if(state.voteStep === "stance"){
+    var stanceBtn = function(stance){
+      var isCurrent = existing && existing.stance === stance;
+      return '<button class="stance-btn ' + stance + (isCurrent ? ' current' : '') + '" data-stance="' + stance + '">' +
+        (isCurrent ? '<span class="current-tag"><span>Ta réponse</span></span>' : '') +
+        '<span class="ic">' + STANCE_ICON[stance] + '</span>' + STANCE_LABEL[stance] + '</button>';
+    };
     bodyHtml =
       '<div class="vote-card" id="vote-card">' +
         topicHeaderHtml(topic) +
+        (existing ? '<div class="current-answer">Ta réponse actuelle : <strong style="color:var(' + STANCE_COLORVAR[existing.stance] + ')">' + STANCE_LABEL[existing.stance] + '</strong>' +
+          (IMPORTANCE_LABEL[existing.importance] ? ' · ' + IMPORTANCE_LABEL[existing.importance] : '') + '</div>' : '') +
       '</div>' +
-      '<div class="stance-buttons">' +
-        '<button class="stance-btn contre" data-stance="contre"><span class="ic">✕</span>Pas d\'accord</button>' +
-        '<button class="stance-btn neutre" data-stance="neutre"><span class="ic">–</span>Neutre</button>' +
-        '<button class="stance-btn pour" data-stance="pour"><span class="ic">✓</span>D\'accord</button>' +
-      '</div>' +
-      '<button class="skip-link" id="skip-topic">Passer ce sujet</button>';
+      '<div class="stance-buttons">' + stanceBtn("contre") + stanceBtn("neutre") + stanceBtn("pour") + '</div>' +
+      (existing
+        ? '<button class="btn btn-ghost btn-block" id="skip-topic" style="margin-top:14px;">Garder ma réponse</button>'
+        : '<button class="skip-link" id="skip-topic">Passer ce sujet</button>');
   } else if(state.voteStep === "importance"){
     bodyHtml =
       '<div class="vote-card">' +
@@ -3889,7 +3902,8 @@ function renderVote(){
       '<div style="margin-top:16px; font-size:13.5px; color:var(--ink-soft);">Quelle importance ce sujet a-t-il pour toi ?</div>' +
       '<div class="importance-row">' +
         [1,2,3].map(function(v){
-          return '<button class="imp-btn" data-imp="' + v + '">' + IMPORTANCE_LABEL[v] + '</button>';
+          var isCurrent = existing && existing.importance === v;
+          return '<button class="imp-btn' + (isCurrent ? ' picked' : '') + '" data-imp="' + v + '">' + IMPORTANCE_LABEL[v] + '</button>';
         }).join("") +
       '</div>';
   } else {
