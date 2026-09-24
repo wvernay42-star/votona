@@ -3937,8 +3937,8 @@ function renderResults(){
     }).join("") + '</div>';
   }
 
-  var top8 = results.slice(0, 8);
-  var restRows = top8.slice(podiumOrder.length).map(function(r, idx){
+  var top15 = results.slice(0, 15);
+  var restRows = top15.slice(podiumOrder.length).map(function(r, idx){
     var i = podiumOrder.length + idx;
     var pct = r.pct === null ? 0 : r.pct;
     return '<div class="result-row" data-cand="' + r.candidate.id + '">' +
@@ -3960,7 +3960,7 @@ function renderResults(){
     '<p class="intro-copy">Classement pondéré par l\'importance que tu as donnée à chaque sujet.</p>' +
     podiumHtml +
     signupCta +
-    (restRows ? '<div class="results-subhead" style="margin-top:22px;">Top 8 — touche un candidat pour le détail</div>' : '') +
+    (restRows ? '<div class="results-subhead" style="margin-top:22px;">Top 15 — touche un candidat pour le détail</div>' : '') +
     '<div style="padding-bottom:76px;">' + restRows + '</div>';
 
   document.getElementById("app").innerHTML = html;
