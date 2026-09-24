@@ -2825,6 +2825,16 @@ async function syncAfterLogin(){
   safeSet(LS_PENDING_KIT, null);
   safeSet(LS_PENDING_OPTIN, false);
 
+  // L'opt-in coché à l'inscription est posé sur le profil local AVANT
+  // toute synchro, pour qu'il parte dès le premier envoi vers le cloud.
+  if(pendingOptIn && pendingProfileId){
+    var pendingLocal = loadProfiles();
+    if(pendingLocal[pendingProfileId]){
+      pendingLocal[pendingProfileId].newsOptIn = true;
+      saveProfiles(pendingLocal);
+    }
+  }
+
   var cloud = await fetchCloudProfiles();
   var oldToNew = {};
   var finalProfiles;
@@ -4941,9 +4951,17 @@ function render(){
 }
 
 if(sb){
+  // Supabase émet plusieurs événements pour une même connexion
+  // (INITIAL_SESSION, SIGNED_IN, puis TOKEN_REFRESHED régulièrement) :
+  // on ne synchronise qu'une fois par utilisateur, sinon deux synchros
+  // concurrentes s'écrasent (ex. opt-in actus perdu à l'inscription).
+  var syncedUserId = null;
   sb.auth.onAuthStateChange(function(event, session){
     authSession = session;
-    if(session){ syncAfterLogin(); } else { render(); }
+    if(!session){ syncedUserId = null; render(); return; }
+    if(syncedUserId === session.user.id) return;
+    syncedUserId = session.user.id;
+    syncAfterLogin();
   });
   fetchCloudOverrides();
 }
