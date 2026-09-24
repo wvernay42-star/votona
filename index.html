@@ -3198,7 +3198,7 @@ async function generateShareCardImage(profile){
   '</svg>';
   var ringImg = await loadImageSafe("data:image/svg+xml;charset=utf-8," + encodeURIComponent(ringSvg));
 
-  var W = 640, H = 1100, pad = 56, radius = 48;
+  var W = 640, H = 900, pad = 56, radius = 48;
   var canvas = document.createElement("canvas");
   canvas.width = W; canvas.height = H;
   var ctx = canvas.getContext("2d");
@@ -3217,19 +3217,19 @@ async function generateShareCardImage(profile){
 
   ctx.textAlign = "center";
   ctx.fillStyle = "#14121F";
-  ctx.font = "800 36px 'Baloo 2', sans-serif";
-  ctx.fillText("Votona", W / 2, 68);
+  ctx.font = "800 32px 'Baloo 2', sans-serif";
+  ctx.fillText("Votona", W / 2, 54);
 
-  ctx.font = "700 15px 'IBM Plex Mono', monospace";
-  var tagText = "PRÉSIDENTIELLE 2027", tagW = ctx.measureText(tagText).width + 36, tagH = 30;
-  drawRoundedRect(ctx, (W - tagW) / 2, 84, tagW, tagH, tagH / 2);
+  ctx.font = "700 14px 'IBM Plex Mono', monospace";
+  var tagText = "PRÉSIDENTIELLE 2027", tagW = ctx.measureText(tagText).width + 32, tagH = 28;
+  drawRoundedRect(ctx, (W - tagW) / 2, 68, tagW, tagH, tagH / 2);
   ctx.fillStyle = pop;
   ctx.fill();
   ctx.fillStyle = "#ffffff";
-  ctx.fillText(tagText, W / 2, 84 + tagH / 2 + 5);
+  ctx.fillText(tagText, W / 2, 68 + tagH / 2 + 5);
 
-  var blisterW = 460, blisterH = blisterW * (1085 / 775);
-  var blisterX = (W - blisterW) / 2, blisterY = 138;
+  var blisterW = 380, blisterH = blisterW * (1085 / 775);
+  var blisterX = (W - blisterW) / 2, blisterY = 108;
   if(templateImg) ctx.drawImage(templateImg, blisterX, blisterY, blisterW, blisterH);
 
   // Le kit "live" a une largeur de blister fixe (.blister-outer max-width:280px) ;
@@ -3257,46 +3257,46 @@ async function generateShareCardImage(profile){
   accessoryImgs.forEach(function(img, i){ drawInSlot(img, slotBoxes[i]); });
   drawInSlot(ringImg, slotBoxes[2]);
 
-  var y = blisterY + blisterH + 40;
-  ctx.font = "800 28px 'Baloo 2', sans-serif";
+  var y = blisterY + blisterH + 26;
+  ctx.font = "800 25px 'Baloo 2', sans-serif";
   ctx.fillStyle = "#14121F";
   wrapCanvasText(ctx, archetypeName.toUpperCase(), W - pad * 2).forEach(function(line){
     ctx.fillText(line, W / 2, y);
-    y += 33;
+    y += 29;
   });
 
-  y += 6;
+  y += 4;
   ctx.globalAlpha = 0.75;
-  ctx.font = "500 16px 'Work Sans', sans-serif";
+  ctx.font = "500 14px 'Work Sans', sans-serif";
   ctx.fillText("Niveau " + level.level + " · " + level.name + " · " + level.answered + "/" + level.total + " sujets", W / 2, y);
   ctx.globalAlpha = 1;
 
   // Footer compact : CTA et QR code côte à côte (au lieu d'empilés)
   // pour limiter la hauteur totale de l'image sur écran mobile.
-  y += 34;
-  var qrSize = 132;
-  var ctaH = 64;
-  var ctaW = W - pad * 2 - qrSize - 20;
+  y += 24;
+  var qrSize = 112;
+  var ctaH = 56;
+  var ctaW = W - pad * 2 - qrSize - 18;
   var ctaY = y + (qrSize - ctaH) / 2;
   var ctaText = "votona.fr";
   ctx.save();
   ctx.shadowColor = "rgba(" + popRgb + ",.45)";
-  ctx.shadowBlur = 20;
-  ctx.shadowOffsetY = 6;
+  ctx.shadowBlur = 16;
+  ctx.shadowOffsetY = 5;
   drawRoundedRect(ctx, pad, ctaY, ctaW, ctaH, ctaH / 2);
   ctx.fillStyle = pop;
   ctx.fill();
   ctx.restore();
   ctx.fillStyle = "#ffffff";
-  ctx.font = "700 20px 'IBM Plex Mono', monospace";
-  ctx.fillText(ctaText, pad + ctaW / 2, ctaY + ctaH / 2 + 7);
+  ctx.font = "700 18px 'IBM Plex Mono', monospace";
+  ctx.fillText(ctaText, pad + ctaW / 2, ctaY + ctaH / 2 + 6);
 
   var qrBoxX = W - pad - qrSize;
-  drawRoundedRect(ctx, qrBoxX, y, qrSize, qrSize, 20);
+  drawRoundedRect(ctx, qrBoxX, y, qrSize, qrSize, 18);
   ctx.fillStyle = "#ffffff";
   ctx.fill();
-  var qrInner = qrSize - 24;
-  drawQrCode(ctx, buildReferralUrl(profile), qrBoxX + 12, y + 12, qrInner, "#14121F");
+  var qrInner = qrSize - 20;
+  drawQrCode(ctx, buildReferralUrl(profile), qrBoxX + 10, y + 10, qrInner, "#14121F");
 
   return canvas;
 }
