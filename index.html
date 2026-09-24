@@ -4721,9 +4721,12 @@ function renderAdmin(){
         if(!isLoggedIn()){ alert("Connecte-toi (Mon compte) avec ton email admin pour retirer une actu de la file de relance."); return; }
         var id = btn.getAttribute("data-queue-delete");
         btn.disabled = true;
-        var res = await sb.from("relance_news_queue").delete().eq("id", id);
+        // Ne supprime pas la ligne : la marque comme traitée sans l'avoir
+        // envoyée, pour que la routine de veille garde une trace de ce qui
+        // a déjà été écarté et évite de le reproposer.
+        var res = await sb.from("relance_news_queue").update({consumed_at: new Date().toISOString()}).eq("id", id);
         btn.disabled = false;
-        if(res && res.error){ alert("Échec de la suppression : " + res.error.message); return; }
+        if(res && res.error){ alert("Échec du retrait : " + res.error.message); return; }
         await loadRelanceQueue();
         render();
       };
