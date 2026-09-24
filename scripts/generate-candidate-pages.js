@@ -21,11 +21,14 @@ const SITE_URL = "https://votona.fr";
 
 function extractDataBlock(html) {
   const start = html.indexOf("// ==CANDIDATES_DATA_START==");
-  const catMetaEnd = html.indexOf("\n};", html.indexOf("var CATEGORY_META = {")) + 3;
-  if (start === -1 || catMetaEnd === -1) {
+  // Le bloc s'arrête après CATEGORY_ICON_PATHS, défini juste après
+  // CATEGORY_META : couper à la fin de CATEGORY_META le laissait de côté.
+  const iconPathsStart = html.indexOf("var CATEGORY_ICON_PATHS = {");
+  const iconPathsEnd = iconPathsStart === -1 ? -1 : html.indexOf("\n};", iconPathsStart);
+  if (start === -1 || iconPathsEnd === -1) {
     throw new Error("Impossible de localiser le bloc de données dans index.html");
   }
-  return html.slice(start, catMetaEnd);
+  return html.slice(start, iconPathsEnd + 3);
 }
 
 function loadData() {
@@ -46,18 +49,23 @@ function escapeHtml(s) {
 const STANCE_LABEL = { pour: "D'accord", contre: "Pas d'accord", neutre: "Neutre" };
 const STANCE_ICON = { pour: "✓", contre: "✕", neutre: "–" };
 
-const HEADER = '<a class="brand" href="../../"><img src="/assets/ui/logo-head.png" width="28" height="28" alt="" /><span>Votona</span></a>';
-const HEADER_INDEX = '<a class="brand" href="../"><img src="/assets/ui/logo-head.png" width="28" height="28" alt="" /><span>Votona</span></a>';
+// En-tête commun aux pages statiques (même barre que l'appli : Retour,
+// Mon compte, FAQ). Les liens relatifs diffèrent selon la profondeur.
+const HEADER = '<header class="topbar"><div class="brand"><a class="topbar-back" href="../"><span class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></span><span class="title">Retour</span></a></div><div class="topbar-actions"><a class="icon-btn" href="../../?screen=account" title="Mon compte"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></a><a class="icon-btn" href="../../?screen=faq" title="Questions fréquentes"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 1 1 3.9 2.4c-1 .5-1.7 1.1-1.7 2.4"/><line x1="12" y1="17.2" x2="12" y2="17.21"/></svg></a></div></header>';
+const HEADER_INDEX = '<header class="topbar"><div class="brand"><a class="topbar-back" href="../?screen=dashboard"><span class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></span><span class="title">Retour</span></a></div><div class="topbar-actions"><a class="icon-btn" href="../?screen=account" title="Mon compte"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></a><a class="icon-btn" href="../?screen=faq" title="Questions fréquentes"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 1 1 3.9 2.4c-1 .5-1.7 1.1-1.7 2.4"/><line x1="12" y1="17.2" x2="12" y2="17.21"/></svg></a></div></header>';
 
 const SHARED_CSS = `
-  :root{ --bg:#fbfaf7; --ink:#191d2b; --ink-soft:#4d5468; --ink-faint:#8790a3; --line:#e4dfd0; --accent:#7C3AED; }
+  :root{ --bg:#fbfaf7; --ink:#191d2b; --ink-soft:#4d5468; --ink-faint:#8790a3; --line:#e4dfd0; --accent:#7C3AED; --masthead-bg:#F6F2FE; --masthead-ink:#191d2b; --masthead-line:rgba(25,29,43,.14); }
   *{box-sizing:border-box;}
   body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Work Sans',Arial,sans-serif; }
-  header.top{ display:flex; align-items:center; padding:16px clamp(20px,4vw,40px); border-bottom:3px solid var(--accent); background:#f3eefd; }
-  .brand{ display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--ink); }
-  .brand img{ border-radius:50%; display:block; }
-  .brand span{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:18px; }
-`;
+  header.topbar{ display:flex; align-items:center; justify-content:space-between; max-width:1180px; margin:0 auto; padding:16px clamp(20px,4vw,40px); border-bottom:3px solid var(--accent); background:var(--masthead-bg); }
+  .topbar-back{ display:flex; align-items:center; gap:8px; text-decoration:none; color:var(--masthead-ink); }
+  .topbar-back:hover{ color:var(--accent); }
+  .topbar-back .arrow{ flex:none; display:flex; }
+  .topbar-back .title{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:17px; }
+  .topbar-actions{ display:flex; align-items:center; gap:6px; }
+  .icon-btn{ width:34px; height:34px; border-radius:50%; border:1px solid var(--masthead-line); background:transparent; color:var(--masthead-ink); display:flex; align-items:center; justify-content:center; text-decoration:none; }
+  .icon-btn:hover{ color:var(--accent); border-color:var(--accent); }`;
 
 function catIconSvg(cat, categoryIconPaths, size) {
   const iconPath = categoryIconPaths[cat];
@@ -140,7 +148,7 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths) {
 </style>
 </head>
 <body>
-<header class="top">${HEADER}</header>
+${HEADER}
 <main>
   <div class="cand-header">
     <div class="cand-avatar" style="background:${escapeHtml(cand.color || "#7C3AED")};">${escapeHtml(initials)}</div>
@@ -167,7 +175,7 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths) {
 function indexPageHtml(candidates) {
   const canonical = `${SITE_URL}/candidats/`;
   const items = candidates.map((c) => `
-    <li data-search="${escapeHtml((c.name + " " + c.party).toLowerCase())}"><a href="${c.id}/">${escapeHtml(c.name)} <span class="party">— ${escapeHtml(c.party)}</span>${c.withdrawn ? ' <span class="withdrawn-tag">(retiré)</span>' : ""}</a></li>`).join("\n");
+    <li data-search="${escapeHtml((c.name + " " + c.party).toLowerCase())}"><a href="${c.id}/"><span class="cand-dot" style="background:${escapeHtml(c.color || "#7C3AED")}"></span>${escapeHtml(c.name)} <span class="party">— ${escapeHtml(c.party)}</span>${c.withdrawn ? ' <span class="withdrawn-tag">(retiré)</span>' : ""}</a></li>`).join("\n");
 
   return `<!DOCTYPE html>
 <html lang="fr">
@@ -189,15 +197,16 @@ function indexPageHtml(candidates) {
   ul{ list-style:none; padding:0; margin:20px 0; }
   li{ padding:14px 0; border-top:1px solid var(--line); }
   li.hidden{ display:none; }
-  li a{ color:var(--ink); text-decoration:none; font-weight:700; font-size:15.5px; }
+  li a{ display:flex; align-items:center; gap:9px; color:var(--ink); text-decoration:none; font-weight:700; font-size:15.5px; }
   li a:hover{ color:var(--accent); }
+  .cand-dot{ width:10px; height:10px; border-radius:50%; flex:none; }
   .party{ color:var(--ink-faint); font-weight:400; font-size:13.5px; }
   .withdrawn-tag{ color:var(--ink-faint); font-weight:400; font-size:12.5px; }
   #empty{ display:none; color:var(--ink-faint); font-size:13.5px; padding:14px 0; }
 </style>
 </head>
 <body>
-<header class="top">${HEADER_INDEX}</header>
+${HEADER_INDEX}
 <main>
   <h1>Tous les candidats à la présidentielle 2027</h1>
   <p class="intro">Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet — retraits de la course inclus.</p>
@@ -232,10 +241,10 @@ function main() {
   CANDIDATES.forEach((cand) => {
     const dir = path.join(OUT_DIR, cand.id);
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path.join(dir, "index.html"), candidatePageHtml(cand, TOPICS, CATEGORY_META, CATEGORY_ICON_PATHS), "utf8");
+    fs.writeFileSync(path.join(dir, "index.html"), "\uFEFF" + candidatePageHtml(cand, TOPICS, CATEGORY_META, CATEGORY_ICON_PATHS), "utf8");
   });
 
-  fs.writeFileSync(path.join(OUT_DIR, "index.html"), indexPageHtml(CANDIDATES), "utf8");
+  fs.writeFileSync(path.join(OUT_DIR, "index.html"), "\uFEFF" + indexPageHtml(CANDIDATES), "utf8");
 
   console.log(`Généré : ${CANDIDATES.length} pages candidats + 1 index dans ${OUT_DIR} (og.jpg non régénéré, voir commentaire en tête de fichier)`);
 }
