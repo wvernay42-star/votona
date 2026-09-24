@@ -73,28 +73,41 @@ module.exports = async (req, res) => {
   }
 
   const now = Date.now();
-  const sevenDaysAgo = new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString();
-  const thirtyDaysAgo = new Date(now - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const sevenDaysAgoDate = new Date(now - 7 * 24 * 60 * 60 * 1000);
+  const thirtyDaysAgoDate = new Date(now - 30 * 24 * 60 * 60 * 1000);
 
-  // Palier 1 : inactifs 7j+, aucun rappel déjà reçu.
-  const profiles1Res = await fetch(
-    SUPABASE_URL +
-      "/rest/v1/profiles?news_opt_in=eq.true&reminder1_sent_at=is.null&last_seen_at=lt." +
-      sevenDaysAgo +
-      "&select=user_id,name",
+  // Un compte peut avoir plusieurs profils (foyer). On ne veut envoyer
+  // qu'UN SEUL email par compte : on récupère tous les profils liés à
+  // un compte, on ne garde que le plus récemment actif par user_id, et
+  // c'est SEULEMENT ce profil représentatif qui détermine l'éligibilité
+  // (et qui sera marqué comme relancé, pour tout le compte).
+  const allRes = await fetch(
+    SUPABASE_URL + "/rest/v1/profiles?user_id=not.is.null&select=user_id,name,news_opt_in,reminder1_sent_at,reminder2_sent_at,last_seen_at",
     { headers: sbHeaders }
   );
-  const profiles1 = await profiles1Res.json();
+  const all = await allRes.json();
 
-  // Palier 2 : inactifs 30j+, ont déjà reçu le 1er rappel, pas encore le 2e.
-  const profiles2Res = await fetch(
-    SUPABASE_URL +
-      "/rest/v1/profiles?news_opt_in=eq.true&reminder1_sent_at=not.is.null&reminder2_sent_at=is.null&last_seen_at=lt." +
-      thirtyDaysAgo +
-      "&select=user_id,name",
-    { headers: sbHeaders }
-  );
-  const profiles2 = await profiles2Res.json();
+  const byAccount = {};
+  for (const p of Array.isArray(all) ? all : []) {
+    if (!p.last_seen_at) continue;
+    const existing = byAccount[p.user_id];
+    if (!existing || new Date(p.last_seen_at) > new Date(existing.last_seen_at)) {
+      byAccount[p.user_id] = p;
+    }
+  }
+
+  const profiles1 = [];
+  const profiles2 = [];
+  for (const userId in byAccount) {
+    const p = byAccount[userId];
+    if (!p.news_opt_in) continue;
+    const lastSeen = new Date(p.last_seen_at);
+    if (!p.reminder1_sent_at && lastSeen < sevenDaysAgoDate) {
+      profiles1.push(p);
+    } else if (p.reminder1_sent_at && !p.reminder2_sent_at && lastSeen < thirtyDaysAgoDate) {
+      profiles2.push(p);
+    }
+  }
 
   const rowsHtml = queue.map(buildRowHtml).join("");
   const subject = queue.length === 1 ? "1 actu qui peut changer ton classement" : queue.length + " actus qui peuvent changer ton classement";
