@@ -1,0 +1,38 @@
+# Votona — règles du dépôt
+
+Site statique (HTML/CSS/JS vanilla, sans build) de comparaison de positions politiques pour la présidentielle française 2027. Déployé sur Vercel.
+
+## Architecture — à lire avant de toucher au code
+
+- **`index.html` n'est JAMAIS la source de vérité — ne l'édite jamais directement.** La source de vérité est `../boussole2027/app.html` (un dossier frère, hors de ce dépôt git). `index.html` en est toujours une copie mirroir.
+- Workflow correct pour tout changement du site (pas des fichiers `api/`) :
+  1. Éditer `../boussole2027/app.html`
+  2. Copier vers `index.html` : `cp ../boussole2027/app.html index.html`
+  3. Vérifier avant/après que les comptes de candidats et de sujets sont identiques entre les deux fichiers (`grep -oE 'id:"[a-z0-9-]+", name:' | wc -l` pour les candidats, `grep -oE 'id:"t[0-9]+"' | wc -l` pour les sujets) — un écart signale une perte de données.
+  4. Commit + push sur la branche `draft`, jamais directement sur `main`.
+- Si `index.html` a divergé de `app.html` (ex. un autre agent/session a édité `index.html` directement) : NE PAS écraser `index.html` avec `app.html` sans vérifier. Inspecter le diff, resynchroniser `app.html` DEPUIS `index.html` si besoin (sens inverse), puis repartir de ce nouveau `app.html`.
+- Les fichiers `votona-web/api/*.js` (fonctions serverless Vercel) sont propres à ce dépôt — ils ne sont PAS mirrorés depuis `app.html`.
+- Les 34 pages `candidats/<id>/index.html` sont générées, pas éditées à la main (voir `scripts/generate-candidate-pages.js`).
+
+## Déploiement — deux environnements distincts, ne jamais les confondre
+
+- Branche `draft` → domaine `votona.vercel.app` (test/preview).
+- Branche `main` → domaine `votona.fr` (production réelle).
+- **Toujours tester sur `draft` d'abord.** Ne fusionner `draft` → `main` que si l'utilisateur le demande explicitement ("pousse en production").
+
+## Contraintes de l'environnement local
+
+- **Node.js n'est pas installé sur cette machine.** N'écris pas de script supposant `node`/`npm` disponible en local ; utilise Bash/PowerShell + `curl`/`Invoke-RestMethod` pour les appels API directs.
+- Backend : Supabase (`vvvlhxniiykbdssmadbs.supabase.co`) — utilise les clés au **nouveau format** (`sb_publishable_...` / `sb_secret_...`), les clés legacy sont désactivées pour ce projet.
+- Emails transactionnels : Brevo.
+
+## Relance email des utilisateurs inactifs
+
+Deux mécanismes séparés, ne pas les confondre ni les dupliquer :
+- **Envoi** : 100% manuel, uniquement via le bouton Admin → "Relances email" → "Envoyer aux utilisateurs inactifs" sur le site (`api/send-relance.js` + `api/_lib/relance.js`). N'ajoute jamais d'envoi automatique/planifié sans demande explicite de l'utilisateur.
+- **Sourcing des actus** : automatisé via une tâche locale Claude Code Desktop (`votona-relance-inactifs`, tous les jours à 6h) qui cherche l'actualité de la campagne et l'ajoute à la file `relance_news_queue` — elle n'envoie jamais d'email elle-même. Son prompt vit dans `C:\Users\willi\.claude\scheduled-tasks\votona-relance-inactifs\SKILL.md`, hors de ce dépôt.
+- Le bouton "Retirer" dans l'admin ne supprime pas la ligne, il la marque `consumed_at` sans envoyer — pour que la tâche de sourcing garde un historique de ce qui a déjà été écarté et évite les doublons.
+
+## Avant de pousser en production
+
+Toujours prévenir l'utilisateur et attendre confirmation explicite avant tout `git push origin main` (ou merge `draft`→`main`).
