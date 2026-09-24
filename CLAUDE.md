@@ -4,29 +4,23 @@ Site statique (HTML/CSS/JS vanilla, sans build) de comparaison de positions poli
 
 ## Architecture — à lire avant de toucher au code
 
-- **`index.html` n'est JAMAIS la source de vérité — ne l'édite jamais directement.** La source de vérité est `../boussole2027/app.html` (un dossier frère, hors de ce dépôt git). `index.html` en est toujours une copie mirroir.
-- Workflow correct pour tout changement du site (pas des fichiers `api/`) :
-  1. Éditer `../boussole2027/app.html`
-  2. Copier vers `index.html` : `cp ../boussole2027/app.html index.html`
-  3. Vérifier avant/après que les comptes de candidats et de sujets sont identiques entre les deux fichiers (`grep -oE 'id:"[a-z0-9-]+", name:' | wc -l` pour les candidats, `grep -oE 'id:"t[0-9]+"' | wc -l` pour les sujets) — un écart signale une perte de données.
-  4. Commit + push sur la branche `draft`, jamais directement sur `main`.
-- Si `index.html` a divergé de `app.html` (ex. un autre agent/session a édité `index.html` directement) : NE PAS écraser `index.html` avec `app.html` sans vérifier. Inspecter le diff, resynchroniser `app.html` DEPUIS `index.html` si besoin (sens inverse), puis repartir de ce nouveau `app.html`.
-- Les fichiers `votona-web/api/*.js` (fonctions serverless Vercel) sont propres à ce dépôt — ils ne sont PAS mirrorés depuis `app.html`.
-- Les 34 pages `candidats/<id>/index.html` sont générées, pas éditées à la main (voir `scripts/generate-candidate-pages.js`). Ce script demande Node.js : absent de la machine locale, il se lance depuis une session cloud (voir plus bas). Après une modification des candidats/sujets, relance-le et commite les pages régénérées avec le reste.
-
-### Session cloud (Claude Code web / appli mobile) — pas d'accès à `app.html`
-
-Une session qui tourne dans un conteneur cloud n'a que ce dépôt : `../boussole2027/app.html` n'existe pas pour elle. Dans ce cas, et seulement dans ce cas :
-- Édite `index.html` directement, c'est la seule option — mais **dis-le explicitement à l'utilisateur à la fin de chaque changement** : `app.html` doit être resynchronisé depuis `index.html` avant la prochaine modification locale (la règle « si `index.html` a divergé » ci-dessus s'applique alors côté local).
-- Vérifie quand même les comptes candidats/sujets avant/après avec les mêmes `grep` (ils doivent rester identiques).
-- Ne crée pas de copie de `app.html` dans ce dépôt pour « contourner » la règle.
-- Une session cloud travaille sur sa propre branche `claude/...` : elle pousse sur `draft` pour test, jamais sur `main` sans le « pousse en production » explicite de l'utilisateur.
+- **`index.html` (dans ce dépôt) est la SEULE source de vérité du site.** On l'édite directement, en local comme en session cloud. Git garde l'historique de chaque version.
+- **`../boussole2027/app.html` est ABANDONNÉ** (ancienne copie de travail hors git, renommée `app.html.ancien` sur la machine locale). Ne le lis pas, ne le copie jamais vers `index.html`, ne le recrée pas, ne le resynchronise pas : une ancienne copie écraserait des correctifs publiés depuis.
+- Workflow pour tout changement du site :
+  1. Compter candidats et sujets AVANT : `grep -oE 'id:"[a-z0-9-]+", name:' index.html | wc -l` (candidats) et `grep -oE 'id:"t[0-9]+"' index.html | wc -l` (sujets).
+  2. Éditer `index.html`.
+  3. Recompter APRÈS : les chiffres doivent être identiques (sauf ajout/retrait voulu). Un écart inattendu signale une perte de données.
+  4. Commit + push sur `draft` (test), jamais directement sur `main` — voir « Déploiement ».
+- Les fichiers `api/*.js` sont les fonctions serverless Vercel (Node côté serveur).
+- Les 34 pages `candidats/<id>/index.html` sont générées, pas éditées à la main (voir `scripts/generate-candidate-pages.js`). Ce script demande Node.js : absent de la machine locale, il se lance depuis une session cloud. Après une modification des candidats/sujets, relance-le et commite les pages régénérées avec le reste.
+- Une session cloud (Claude Code web / appli mobile) n'a que ce dépôt, pas la machine locale : elle travaille sur sa propre branche `claude/...` et pousse sur `draft` pour test.
 
 ## Déploiement — deux environnements distincts, ne jamais les confondre
 
 - Branche `draft` → domaine `votona.vercel.app` (test/preview).
 - Branche `main` → domaine `votona.fr` (production réelle).
 - **Toujours tester sur `draft` d'abord.** Ne fusionner `draft` → `main` que si l'utilisateur le demande explicitement ("pousse en production").
+- Exceptions voulues, par des routines cloud planifiées : « Votona - veille quotidienne » (5h26 UTC) modifie les blocs `CANDIDATES_DATA` et `POLL_DATA` d'`index.html` et pousse **directement sur `main`** ; « Votona - revue kit mensuelle » pousse une branche `kit-revue-AAAA-MM` à valider. Avant de travailler, fais donc toujours `git pull` : `main` a pu bouger pendant la nuit.
 
 ## Contraintes de l'environnement local
 
