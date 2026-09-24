@@ -32,7 +32,8 @@ module.exports = async (req, res) => {
     headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: "Bearer " + accessToken }
   });
   if (!userRes.ok) {
-    res.status(401).json({ error: "Session invalide" });
+    const errBody = await userRes.text().catch(() => "");
+    res.status(401).json({ error: "Session invalide (" + userRes.status + ") : " + errBody });
     return;
   }
   const user = await userRes.json();
