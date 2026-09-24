@@ -151,7 +151,7 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths) {
   </div>
   ${withdrawnBadge}
   <p style="color:var(--ink-soft); line-height:1.6; margin-top:18px;">Positions de ${escapeHtml(cand.name)} sur ${topics.length} sujets de la présidentielle 2027, établies à partir de déclarations, votes ou programmes publics.</p>
-  <a class="cta" href="../../">Compare tes propres positions à celles de ${escapeHtml(cand.name)} sur Votona →</a>
+  <a class="cta" href="../../?screen=results">Compare tes propres positions à celles de ${escapeHtml(cand.name)} sur Votona →</a>
   <h2 class="subhead">Toutes ses positions</h2>
   ${rows}
   <footer>

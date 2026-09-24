@@ -2955,12 +2955,12 @@ var state = {
 };
 
 /* Lien profond depuis une page statique externe (ex. candidats/) vers
-   un écran précis. "dashboard" ne saute que si un profil existe déjà
+   un écran précis. "dashboard"/"results" ne sautent que si un profil existe déjà
    (sinon rien à y afficher, on garde le picker de profils par
    défaut) ; "faq"/"account" sont toujours accessibles. */
 var requestedScreen = new URLSearchParams(location.search).get("screen");
-if(requestedScreen === "dashboard" && state.activeProfileId && loadProfiles()[state.activeProfileId]){
-  state.screen = "dashboard";
+if((requestedScreen === "dashboard" || requestedScreen === "results") && state.activeProfileId && loadProfiles()[state.activeProfileId]){
+  state.screen = requestedScreen;
 } else if(requestedScreen === "faq" || requestedScreen === "account" || requestedScreen === "legal" || requestedScreen === "privacy"){
   state.screen = requestedScreen;
 }
