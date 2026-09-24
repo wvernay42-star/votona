@@ -18,7 +18,8 @@
 //   node scripts/relance-inactifs.js            → envoie pour de vrai
 //   node scripts/relance-inactifs.js --dry-run  → affiche le bilan sans rien envoyer
 //
-// Planification quotidienne à 6h sous Windows : voir scripts/relance-inactifs.cmd.
+// Installation + planification quotidienne à 6h sous Windows, en une commande :
+//   powershell -ExecutionPolicy Bypass -File scripts\installer-relance.ps1
 // Nécessite Node.js 18 ou plus récent (fetch intégré).
 
 const fs = require("fs");
