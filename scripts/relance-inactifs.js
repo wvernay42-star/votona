@@ -18,8 +18,9 @@
 //   node scripts/relance-inactifs.js            → envoie pour de vrai
 //   node scripts/relance-inactifs.js --dry-run  → affiche le bilan sans rien envoyer
 //
-// Installation + planification quotidienne à 6h sous Windows, en une commande :
-//   powershell -ExecutionPolicy Bypass -File scripts\installer-relance.ps1
+// Planification : tâche planifiée LOCALE de l'appli Claude Desktop
+// (tous les jours à 6h, dossier votona-web), qui fait `git pull origin main`
+// puis lance ce script avec les deux clés en variables d'environnement.
 // Nécessite Node.js 18 ou plus récent (fetch intégré).
 
 const fs = require("fs");
@@ -55,7 +56,7 @@ async function main() {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const brevoKey = process.env.BREVO_API_KEY;
   if (!serviceKey || !brevoKey) {
-    throw new Error("Clés manquantes : renseigne SUPABASE_SERVICE_ROLE_KEY et BREVO_API_KEY dans .env.local (voir scripts/relance-inactifs.env.example).");
+    throw new Error("Clés manquantes : fournis SUPABASE_SERVICE_ROLE_KEY et BREVO_API_KEY en variables d'environnement ou dans .env.local (voir scripts/relance-inactifs.env.example).");
   }
 
   const dryRun = process.argv.includes("--dry-run");
