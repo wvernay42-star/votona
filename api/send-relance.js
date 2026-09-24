@@ -37,8 +37,8 @@ module.exports = async (req, res) => {
     return;
   }
   const user = await userRes.json();
-  if (!user || user.email !== ADMIN_EMAIL) {
-    res.status(403).json({ error: "Réservé à l'admin" });
+  if (!user || !user.email || user.email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+    res.status(403).json({ error: "Réservé à l'admin (connecté avec : " + (user && user.email) + ")" });
     return;
   }
 
