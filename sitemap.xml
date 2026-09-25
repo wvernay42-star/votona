@@ -106,11 +106,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/labib/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://votona.fr/candidats/ruffin/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -126,22 +121,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/royal/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://votona.fr/candidats/massard/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/lalanne/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/mathieu/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -152,16 +132,6 @@
   </url>
   <url>
     <loc>https://votona.fr/candidats/batho/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/bouamrane/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/verdier/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -177,11 +147,6 @@
   </url>
   <url>
     <loc>https://votona.fr/candidats/zemmour/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/becht/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

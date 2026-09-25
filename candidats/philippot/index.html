@@ -57,6 +57,18 @@
   .topic-row h3 a:hover{ color:var(--accent); text-decoration:underline; }
   .stance-label{ font-weight:700; font-size:13.5px; margin:0 0 4px; color:var(--ink); }
   .detail{ font-size:13.5px; line-height:1.55; color:var(--ink-soft); margin:0; }
+  .count{ display:inline-block; min-width:22px; padding:1px 8px; margin-left:4px; border-radius:99px; background:var(--line); color:var(--ink-soft); font-size:12px; font-family:inherit; font-weight:700; text-align:center; vertical-align:middle; }
+  .unknown{ margin-top:28px; border-top:1px solid var(--line); padding-top:16px; }
+  .unknown summary{ cursor:pointer; font-weight:700; font-size:14.5px; color:var(--ink-soft); padding:6px 0; }
+  .unknown summary:hover{ color:var(--accent); }
+  .unknown ul{ list-style:none; padding:0; margin:8px 0 0; }
+  .unknown li{ padding:8px 0; border-top:1px solid var(--line); font-size:13.5px; line-height:1.45; }
+  .unknown li a{ color:var(--ink-soft); text-decoration:none; }
+  .unknown li a:hover{ color:var(--accent); text-decoration:underline; }
+  .empty-note{ margin:32px 0; padding:22px 24px; border:1px dashed var(--line); border-radius:16px; color:var(--ink-soft); line-height:1.6; font-size:14.5px; }
+  .empty-note p{ margin:0 0 10px; } .empty-note p:last-child{ margin:0; }
+  .empty-note strong{ color:var(--ink); }
+  .empty-note a{ color:var(--accent); font-weight:600; }
   footer{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; }
   footer a{ color:inherit; }
 </style>
@@ -73,9 +85,9 @@
     </div>
   </div>
   
-  <p style="color:var(--ink-soft); line-height:1.6; margin-top:18px;">Positions de Florian Philippot sur 35 sujets de la présidentielle 2027, établies à partir de déclarations, votes ou programmes publics.</p>
+  <p style="color:var(--ink-soft); line-height:1.6; margin-top:18px;">Positions de Florian Philippot sur 8 des 35 sujets de la présidentielle 2027 suivis par Votona, établies à partir de déclarations, votes ou programmes publics.</p>
   <a class="cta" href="../../?screen=results">Compare tes propres positions à celles de Florian Philippot sur Votona →</a>
-  <h2 class="subhead">Toutes ses positions</h2>
+  <h2 class="subhead">Ses positions connues <span class="count">8</span></h2>
   
     <article class="topic-row">
       <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Économie &amp; travail</div>
@@ -92,31 +104,10 @@
     </article>
 
     <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Économie &amp; travail</div>
-      <h3><a href="/sujets/reduire-la-dette-publique-en-priorite-par-la-baisse-des/">Réduire la dette publique en priorité par la baisse des dépenses de l&#39;État</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>Protection sociale</div>
-      <h3><a href="/sujets/conditionner-le-rsa-a-15-heures-dactivite-hebdomadaire/">Conditionner le RSA à 15 heures d&#39;activité hebdomadaire</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
       <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>Protection sociale</div>
       <h3><a href="/sujets/augmenter-significativement-le-smic/">Augmenter significativement le SMIC</a></h3>
       <p class="stance-label">✓ D&#39;accord</p>
       <p class="detail">Propose une hausse du SMIC de 15 à 25 % sur le quinquennat.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>Protection sociale</div>
-      <h3><a href="/sujets/durcir-les-conditions-dindemnisation-du-chomage/">Durcir les conditions d&#39;indemnisation du chômage</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
     </article>
 
     <article class="topic-row">
@@ -128,30 +119,9 @@
 
     <article class="topic-row">
       <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>Sécurité &amp; immigration</div>
-      <h3><a href="/sujets/renforcer-les-moyens-de-la-police-et-allonger-les-peines-de/">Renforcer les moyens de la police et allonger les peines de prison</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>Sécurité &amp; immigration</div>
       <h3><a href="/sujets/reserver-certaines-aides-sociales-aux-seuls-citoyens/">Réserver certaines aides sociales aux seuls citoyens français</a></h3>
       <p class="stance-label">✓ D&#39;accord</p>
       <p class="detail">Propose l&#39;abolition de l&#39;aide médicale d&#39;État (AME), dans une logique de restriction des aides aux non-nationaux.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M12 22v-7"/><path d="M12 15c-4.5 0-8-3.5-8-8 4.5 0 8 2 8 5.5"/><path d="M12 15c4.5 0 8-3.5 8-8-4.5 0-8 2-8 5.5"/></svg>Écologie</div>
-      <h3><a href="/sujets/relancer-massivement-la-filiere-nucleaire/">Relancer massivement la filière nucléaire</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M12 22v-7"/><path d="M12 15c-4.5 0-8-3.5-8-8 4.5 0 8 2 8 5.5"/><path d="M12 15c4.5 0 8-3.5 8-8-4.5 0-8 2-8 5.5"/></svg>Écologie</div>
-      <h3><a href="/sujets/renforcer-la-taxe-carbone-sur-les-entreprises-polluantes/">Renforcer la taxe carbone sur les entreprises polluantes</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
     </article>
 
     <article class="topic-row">
@@ -159,41 +129,6 @@
       <h3><a href="/sujets/approfondir-lintegration-europeenne-y-compris-une-dette/">Approfondir l&#39;intégration européenne, y compris une dette commune</a></h3>
       <p class="stance-label">✕ Pas d&#39;accord</p>
       <p class="detail">Défend la sortie de l&#39;Union européenne, de l&#39;euro et de l&#39;OTAN, ligne souverainiste intégrale.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Société</div>
-      <h3><a href="/sujets/recruter-massivement-du-personnel-soignant-et-revaloriser/">Recruter massivement du personnel soignant et revaloriser les salaires à l&#39;hôpital public</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Société</div>
-      <h3><a href="/sujets/reconnaitre-un-droit-a-laide-active-a-mourir-comme-la-loi/">Reconnaître un droit à l&#39;aide active à mourir, comme la loi promulguée en août 2026</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Société</div>
-      <h3><a href="/sujets/encadrer-plus-strictement-les-loyers-dans-les-zones-tendues/">Encadrer plus strictement les loyers dans les zones tendues</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Société</div>
-      <h3><a href="/sujets/redonner-davantage-dautonomie-et-de-selection-aux/">Redonner davantage d&#39;autonomie et de sélection aux établissements scolaires</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Défense &amp; numérique</div>
-      <h3><a href="/sujets/augmenter-fortement-le-budget-de-la-defense-face-aux/">Augmenter fortement le budget de la défense face aux tensions internationales</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
     </article>
 
     <article class="topic-row">
@@ -205,122 +140,14 @@
 
     <article class="topic-row">
       <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><circle cx="12" cy="12" r="9"/><path d="M12 7.3l1.1 2.4 2.6.2-2 1.8.6 2.6L12 12.9l-2.3 1.4.6-2.6-2-1.8 2.6-.2L12 7.3z"/></svg>Europe &amp; institutions</div>
-      <h3><a href="/sujets/instaurer-une-dose-de-proportionnelle-aux-elections/">Instaurer une dose de proportionnelle aux élections législatives</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Défense &amp; numérique</div>
-      <h3><a href="/sujets/encadrer-strictement-lintelligence-artificielle-par-une/">Encadrer strictement l&#39;intelligence artificielle par une régulation nationale ou européenne renforcée</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M12 22v-7"/><path d="M12 15c-4.5 0-8-3.5-8-8 4.5 0 8 2 8 5.5"/><path d="M12 15c4.5 0 8-3.5 8-8-4.5 0-8 2-8 5.5"/></svg>Écologie</div>
-      <h3><a href="/sujets/interdire-rapidement-les-pesticides-de-synthese-en/">Interdire rapidement les pesticides de synthèse en agriculture</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Société</div>
-      <h3><a href="/sujets/creer-un-droit-opposable-a-un-mode-de-garde-pour-la-petite/">Créer un droit opposable à un mode de garde pour la petite enfance</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Société</div>
-      <h3><a href="/sujets/plafonner-les-effectifs-a-19-eleves-par-classe-en-recrutant/">Plafonner les effectifs à 19 élèves par classe en recrutant davantage d&#39;enseignants</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>Sécurité &amp; immigration</div>
-      <h3><a href="/sujets/rendre-imprescriptibles-les-crimes-sexuels-et-violents/">Rendre imprescriptibles les crimes sexuels et violents commis sur des mineurs</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>Protection sociale</div>
-      <h3><a href="/sujets/allonger-le-delai-de-carence-non-indemnise-pour-les-arrets/">Allonger le délai de carence non indemnisé pour les arrêts de travail courts</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><circle cx="12" cy="12" r="9"/><path d="M12 7.3l1.1 2.4 2.6.2-2 1.8.6 2.6L12 12.9l-2.3 1.4.6-2.6-2-1.8 2.6-.2L12 7.3z"/></svg>Europe &amp; institutions</div>
       <h3><a href="/sujets/sopposer-a-la-ratification-de-laccord-de-libre-echange/">S&#39;opposer à la ratification de l&#39;accord de libre-échange entre l&#39;Union européenne et le Mercosur</a></h3>
       <p class="stance-label">✓ D&#39;accord</p>
       <p class="detail">Sa ligne souverainiste s&#39;oppose par principe aux accords de libre-échange négociés par l&#39;Union européenne.</p>
     </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><circle cx="12" cy="12" r="9"/><path d="M12 7.3l1.1 2.4 2.6.2-2 1.8.6 2.6L12 12.9l-2.3 1.4.6-2.6-2-1.8 2.6-.2L12 7.3z"/></svg>Europe &amp; institutions</div>
-      <h3><a href="/sujets/convoquer-une-assemblee-constituante-pour-instaurer-une-vie/">Convoquer une assemblée constituante pour instaurer une VIe République</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Économie &amp; travail</div>
-      <h3><a href="/sujets/alourdir-la-fiscalite-sur-les-tres-gros-heritages-mega/">Alourdir la fiscalité sur les très gros héritages (&quot;méga-successions&quot;)</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>Sécurité &amp; immigration</div>
-      <h3><a href="/sujets/abaisser-la-majorite-penale-a-15-ans/">Abaisser la majorité pénale à 15 ans</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Société</div>
-      <h3><a href="/sujets/instaurer-un-depistage-obligatoire-de-laddiction-aux-ecrans/">Instaurer un dépistage obligatoire de l&#39;addiction aux écrans à l&#39;entrée en sixième et en seconde</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Économie &amp; travail</div>
-      <h3><a href="/sujets/baisser-la-tva-et-la-ticpe-sur-les-carburants-pour-redonner/">Baisser la TVA et la TICPE sur les carburants pour redonner du pouvoir d&#39;achat aux automobilistes</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Défense &amp; numérique</div>
-      <h3><a href="/sujets/interdire-lacces-aux-reseaux-sociaux-aux-mineurs-de-moins/">Interdire l&#39;accès aux réseaux sociaux aux mineurs de moins de 15 ans</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>Protection sociale</div>
-      <h3><a href="/sujets/geler-la-revalorisation-des-pensions-de-retraite-depassant/">Geler la revalorisation des pensions de retraite dépassant 2 034 euros mensuels pour financer le budget 2027</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Économie &amp; travail</div>
-      <h3><a href="/sujets/geler-le-point-dindice-des-fonctionnaires-en-2027-pour/">Geler le point d&#39;indice des fonctionnaires en 2027 pour financer le budget de l&#39;État</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
-
-    <article class="topic-row">
-      <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>Sécurité &amp; immigration</div>
-      <h3><a href="/sujets/reserver-le-jugement-de-tous-les-crimes-sexuels-aux-cours/">Réserver le jugement de tous les crimes sexuels aux cours d&#39;assises avec jury populaire, en les excluant des cours criminelles départementales</a></h3>
-      <p class="stance-label">– Neutre</p>
-      <p class="detail">Position non encore précisée publiquement sur ce sujet.</p>
-    </article>
+  <details class="unknown">
+    <summary>Pas encore de position connue sur 27 sujets</summary>
+    <ul><li><a href="/sujets/reduire-la-dette-publique-en-priorite-par-la-baisse-des/">Réduire la dette publique en priorité par la baisse des dépenses de l&#39;État</a></li><li><a href="/sujets/conditionner-le-rsa-a-15-heures-dactivite-hebdomadaire/">Conditionner le RSA à 15 heures d&#39;activité hebdomadaire</a></li><li><a href="/sujets/durcir-les-conditions-dindemnisation-du-chomage/">Durcir les conditions d&#39;indemnisation du chômage</a></li><li><a href="/sujets/renforcer-les-moyens-de-la-police-et-allonger-les-peines-de/">Renforcer les moyens de la police et allonger les peines de prison</a></li><li><a href="/sujets/relancer-massivement-la-filiere-nucleaire/">Relancer massivement la filière nucléaire</a></li><li><a href="/sujets/renforcer-la-taxe-carbone-sur-les-entreprises-polluantes/">Renforcer la taxe carbone sur les entreprises polluantes</a></li><li><a href="/sujets/recruter-massivement-du-personnel-soignant-et-revaloriser/">Recruter massivement du personnel soignant et revaloriser les salaires à l&#39;hôpital public</a></li><li><a href="/sujets/reconnaitre-un-droit-a-laide-active-a-mourir-comme-la-loi/">Reconnaître un droit à l&#39;aide active à mourir, comme la loi promulguée en août 2026</a></li><li><a href="/sujets/encadrer-plus-strictement-les-loyers-dans-les-zones-tendues/">Encadrer plus strictement les loyers dans les zones tendues</a></li><li><a href="/sujets/redonner-davantage-dautonomie-et-de-selection-aux/">Redonner davantage d&#39;autonomie et de sélection aux établissements scolaires</a></li><li><a href="/sujets/augmenter-fortement-le-budget-de-la-defense-face-aux/">Augmenter fortement le budget de la défense face aux tensions internationales</a></li><li><a href="/sujets/instaurer-une-dose-de-proportionnelle-aux-elections/">Instaurer une dose de proportionnelle aux élections législatives</a></li><li><a href="/sujets/encadrer-strictement-lintelligence-artificielle-par-une/">Encadrer strictement l&#39;intelligence artificielle par une régulation nationale ou européenne renforcée</a></li><li><a href="/sujets/interdire-rapidement-les-pesticides-de-synthese-en/">Interdire rapidement les pesticides de synthèse en agriculture</a></li><li><a href="/sujets/creer-un-droit-opposable-a-un-mode-de-garde-pour-la-petite/">Créer un droit opposable à un mode de garde pour la petite enfance</a></li><li><a href="/sujets/plafonner-les-effectifs-a-19-eleves-par-classe-en-recrutant/">Plafonner les effectifs à 19 élèves par classe en recrutant davantage d&#39;enseignants</a></li><li><a href="/sujets/rendre-imprescriptibles-les-crimes-sexuels-et-violents/">Rendre imprescriptibles les crimes sexuels et violents commis sur des mineurs</a></li><li><a href="/sujets/allonger-le-delai-de-carence-non-indemnise-pour-les-arrets/">Allonger le délai de carence non indemnisé pour les arrêts de travail courts</a></li><li><a href="/sujets/convoquer-une-assemblee-constituante-pour-instaurer-une-vie/">Convoquer une assemblée constituante pour instaurer une VIe République</a></li><li><a href="/sujets/alourdir-la-fiscalite-sur-les-tres-gros-heritages-mega/">Alourdir la fiscalité sur les très gros héritages (&quot;méga-successions&quot;)</a></li><li><a href="/sujets/abaisser-la-majorite-penale-a-15-ans/">Abaisser la majorité pénale à 15 ans</a></li><li><a href="/sujets/instaurer-un-depistage-obligatoire-de-laddiction-aux-ecrans/">Instaurer un dépistage obligatoire de l&#39;addiction aux écrans à l&#39;entrée en sixième et en seconde</a></li><li><a href="/sujets/baisser-la-tva-et-la-ticpe-sur-les-carburants-pour-redonner/">Baisser la TVA et la TICPE sur les carburants pour redonner du pouvoir d&#39;achat aux automobilistes</a></li><li><a href="/sujets/interdire-lacces-aux-reseaux-sociaux-aux-mineurs-de-moins/">Interdire l&#39;accès aux réseaux sociaux aux mineurs de moins de 15 ans</a></li><li><a href="/sujets/geler-la-revalorisation-des-pensions-de-retraite-depassant/">Geler la revalorisation des pensions de retraite dépassant 2 034 euros mensuels pour financer le budget 2027</a></li><li><a href="/sujets/geler-le-point-dindice-des-fonctionnaires-en-2027-pour/">Geler le point d&#39;indice des fonctionnaires en 2027 pour financer le budget de l&#39;État</a></li><li><a href="/sujets/reserver-le-jugement-de-tous-les-crimes-sexuels-aux-cours/">Réserver le jugement de tous les crimes sexuels aux cours d&#39;assises avec jury populaire, en les excluant des cours criminelles départementales</a></li></ul>
+  </details>
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques — ni exhaustives ni officielles.<br />
     <a href="../../">votona.fr</a>

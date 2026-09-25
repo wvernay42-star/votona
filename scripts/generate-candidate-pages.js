@@ -24,6 +24,17 @@ const TOPIC_DIR = path.join(ROOT, "sujets");
 const DEFAULT_NEUTRAL = "Position non encore précisée publiquement sur ce sujet.";
 
 // Adresse lisible et stable d'un sujet, tirée de son intitulé.
+// Position réellement connue (pas le « neutre » par défaut posé quand rien n'est sourcé).
+function isKnown(pos) {
+  return !!pos && !(pos.stance === "neutre" && (!pos.detail || pos.detail === DEFAULT_NEUTRAL));
+}
+
+// Fiche sans aucune position connue : on ne la propose pas aux moteurs (noindex + hors sitemap)
+// tant que la veille ne l'a pas complétée ; elle revient automatiquement dès la première position.
+function hasKnownPositions(cand, topics) {
+  return topics.some((t) => isKnown(cand.positions && cand.positions[t.id]));
+}
+
 function slugify(text, maxLen = 60) {
   let slug = String(text).normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     .toLowerCase().replace(/['’"]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -124,12 +135,16 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths, slugs)
   const canonical = `${SITE_URL}/candidats/${cand.id}/`;
   const ogImage = `${SITE_URL}/candidats/${cand.id}/og.jpg`;
 
-  const rows = topics.map((t) => {
-    const pos = cand.positions && cand.positions[t.id];
-    const stance = pos ? pos.stance : null;
-    const label = stance ? (STANCE_LABEL[stance] || stance) : "Position non précisée publiquement";
-    const icon = stance ? (STANCE_ICON[stance] || "") : "–";
-    const detail = pos && pos.detail ? pos.detail : "";
+  const known = topics.filter((t) => isKnown(cand.positions && cand.positions[t.id]));
+  const unknown = topics.filter((t) => !isKnown(cand.positions && cand.positions[t.id]));
+  const indexable = known.length > 0;
+
+  const rows = known.map((t) => {
+    const pos = cand.positions[t.id];
+    const stance = pos.stance;
+    const label = STANCE_LABEL[stance] || stance;
+    const icon = STANCE_ICON[stance] || "";
+    const detail = pos.detail || "";
     return `
     <article class="topic-row">
       <div class="topic-cat">${catIconSvg(t.cat, categoryIconPaths, 13)}${escapeHtml(t.cat)}</div>
@@ -138,6 +153,20 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths, slugs)
       ${detail ? `<p class="detail">${escapeHtml(detail)}</p>` : ""}
     </article>`;
   }).join("\n");
+
+  const unknownLinks = unknown.map((t) => `<li><a href="/sujets/${slugs[t.id]}/">${escapeHtml(t.statement)}</a></li>`).join("");
+  const positionsHtml = indexable
+    ? `<h2 class="subhead">Ses positions connues <span class="count">${known.length}</span></h2>
+  ${rows}${unknown.length ? `
+  <details class="unknown">
+    <summary>Pas encore de position connue sur ${unknown.length} sujet${unknown.length > 1 ? "s" : ""}</summary>
+    <ul>${unknownLinks}</ul>
+  </details>` : ""}`
+    : `<div class="empty-note">
+    <p><strong>Aucune position publique connue pour l'instant.</strong></p>
+    <p>Aucune déclaration, aucun vote ni programme de ${escapeHtml(cand.name)} n'a encore été relevé sur les ${topics.length} sujets suivis par Votona. Les fiches sont complétées au fil de la campagne : reviens bientôt.</p>
+    <p><a href="/sujets/">Voir ce que proposent les autres candidats, sujet par sujet ›</a></p>
+  </div>`;
 
   const withdrawnBadge = cand.withdrawn
     ? `<p class="withdrawn-badge">Candidature retirée de la course</p>`
@@ -161,7 +190,7 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths, slugs)
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="description" content="${escapeHtml(description)}" />
 <link rel="canonical" href="${canonical}" />
-<meta name="robots" content="index, follow" />
+<meta name="robots" content="${indexable ? "index, follow" : "noindex, follow"}" />
 <meta property="og:type" content="profile" />
 <meta property="og:site_name" content="Votona" />
 <meta property="og:url" content="${canonical}" />
@@ -190,6 +219,18 @@ ${HEAD_ICONS}
   .topic-row h3 a:hover{ color:var(--accent); text-decoration:underline; }
   .stance-label{ font-weight:700; font-size:13.5px; margin:0 0 4px; color:var(--ink); }
   .detail{ font-size:13.5px; line-height:1.55; color:var(--ink-soft); margin:0; }
+  .count{ display:inline-block; min-width:22px; padding:1px 8px; margin-left:4px; border-radius:99px; background:var(--line); color:var(--ink-soft); font-size:12px; font-family:inherit; font-weight:700; text-align:center; vertical-align:middle; }
+  .unknown{ margin-top:28px; border-top:1px solid var(--line); padding-top:16px; }
+  .unknown summary{ cursor:pointer; font-weight:700; font-size:14.5px; color:var(--ink-soft); padding:6px 0; }
+  .unknown summary:hover{ color:var(--accent); }
+  .unknown ul{ list-style:none; padding:0; margin:8px 0 0; }
+  .unknown li{ padding:8px 0; border-top:1px solid var(--line); font-size:13.5px; line-height:1.45; }
+  .unknown li a{ color:var(--ink-soft); text-decoration:none; }
+  .unknown li a:hover{ color:var(--accent); text-decoration:underline; }
+  .empty-note{ margin:32px 0; padding:22px 24px; border:1px dashed var(--line); border-radius:16px; color:var(--ink-soft); line-height:1.6; font-size:14.5px; }
+  .empty-note p{ margin:0 0 10px; } .empty-note p:last-child{ margin:0; }
+  .empty-note strong{ color:var(--ink); }
+  .empty-note a{ color:var(--accent); font-weight:600; }
   footer{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; }
   footer a{ color:inherit; }
 </style>
@@ -206,10 +247,9 @@ ${HEADER}
     </div>
   </div>
   ${withdrawnBadge}
-  <p style="color:var(--ink-soft); line-height:1.6; margin-top:18px;">Positions de ${escapeHtml(cand.name)} sur ${topics.length} sujets de la présidentielle 2027, établies à partir de déclarations, votes ou programmes publics.</p>
+  <p style="color:var(--ink-soft); line-height:1.6; margin-top:18px;">${indexable ? `Positions de ${escapeHtml(cand.name)} sur ${known.length === topics.length ? "" : `${known.length} des `}${topics.length} sujets de la présidentielle 2027 suivis par Votona, établies à partir de déclarations, votes ou programmes publics.` : `Votona suit ${topics.length} sujets de la présidentielle 2027 et y relève, pour chaque candidat, les positions tirées de déclarations, votes ou programmes publics.`}</p>
   <a class="cta" href="../../?screen=results">Compare tes propres positions à celles de ${escapeHtml(cand.name)} sur Votona →</a>
-  <h2 class="subhead">Toutes ses positions</h2>
-  ${rows}
+  ${positionsHtml}
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques — ni exhaustives ni officielles.<br />
     <a href="../../">votona.fr</a>
@@ -289,7 +329,7 @@ function topicPageHtml(topic, candidates, topics, categoryIconPaths, slugs) {
   const groups = { pour: [], contre: [], nuance: [], inconnu: [] };
   active.forEach((c) => {
     const pos = c.positions && c.positions[topic.id];
-    if (!pos || (pos.stance === "neutre" && (!pos.detail || pos.detail === DEFAULT_NEUTRAL))) groups.inconnu.push({ c, pos });
+    if (!isKnown(pos)) groups.inconnu.push({ c, pos });
     else if (pos.stance === "pour") groups.pour.push({ c, pos });
     else if (pos.stance === "contre") groups.contre.push({ c, pos });
     else groups.nuance.push({ c, pos });
@@ -445,7 +485,7 @@ function sitemapXml(candidates, topics, slugs) {
 ${[
     url(`${SITE_URL}/`, "daily", "1.0"),
     url(`${SITE_URL}/candidats/`, "weekly", "0.8"),
-    ...candidates.map((c) => url(`${SITE_URL}/candidats/${c.id}/`, "weekly", "0.7")),
+    ...candidates.filter((c) => hasKnownPositions(c, topics)).map((c) => url(`${SITE_URL}/candidats/${c.id}/`, "weekly", "0.7")),
     url(`${SITE_URL}/sujets/`, "weekly", "0.8"),
     ...topics.map((t) => url(`${SITE_URL}/sujets/${slugs[t.id]}/`, "weekly", "0.7"))
   ].join("\n")}
