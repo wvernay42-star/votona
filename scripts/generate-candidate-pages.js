@@ -280,6 +280,8 @@ ${HEAD_ICONS}
   main{ max-width:640px; margin:0 auto; padding:32px 20px 64px; }
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:28px 0 8px; }
   p.intro{ color:var(--ink-soft); line-height:1.6; }
+  .btn-sujets{ display:inline-block; margin-top:6px; padding:11px 22px; border-radius:99px; border:1.5px solid var(--accent); color:var(--accent); font-weight:700; font-size:14px; text-decoration:none; transition:background .15s, color .15s; }
+  .btn-sujets:hover{ background:var(--accent); color:#fff; }
   input#q{ width:100%; padding:12px 16px; border-radius:14px; border:1px solid var(--line); font-size:14px; font-family:inherit; margin-top:18px; background:#fff; color:var(--ink); }
   input#q:focus{ outline:2px solid var(--accent); outline-offset:1px; }
   ul{ list-style:none; padding:0; margin:20px 0; }
@@ -297,7 +299,8 @@ ${HEAD_ICONS}
 ${HEADER_INDEX}
 <main>
   <h1>Tous les candidats à la présidentielle 2027</h1>
-  <p class="intro">Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet, retraits de la course inclus. Tu peux aussi <a href="/sujets/" style="color:var(--accent);font-weight:600;">comparer les candidats sujet par sujet</a>.</p>
+  <p class="intro">Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet, retraits de la course inclus.</p>
+  <a class="btn-sujets" href="/sujets/">Comparer les candidats sujet par sujet ›</a>
   <input id="q" type="text" placeholder="Rechercher un candidat ou un parti…" />
   <ul id="list">${items}
   </ul>

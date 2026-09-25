@@ -35,6 +35,8 @@
   main{ max-width:640px; margin:0 auto; padding:32px 20px 64px; }
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:28px 0 8px; }
   p.intro{ color:var(--ink-soft); line-height:1.6; }
+  .btn-sujets{ display:inline-block; margin-top:6px; padding:11px 22px; border-radius:99px; border:1.5px solid var(--accent); color:var(--accent); font-weight:700; font-size:14px; text-decoration:none; transition:background .15s, color .15s; }
+  .btn-sujets:hover{ background:var(--accent); color:#fff; }
   input#q{ width:100%; padding:12px 16px; border-radius:14px; border:1px solid var(--line); font-size:14px; font-family:inherit; margin-top:18px; background:#fff; color:var(--ink); }
   input#q:focus{ outline:2px solid var(--accent); outline-offset:1px; }
   ul{ list-style:none; padding:0; margin:20px 0; }
@@ -52,7 +54,8 @@
 <header class="topbar"><a class="brand" href="/" title="Accueil Votona"><span class="mark"><img src="/assets/ui/logo-head.webp" alt="" width="40" height="32" /></span><span class="name">Votona</span><span class="year">PRÉSIDENTIELLE 2027</span></a><div class="topbar-actions"><a class="icon-btn" href="/?screen=account" title="Mon compte"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></a><a class="icon-btn" href="/?screen=faq" title="Questions fréquentes"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 1 1 3.9 2.4c-1 .5-1.7 1.1-1.7 2.4"/><line x1="12" y1="17.2" x2="12" y2="17.21"/></svg></a></div></header>
 <main>
   <h1>Tous les candidats à la présidentielle 2027</h1>
-  <p class="intro">Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet, retraits de la course inclus. Tu peux aussi <a href="/sujets/" style="color:var(--accent);font-weight:600;">comparer les candidats sujet par sujet</a>.</p>
+  <p class="intro">Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet, retraits de la course inclus.</p>
+  <a class="btn-sujets" href="/sujets/">Comparer les candidats sujet par sujet ›</a>
   <input id="q" type="text" placeholder="Rechercher un candidat ou un parti…" />
   <ul id="list">
     <li data-search="jordan bardella rassemblement national"><a href="bardella/"><span class="cand-dot" style="background:#2457A6"></span>Jordan Bardella <span class="party">— Rassemblement National</span></a></li>
