@@ -348,7 +348,7 @@
   .poll-card{ max-width:640px; margin:22px auto 20px; padding:18px 18px 16px; border-radius:24px; background:var(--bg-raised);
     border:2px solid color-mix(in srgb, var(--accent) 22%, var(--line-soft)); }
   .poll-eyebrow{ display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10.5px; letter-spacing:.08em;
-    text-transform:uppercase; color:var(--accent); font-weight:600; }
+    text-transform:uppercase; color:var(--ink-soft); font-weight:600; }
   .poll-eyebrow .ic{ width:24px; height:24px; border-radius:8px; background:var(--accent-soft); display:flex; align-items:center; justify-content:center; flex:none; }
   .poll-card h2{ font-size:20px; margin:10px 0 2px; }
   .poll-meta{ font-family:var(--mono); font-size:11px; color:var(--ink-faint); }
@@ -368,6 +368,15 @@
   .poll-party{ font-size:11px; color:var(--ink-faint); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .poll-bar{ height:6px; border-radius:99px; background:var(--line-soft); margin-top:6px; overflow:hidden; }
   .poll-bar > span{ display:block; height:100%; border-radius:99px; }
+  /* Pastilles de portée : « Toi » (tes réponses) vs « France » (sondages). */
+  .scope-pill{ display:inline-flex; align-items:center; gap:4px; font-family:var(--mono); font-size:9.5px; font-weight:700;
+    letter-spacing:.06em; text-transform:uppercase; padding:3px 8px; border-radius:99px; vertical-align:middle; flex:none; }
+  .scope-pill.you{ background:var(--accent); color:var(--accent-ink, #fff); }
+  .scope-pill.fr{ background:var(--line-soft); color:var(--ink-soft); }
+  .pct-unit{ font-family:var(--body, inherit); font-size:10.5px; font-weight:600; color:var(--ink-faint); margin-left:3px; }
+  .poll-row.leader .pct-unit{ color:color-mix(in srgb, var(--accent) 70%, var(--ink-faint)); }
+  .poll-note{ font-size:12.5px; color:var(--ink-soft); margin-top:6px; }
+  .affinity-note{ font-size:12.5px; line-height:1.5; color:var(--ink-soft); margin:10px 0 0; padding:10px 12px; border-radius:14px; background:var(--accent-soft); }
   .poll-trend{ font-family:var(--mono); font-size:11px; font-weight:700; flex:none; }
   .poll-trend.up{ color:var(--good); }
   .poll-trend.down{ color:var(--bad); }
@@ -3899,6 +3908,9 @@ function renderDashboard(){
   }
 
   var topPolledCandidates = getTopPolledCandidates(candidates);
+  // Affinités : mêmes candidats que la page Résultats (les 15 en tête des sondages).
+  var affinityIds = topPolledCandidates.map(function(c){ return c.id; });
+  var affinityResults = answered > 0 ? computeResults(profile).filter(function(r){ return r.pct !== null && affinityIds.indexOf(r.candidate.id) !== -1; }) : [];
   var POLL_VISIBLE = 5;
   var maxPoll = topPolledCandidates.length ? CANDIDATE_POLL_PCT[topPolledCandidates[0].id] : 1;
   var shortDate = function(iso){ var d = String(iso || "").split("-"); return d.length === 3 ? d[2] + "/" + d[1] : String(iso || ""); };
@@ -3915,15 +3927,16 @@ function renderDashboard(){
         '<div class="poll-top"><span class="poll-name">' + escapeHtml(c.name) + '</span>' +
           (isNew ? '<span class="badge-new">Nouveau</span>' : '') +
           trendHtml +
-          '<span class="poll-pct">' + pollPct.toFixed(1).replace(".0","") + '%</span></div>' +
+          '<span class="poll-pct">' + pollPct.toFixed(1).replace(".0","") + '%' + (i === 0 ? '<span class="pct-unit">des intentions</span>' : '') + '</span></div>' +
         '<div class="poll-party">' + escapeHtml(c.party) + '</div>' +
         '<div class="poll-bar"><span style="width:' + width + '%;background:' + (i === 0 ? 'var(--accent)' : c.color) + '"></span></div>' +
       '</div></a>';
   }).join("");
   var pollDateLabel = shortDate(CANDIDATE_POLL_UPDATED_AT);
   var pollHtml = topPolledCandidates.length ? '<section class="poll-card" aria-labelledby="poll-title">' +
-      '<div class="poll-eyebrow"><span class="ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="6" y1="20" x2="6" y2="13"/><line x1="12" y1="20" x2="12" y2="5"/><line x1="18" y1="20" x2="18" y2="10"/></svg></span>Sondages nationaux</div>' +
+      '<div class="poll-eyebrow"><span class="scope-pill fr"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="6" y1="20" x2="6" y2="13"/><line x1="12" y1="20" x2="12" y2="5"/><line x1="18" y1="20" x2="18" y2="10"/></svg> France</span>Intentions de vote · France entière</div>' +
       '<h2 id="poll-title">Qui est en tête ?</h2>' +
+      '<div class="poll-note">Ce que pensent l\'ensemble des Français, pas toi : ton affinité est calculée à part, d\'après tes réponses.</div>' +
       '<div class="poll-meta">Derniers sondages publiés · maj ' + escapeHtml(pollDateLabel) + (prevDateLabel ? ' · ▲▼ places depuis le ' + escapeHtml(prevDateLabel) : '') + '</div>' +
       '<div class="poll-list" id="candidate-list">' + pollRows + '</div>' +
       '<p class="empty-state" id="candidate-empty" style="display:none;">Aucun candidat ne correspond à ta recherche.</p>' +
@@ -3932,7 +3945,7 @@ function renderDashboard(){
           '<button class="btn btn-ghost btn-block btn-sm" id="poll-expand">Voir le top ' + topPolledCandidates.length + '</button>' +
           '<input type="text" id="cand-search" placeholder="Rechercher un candidat ou un parti…" style="display:none;" />' +
         '</div>' : '') +
-      '<div class="poll-source">Source : derniers sondages d\'intentions de vote publiés par les instituts (Ifop, Ipsos, Elabe, Harris Interactive, OpinionWay…), relevés chaque jour. Ton classement personnel (page Résultats) prend en compte tous les candidats, pas seulement ceux en tête des sondages.</div>' +
+      '<div class="poll-source">Source : derniers sondages d\'intentions de vote au 1er tour publiés par les instituts (Ifop, Ipsos, Elabe, Harris Interactive, OpinionWay…), relevés chaque jour.</div>' +
     '</section>' : '';
 
   var badgeHtml = "";
@@ -3960,17 +3973,17 @@ function renderDashboard(){
 
   var provisionalHtml = "";
   if(answered > 0 && answered < topics.length && (answered / topics.length) >= 0.2){
-    var provResults = computeResults(profile).filter(function(r){ return r.pct !== null; }).slice(0, 3);
+    var provResults = affinityResults.slice(0, 3);
     if(provResults.length){
       provisionalHtml = '<div class="provisional-card">' +
-        '<div class="provisional-eyebrow">CLASSEMENT PROVISOIRE</div>' +
-        '<div class="provisional-sub">Basé sur tes ' + answered + ' réponses jusqu\'ici — va évoluer avec la suite</div>' +
+        '<div class="provisional-eyebrow"><span class="scope-pill you"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg> Toi</span> TES AFFINITÉS · PROVISOIRE</div>' +
+        '<div class="provisional-sub">D\'après tes ' + answered + ' réponses : va évoluer avec la suite. Ce n\'est pas un sondage.</div>' +
         '<div class="provisional-list">' + provResults.map(function(r, i){
           return '<div class="provisional-row">' +
             '<span class="provisional-rank mono">' + (i+1) + '</span>' +
             '<span class="provisional-dot" style="background:' + r.candidate.color + '"></span>' +
             '<span class="provisional-name">' + escapeHtml(r.candidate.name) + '</span>' +
-            '<span class="provisional-pct mono">' + r.pct + '%</span>' +
+            '<span class="provisional-pct mono">' + r.pct + '%<span class="pct-unit">d\'affinité</span></span>' +
           '</div>';
         }).join("") + '</div>' +
       '</div>';
@@ -3985,7 +3998,7 @@ function renderDashboard(){
     '<div class="stat-row">' +
       '<div class="stat-tile"><div class="num">' + answered + ' / ' + topics.length + '</div><div class="lbl">Sujets répondus</div>' +
         '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div></div>' +
-      '<div class="stat-tile"><div class="num">' + topPolledCandidates.length + '</div><div class="lbl">Candidats en tête</div></div>' +
+      '<div class="stat-tile"><div class="num">' + (affinityResults.length ? affinityResults[0].pct + '%' : '—') + '</div><div class="lbl">Ta meilleure affinité' + (affinityResults.length ? ' · ' + escapeHtml(affinityResults[0].candidate.name) : '') + '</div></div>' +
     '</div>' +
     '<button class="btn btn-accent btn-block" id="btn-vote">' + (answered === 0 ? "Commencer le questionnaire" : answered < topics.length ? "Continuer (" + (topics.length-answered) + " restants)" : "Revoir mes réponses") + '</button>' +
     '</div>' +
@@ -4250,7 +4263,7 @@ function renderResults(){
         '<div class="podium-avatar" style="background:' + r.candidate.color + '">' + escapeHtml(initials(r.candidate.name)) + '</div>' +
         '<div class="podium-name">' + escapeHtml(r.candidate.name) + '</div>' +
         '<div class="podium-party">' + escapeHtml(r.candidate.party) + '</div>' +
-        '<div class="podium-score">' + r.pct + '%</div>' +
+        '<div class="podium-score">' + r.pct + '%<span class="pct-unit">d\'affinité</span></div>' +
         '<div class="podium-block" style="background:' + r.candidate.color + '"><span class="rn">' + (i+1) + '</span></div>' +
       '</div>';
     }).join("") + '</div>';
@@ -4273,12 +4286,13 @@ function renderResults(){
   var signupCta = signupCtaHtml();
 
   var html = '<div id="sponsor-slot-results" style="margin-bottom:16px;"></div>' +
-    '<span class="eyebrow">' + answered + ' / ' + topics.length + ' sujets pris en compte</span>' +
+    '<span class="eyebrow"><span class="scope-pill you"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg> Toi</span> ' + answered + ' / ' + topics.length + ' sujets pris en compte</span>' +
     '<h1>Tes affinités</h1>' +
     '<p class="intro-copy">Classement pondéré par l\'importance que tu as donnée à chaque sujet.</p>' +
+    '<p class="affinity-note">Ces pourcentages mesurent ton accord avec chaque candidat, d\'après tes réponses. Ce ne sont pas des sondages.</p>' +
     podiumHtml +
     signupCta +
-    (restRows ? '<div class="results-subhead" style="margin-top:22px;">Top 15 des sondages — touche un candidat pour le détail</div>' : '') +
+    (restRows ? '<div class="results-subhead" style="margin-top:22px;">Les 15 candidats les plus cités dans les sondages, classés selon ton affinité · touche un candidat pour le détail</div>' : '') +
     '<div style="padding-bottom:76px;">' + restRows + '</div>';
 
   document.getElementById("app").innerHTML = html;
