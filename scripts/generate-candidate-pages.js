@@ -347,12 +347,26 @@ function topicPageHtml(topic, candidates, topics, categoryIconPaths, slugs) {
   const unknown = groups.inconnu.length ? `
   <section class="group g-inconnu">
     <h2>– Position non encore précisée <span class="count">${groups.inconnu.length}</span></h2>
-    <p class="names">${groups.inconnu.map(({ c }) => `<a href="/candidats/${c.id}/">${escapeHtml(c.name)}</a>`).join(" · ")}</p>
+    <p class="names">${groups.inconnu.map(({ c }) => `<a href="/candidats/${c.id}/"><span class="cand-dot" style="background:${escapeHtml(c.color || "#7C3AED")}"></span>${escapeHtml(c.name)}</a>`).join("")}</p>
   </section>` : "";
   const siblings = topics.filter((t) => t.cat === topic.cat && t.id !== topic.id);
+  const stanceSummary = (t) => {
+    const n = { pour: 0, contre: 0, nuance: 0 };
+    active.forEach((c) => {
+      const pos = c.positions && c.positions[t.id];
+      if (isKnown(pos)) n[pos.stance === "pour" || pos.stance === "contre" ? pos.stance : "nuance"]++;
+    });
+    const parts = [];
+    if (n.pour) parts.push(`<span class="s-pour">${n.pour} pour</span>`);
+    if (n.contre) parts.push(`<span class="s-contre">${n.contre} contre</span>`);
+    if (n.nuance) parts.push(`<span>${n.nuance} nuancé${n.nuance > 1 ? "s" : ""}</span>`);
+    return parts.length ? parts.join(" · ") : "<span>Positions à venir</span>";
+  };
   const siblingsHtml = siblings.length ? `
   <h2 class="subhead">Autres sujets : ${escapeHtml(topic.cat)}</h2>
-  <ul class="links">${siblings.map((t) => `<li><a href="/sujets/${slugs[t.id]}/">${escapeHtml(t.statement)}</a></li>`).join("")}</ul>` : "";
+  <ul class="related">${siblings.map((t) => `
+    <li><a href="/sujets/${slugs[t.id]}/"><span class="r-title">${escapeHtml(t.statement)}</span><span class="r-meta">${stanceSummary(t)}</span><span class="r-arrow" aria-hidden="true">›</span></a></li>`).join("")}
+  </ul>` : "";
 
   return `<!DOCTYPE html>
 <html lang="fr">
@@ -392,12 +406,22 @@ ${HEAD_ICONS}
   .cand-dot{ width:10px; height:10px; border-radius:50%; flex:none; }
   .cand-party{ color:var(--ink-faint); font-size:13px; margin-left:8px; }
   .detail{ font-size:13.5px; line-height:1.55; color:var(--ink-soft); margin:6px 0 0; }
-  .names{ font-size:14px; line-height:1.9; color:var(--ink-soft); margin:0; }
-  .names a{ color:var(--ink-soft); }
-  h2.subhead{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:40px 0 10px; }
-  ul.links{ padding-left:18px; margin:0; }
-  ul.links li{ margin:8px 0; line-height:1.4; }
-  ul.links a, .all a{ color:var(--accent); }
+  .names{ display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 0; }
+  .names a{ display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:99px; background:#fff; border:1px solid var(--line); color:var(--ink-soft); font-size:13px; font-weight:600; text-decoration:none; }
+  .names a:hover{ border-color:var(--accent); color:var(--accent); }
+  .names .cand-dot{ width:8px; height:8px; }
+  h2.subhead{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:44px 0 12px; }
+  ul.related{ list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; }
+  ul.related a{ position:relative; display:flex; flex-direction:column; gap:8px; height:100%; box-sizing:border-box; padding:16px 38px 16px 18px; background:#fff; border:1px solid var(--line); border-radius:16px; color:var(--ink); text-decoration:none; transition:border-color .15s, transform .15s, box-shadow .15s; }
+  ul.related a:hover{ border-color:var(--accent); transform:translateY(-2px); box-shadow:0 6px 18px rgba(124,58,237,.10); }
+  .r-title{ font-weight:600; font-size:14.5px; line-height:1.4; }
+  .r-meta{ font-size:12px; color:var(--ink-faint); }
+  .r-meta .s-pour{ color:#2c9354; font-weight:600; } .r-meta .s-contre{ color:#d1453a; font-weight:600; }
+  .r-arrow{ position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:22px; color:var(--ink-faint); }
+  ul.related a:hover .r-arrow{ color:var(--accent); }
+  .all{ text-align:center; margin-top:26px; }
+  .all a{ display:inline-block; padding:11px 22px; border-radius:99px; border:1.5px solid var(--accent); color:var(--accent); font-weight:700; font-size:14px; text-decoration:none; }
+  .all a:hover{ background:var(--accent); color:#fff; }
   footer{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; }
   footer a{ color:inherit; }
 </style>
@@ -415,7 +439,7 @@ ${HEADER}
   ${section("nuance", "Neutre ou nuancé", "≈")}
   ${unknown}
   ${siblingsHtml}
-  <p class="all" style="margin-top:22px;"><a href="/sujets/">Voir les ${topics.length} sujets de la présidentielle 2027</a></p>
+  <p class="all"><a href="/sujets/">Voir les ${topics.length} sujets de la présidentielle 2027 ›</a></p>
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
     <a href="/">votona.fr</a>
