@@ -24,38 +24,48 @@ const TOPIC_OG_DIR = path.join(ROOT, "assets", "og", "sujets");
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const hex = (c, fallback) => (/^#[0-9a-fA-F]{3,8}$/.test(c || "") ? c : fallback);
 
+// Mascotte en « sticker » en bas à droite, signature visuelle de Votona.
+const MASCOT = "data:image/png;base64," + fs.readFileSync(path.join(ROOT, "assets", "ui", "logo-head.png")).toString("base64");
+const WATERMARK = `<img class="c" src="${MASCOT}" alt="">`;
 const FONTS = `<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Work+Sans:wght@600;700&display=block" rel="stylesheet">`;
 const BASE_CSS = `
 *{margin:0;box-sizing:border-box}
 body{width:1200px;height:630px;overflow:hidden;position:relative;font-family:'Work Sans',sans-serif;color:#fff;}
-.c{position:absolute;left:900px;top:-140px;width:440px;height:440px;border-radius:50%;background:rgba(255,255,255,.15)}
+.c{position:absolute;left:930px;top:300px;width:220px;height:auto;transform:rotate(-10deg);filter:drop-shadow(0 10px 24px rgba(0,0,0,.35))}
 .brand{position:absolute;left:70px;top:62px;font-weight:700;font-size:28px;letter-spacing:.01em}
 .sub{position:absolute;left:70px;top:104px;font-weight:700;font-size:19px;color:rgba(255,255,255,.72);letter-spacing:.02em}
 .foot{position:absolute;left:70px;top:541px;font-weight:700;font-size:20px;color:rgba(255,255,255,.7)}`;
+
+function initials(name) {
+  return String(name || "").split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+}
 
 function candidateHtml(c) {
   return `<!DOCTYPE html><html><head><meta charset="utf-8">${FONTS}
 <style>${BASE_CSS}
 body{background:linear-gradient(115deg, ${hex(c.color, "#7C3AED")} 0%, #14121F 100%);}
-.name{position:absolute;left:70px;top:272px;right:70px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:62px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.party{position:absolute;left:70px;top:377px;right:70px;font-weight:700;font-size:24px;color:rgba(255,255,255,.85)}
-</style></head><body><div class="c"></div>
+.av{position:absolute;left:70px;top:262px;width:104px;height:104px;border-radius:50%;background:#fff;color:${hex(c.color, "#7C3AED")};display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:42px;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.name{position:absolute;left:200px;top:272px;right:290px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:62px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.party{position:absolute;left:200px;top:342px;right:290px;font-weight:700;font-size:24px;color:rgba(255,255,255,.85)}
+</style></head><body>${WATERMARK}
 <div class="brand">VOTONA</div><div class="sub">PRÉSIDENTIELLE 2027</div>
-<div class="name">${esc(c.name)}</div><div class="party">${esc(c.party)}</div>
+<div class="av">${esc(initials(c.name))}</div><div class="name">${esc(c.name)}</div><div class="party">${esc(c.party)}</div>
 <div class="foot">Découvre toutes ses positions sur votona.fr</div></body></html>`;
 }
 
-// Sujet : fond violet Votona, pastille du thème à sa couleur, intitulé en
-// grand (taille réduite automatiquement pour tenir en 3 lignes au plus).
+// Sujet : fond teinté par la couleur du thème (assombrie pour garder le texte
+// blanc lisible), pastille du thème, intitulé en grand (taille réduite
+// automatiquement si besoin).
 function topicHtml(t, meta) {
+  const theme = hex(meta && meta.pop, "#7C3AED");
   return `<!DOCTYPE html><html><head><meta charset="utf-8">${FONTS}
 <style>${BASE_CSS}
-body{background:linear-gradient(115deg, #7C3AED 0%, #14121F 100%);}
-.cat{position:absolute;left:70px;top:176px;display:flex;align-items:center;gap:12px;padding:9px 20px 9px 16px;border-radius:99px;background:rgba(255,255,255,.12);font-weight:700;font-size:19px;letter-spacing:.06em;text-transform:uppercase}
-.dot{width:14px;height:14px;border-radius:50%;background:${hex(meta && meta.pop, "#FFB703")}}
-.q{position:absolute;left:70px;right:150px;top:246px;height:262px;display:flex;align-items:center}
+body{background:linear-gradient(115deg, color-mix(in srgb, ${theme} 72%, #14121F) 0%, #14121F 100%);}
+.cat{position:absolute;left:70px;top:176px;display:flex;align-items:center;gap:12px;padding:9px 20px 9px 16px;border-radius:99px;background:#fff;color:#191d2b;font-weight:700;font-size:19px;letter-spacing:.06em;text-transform:uppercase}
+.dot{width:14px;height:14px;border-radius:50%;background:${theme}}
+.q{position:absolute;left:70px;right:300px;top:246px;height:262px;display:flex;align-items:center}
 .q h1{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:64px;line-height:1.08;text-wrap:balance}
-</style></head><body><div class="c"></div>
+</style></head><body>${WATERMARK}
 <div class="brand">VOTONA</div><div class="sub">PRÉSIDENTIELLE 2027</div>
 <div class="cat"><span class="dot"></span>${esc(t.cat)}</div>
 <div class="q"><h1 id="q">${esc(t.statement)}</h1></div>
@@ -114,4 +124,4 @@ async function main(options = {}) {
 }
 
 if (require.main === module) main().catch((e) => { console.error(e); process.exit(1); });
-module.exports = { main };
+module.exports = { main, candidateHtml, topicHtml, fitStatement };
