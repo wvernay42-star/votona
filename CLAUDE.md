@@ -12,6 +12,7 @@ Site statique (HTML/CSS/JS vanilla, sans build) de comparaison de positions poli
   3. Recompter APRÈS : les chiffres doivent être identiques (sauf ajout/retrait voulu). Un écart inattendu signale une perte de données.
   4. Commit + push sur `draft` (test), jamais directement sur `main` — voir « Déploiement ».
 - Les fichiers `api/*.js` sont les fonctions serverless Vercel (Node côté serveur).
+- Référencement (SEO) : `<main id="app">` contient un contenu statique (titre, présentation, les 7 familles de sujets, liens) lisible sans JavaScript par les moteurs et les aperçus de liens ; l'app le remplace au chargement. Tiens-le cohérent si les familles de sujets ou le fonctionnement changent. Garde en tête du fichier `<!DOCTYPE html>`, `<html lang="fr">` et `<meta charset="utf-8">`, ainsi que les données structurées Organization/WebSite du `<head>`. Dans les titres de pages, utilise le tiret court « - », pas le tiret long.
 - Les 34 pages `candidats/<id>/index.html` sont générées, pas éditées à la main (voir `scripts/generate-candidate-pages.js`). Ce script demande Node.js : absent de la machine locale, il se lance depuis une session cloud. Après une modification des candidats/sujets, relance-le et commite les pages régénérées avec le reste.
 - Une session cloud (Claude Code web / appli mobile) n'a que ce dépôt, pas la machine locale : elle travaille sur sa propre branche `claude/...` et pousse sur `draft` pour test.
 

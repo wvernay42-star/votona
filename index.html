@@ -1,23 +1,35 @@
-<title>Votona — Donne le ton à ton vote</title>
+<!DOCTYPE html>
+<html lang="fr">
+<meta charset="utf-8" />
+<title>Votona - Quel candidat te correspond ? Présidentielle 2027</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="Compare tes positions à celles de tous les candidats déclarés à la présidentielle 2027, sujet par sujet, et découvre ton classement personnel. Gratuit, sans compte, données gardées sur ton appareil." />
+<meta name="description" content="Test gratuit pour la présidentielle 2027 : compare tes positions à celles des candidats déclarés, sujet par sujet, et découvre ton classement. Sans inscription." />
 <link rel="canonical" href="https://votona.fr/" />
 <meta name="robots" content="index, follow" />
 
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Votona" />
 <meta property="og:url" content="https://votona.fr/" />
-<meta property="og:title" content="Votona — Donne le ton à ton vote" />
-<meta property="og:description" content="Compare tes positions à celles de tous les candidats déclarés à la présidentielle 2027, sujet par sujet, et découvre ton classement personnel." />
-<meta property="og:image" content="https://votona.fr/assets/ui/logo-head.png" />
+<meta property="og:title" content="Votona - Quel candidat te correspond ? Présidentielle 2027" />
+<meta property="og:description" content="Test gratuit pour la présidentielle 2027 : compare tes positions à celles des candidats déclarés, sujet par sujet, et découvre ton classement. Sans inscription." />
+<meta property="og:image" content="https://votona.fr/assets/ui/og-home.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Votona : quel candidat te correspond pour la présidentielle 2027 ?" />
 <meta property="og:locale" content="fr_FR" />
 
-<meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Votona — Donne le ton à ton vote" />
-<meta name="twitter:description" content="Compare tes positions à celles de tous les candidats déclarés à la présidentielle 2027, sujet par sujet, et découvre ton classement personnel." />
-<meta name="twitter:image" content="https://votona.fr/assets/ui/logo-head.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Votona - Quel candidat te correspond ? Présidentielle 2027" />
+<meta name="twitter:description" content="Test gratuit pour la présidentielle 2027 : compare tes positions à celles des candidats déclarés, sujet par sujet, et découvre ton classement. Sans inscription." />
+<meta name="twitter:image" content="https://votona.fr/assets/ui/og-home.jpg" />
 
-<link rel="icon" type="image/png" href="assets/ui/favicon.png" />
+<link rel="icon" href="/favicon.ico" sizes="32x32 48x48" />
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/ui/favicon-48.png" />
+<link rel="icon" type="image/png" sizes="96x96" href="/assets/ui/favicon-96.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/ui/favicon-192.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/ui/apple-touch-icon.png" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "@id": "https://votona.fr/#organization", "name": "Votona", "url": "https://votona.fr/", "logo": {"@type": "ImageObject", "url": "https://votona.fr/assets/ui/favicon-192.png", "width": 192, "height": 192}, "description": "Comparateur gratuit des positions des candidats à l'élection présidentielle française de 2027."}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "@id": "https://votona.fr/#website", "name": "Votona", "url": "https://votona.fr/", "inLanguage": "fr-FR", "publisher": {"@id": "https://votona.fr/#organization"}, "description": "Test gratuit pour la présidentielle 2027 : compare tes positions à celles des candidats déclarés, sujet par sujet, et découvre ton classement. Sans inscription."}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -242,6 +254,11 @@
   .toggle-switch:checked{ background:var(--accent); }
   .toggle-switch:checked::after{ left:18px; }
   .auth-message{ font-size:13px; line-height:1.5; color:var(--ink-soft); padding:12px 14px; border-radius:14px; background:var(--bg-raised); border:1px solid var(--line); }
+  .seo-static{ max-width:640px; margin:0 auto; padding:8px 0 24px; color:var(--ink-soft); line-height:1.6; font-size:15px; }
+  .seo-static h1{ color:var(--ink); font-size:26px; line-height:1.25; margin:8px 0 12px; }
+  .seo-static h2{ color:var(--ink); font-size:17px; margin:20px 0 6px; }
+  .seo-static ul{ padding-left:20px; margin:6px 0; }
+  .seo-static a{ color:var(--accent); font-weight:600; }
   .auth-sent{ margin-top:12px; font-size:13px; line-height:1.5; color:var(--ink-soft); padding:14px; border-radius:14px; background:color-mix(in srgb, var(--good) 10%, transparent); border:1px solid color-mix(in srgb, var(--good) 35%, transparent); }
   .auth-sent-title{ color:var(--good); font-weight:700; font-size:14px; margin-bottom:4px; }
   .auth-sent strong{ color:var(--ink); word-break:break-all; }
@@ -788,7 +805,26 @@
     <div class="brand" id="brand-slot"></div>
     <div class="topbar-actions" id="topbar-actions"></div>
   </header>
-  <main id="app"></main>
+  <main id="app">
+    <!-- Contenu lisible sans JavaScript (moteurs de recherche, aperçus de liens) : remplacé par l'app dès son chargement. -->
+    <section class="seo-static">
+      <h1>Votona - Quel candidat te correspond pour la présidentielle 2027 ?</h1>
+      <p>Votona est un comparateur gratuit pour l'élection présidentielle française de 2027. Réponds aux questions sur les grands sujets de la campagne et compare tes positions à celles des candidats déclarés, sujet par sujet, pour découvrir ton classement personnel.</p>
+      <h2>Les sujets abordés</h2>
+      <ul>
+        <li>Économie et travail : fiscalité, emploi, retraites, pouvoir d'achat</li>
+        <li>Protection sociale : santé, chômage, minima sociaux, solidarité</li>
+        <li>Sécurité et immigration : police, justice, frontières, droit d'asile</li>
+        <li>Écologie : énergie, agriculture, climat, biodiversité</li>
+        <li>Europe et institutions : Union européenne, réforme des institutions, mode de scrutin</li>
+        <li>Société : école, logement, santé, libertés individuelles</li>
+        <li>Défense et numérique : armée, intelligence artificielle, souveraineté technologique</li>
+      </ul>
+      <h2>Comment ça marche</h2>
+      <p>Pour chaque sujet, dis si tu es d'accord ou non, puis indique son importance pour toi. Votona calcule ta proximité avec chaque candidat. C'est gratuit et sans inscription : tes réponses restent sur ton appareil, sauf si tu crées un compte pour les retrouver ailleurs.</p>
+      <p><a href="/candidats/">Voir tous les candidats et leurs positions</a> · <a href="/?screen=faq">Questions fréquentes</a></p>
+    </section>
+  </main>
   <footer class="appfoot">
     <div id="sponsor-slot"></div>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques — ni exhaustives ni officielles.
@@ -3588,13 +3624,6 @@ function faqHtml(){
 /* Données structurées SEO (schema.org), générées depuis les mêmes
    sources que le contenu affiché pour rester en phase avec la FAQ. */
 function injectStructuredData(){
-  var website = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Votona",
-    "url": "https://votona.fr/",
-    "description": "Compare tes positions à celles de tous les candidats déclarés à la présidentielle 2027, sujet par sujet, et découvre ton classement personnel."
-  };
   var faqPage = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -3606,7 +3635,7 @@ function injectStructuredData(){
       };
     })
   };
-  [website, faqPage].forEach(function(data){
+  [faqPage].forEach(function(data){
     var tag = document.createElement("script");
     tag.type = "application/ld+json";
     tag.textContent = JSON.stringify(data);

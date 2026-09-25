@@ -74,7 +74,7 @@ function catIconSvg(cat, categoryIconPaths, size) {
 }
 
 function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths) {
-  const title = `${cand.name} (${cand.party}) — Positions à la présidentielle 2027 | Votona`;
+  const title = `${cand.name} (${cand.party}) - Positions à la présidentielle 2027 | Votona`;
   const description = `Découvre les positions de ${cand.name}, candidat${cand.withdrawn ? " (retiré)" : ""} ${cand.party} à la présidentielle 2027, sujet par sujet : retraites, immigration, écologie, Europe, et plus.`;
   const canonical = `${SITE_URL}/candidats/${cand.id}/`;
   const ogImage = `${SITE_URL}/candidats/${cand.id}/og.jpg`;
@@ -126,7 +126,9 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths) {
 <meta property="og:locale" content="fr_FR" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:image" content="${ogImage}" />
-<link rel="icon" type="image/png" href="/assets/ui/favicon.png" />
+<link rel="icon" href="/favicon.ico" sizes="32x32 48x48" />
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/ui/favicon-192.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/ui/apple-touch-icon.png" />
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script type="application/ld+json">${personLd}</script>
 <style>${SHARED_CSS}
@@ -186,7 +188,9 @@ function indexPageHtml(candidates) {
 <meta name="description" content="La liste complète des candidats déclarés à l'élection présidentielle française de 2027, avec le détail de leurs positions sujet par sujet sur Votona." />
 <link rel="canonical" href="${canonical}" />
 <meta name="robots" content="index, follow" />
-<link rel="icon" type="image/png" href="/assets/ui/favicon.png" />
+<link rel="icon" href="/favicon.ico" sizes="32x32 48x48" />
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/ui/favicon-192.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/ui/apple-touch-icon.png" />
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>${SHARED_CSS}
   main{ max-width:640px; margin:0 auto; padding:32px 20px 64px; }
