@@ -32,9 +32,9 @@ def url_for(path):
     """Fichier du dépôt -> URL publique, ou None si ce n'est pas une page."""
     if path == "index.html":
         return SITE + "/"
-    m = re.fullmatch(r"candidats/(?:([a-z0-9-]+)/)?index\.html", path)
+    m = re.fullmatch(r"(candidats|sujets)/(?:([a-z0-9-]+)/)?index\.html", path)
     if m:
-        return SITE + "/candidats/" + (m.group(1) + "/" if m.group(1) else "")
+        return SITE + "/" + m.group(1) + "/" + (m.group(2) + "/" if m.group(2) else "")
     return None
 
 

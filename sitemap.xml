@@ -11,12 +11,12 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/arthaud/</loc>
+    <loc>https://votona.fr/candidats/bardella/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/asselineau/</loc>
+    <loc>https://votona.fr/candidats/philippe/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -26,52 +26,12 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/bardella/</loc>
+    <loc>https://votona.fr/candidats/retailleau/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/batho/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/bertrand/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/bouamrane/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/branco/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/brun/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/cazeneuve/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/dupont-aignan/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/egger/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/faure/</loc>
+    <loc>https://votona.fr/candidats/melenchon/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -81,22 +41,12 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/guedj/</loc>
+    <loc>https://votona.fr/candidats/tondelier/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/kazib/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/labib/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/lalanne/</loc>
+    <loc>https://votona.fr/candidats/bertrand/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -111,32 +61,22 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/massard/</loc>
+    <loc>https://votona.fr/candidats/dupont-aignan/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/mathieu/</loc>
+    <loc>https://votona.fr/candidats/guedj/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/maurel/</loc>
+    <loc>https://votona.fr/candidats/faure/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/melenchon/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/mikolajczak/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://votona.fr/candidats/philippe/</loc>
+    <loc>https://votona.fr/candidats/arthaud/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -146,17 +86,27 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/retailleau/</loc>
+    <loc>https://votona.fr/candidats/asselineau/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/roussel/</loc>
+    <loc>https://votona.fr/candidats/egger/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/royal/</loc>
+    <loc>https://votona.fr/candidats/kazib/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/candidats/branco/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/candidats/labib/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -166,12 +116,62 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://votona.fr/candidats/tondelier/</loc>
+    <loc>https://votona.fr/candidats/mikolajczak/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/candidats/brun/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/candidats/royal/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/candidats/massard/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/candidats/lalanne/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/candidats/mathieu/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/candidats/cazeneuve/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/candidats/batho/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/candidats/bouamrane/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://votona.fr/candidats/verdier/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/candidats/maurel/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/candidats/roussel/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -182,6 +182,186 @@
   </url>
   <url>
     <loc>https://votona.fr/candidats/becht/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/ramener-lage-legal-de-depart-a-la-retraite-a-60-ans/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/retablir-un-impot-renforce-sur-les-grandes-fortunes/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/reduire-la-dette-publique-en-priorite-par-la-baisse-des/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/conditionner-le-rsa-a-15-heures-dactivite-hebdomadaire/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/augmenter-significativement-le-smic/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/durcir-les-conditions-dindemnisation-du-chomage/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/reduire-drastiquement-limmigration-par-des-quotas-stricts/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/renforcer-les-moyens-de-la-police-et-allonger-les-peines-de/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/reserver-certaines-aides-sociales-aux-seuls-citoyens/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/relancer-massivement-la-filiere-nucleaire/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/renforcer-la-taxe-carbone-sur-les-entreprises-polluantes/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/approfondir-lintegration-europeenne-y-compris-une-dette/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/recruter-massivement-du-personnel-soignant-et-revaloriser/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/reconnaitre-un-droit-a-laide-active-a-mourir-comme-la-loi/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/encadrer-plus-strictement-les-loyers-dans-les-zones-tendues/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/redonner-davantage-dautonomie-et-de-selection-aux/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/augmenter-fortement-le-budget-de-la-defense-face-aux/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/maintenir-un-soutien-militaire-et-financier-fort-a-lukraine/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/instaurer-une-dose-de-proportionnelle-aux-elections/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/encadrer-strictement-lintelligence-artificielle-par-une/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/interdire-rapidement-les-pesticides-de-synthese-en/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/creer-un-droit-opposable-a-un-mode-de-garde-pour-la-petite/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/plafonner-les-effectifs-a-19-eleves-par-classe-en-recrutant/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/rendre-imprescriptibles-les-crimes-sexuels-et-violents/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/allonger-le-delai-de-carence-non-indemnise-pour-les-arrets/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/sopposer-a-la-ratification-de-laccord-de-libre-echange/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/convoquer-une-assemblee-constituante-pour-instaurer-une-vie/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/alourdir-la-fiscalite-sur-les-tres-gros-heritages-mega/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/abaisser-la-majorite-penale-a-15-ans/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/instaurer-un-depistage-obligatoire-de-laddiction-aux-ecrans/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/baisser-la-tva-et-la-ticpe-sur-les-carburants-pour-redonner/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/interdire-lacces-aux-reseaux-sociaux-aux-mineurs-de-moins/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/geler-la-revalorisation-des-pensions-de-retraite-depassant/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/geler-le-point-dindice-des-fonctionnaires-en-2027-pour/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://votona.fr/sujets/reserver-le-jugement-de-tous-les-crimes-sexuels-aux-cours/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

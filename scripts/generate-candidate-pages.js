@@ -1,9 +1,12 @@
-// Génère une page statique par candidat (votona-web/candidats/<id>/index.html)
-// à partir des données déjà présentes dans index.html (CANDIDATES, TOPICS,
-// CATEGORY_META, CATEGORY_ICON_PATHS) : rien n'est ressaisi à la main, un
-// seul lancement régénère tout. À relancer après chaque évolution notable
-// des candidats/sujets (ex. après une session où la veille quotidienne en
-// a ajouté).
+// Génère les pages statiques (référencement) à partir des données déjà
+// présentes dans index.html (CANDIDATES, TOPICS, CATEGORY_META,
+// CATEGORY_ICON_PATHS) : rien n'est ressaisi à la main, un seul lancement
+// régénère tout :
+//   - candidats/<id>/index.html : une page par candidat + candidats/index.html ;
+//   - sujets/<slug>/index.html : une page par sujet (« que proposent les
+//     candidats ? ») + sujets/index.html ;
+//   - sitemap.xml, entièrement réécrit (accueil, candidats, sujets).
+// À relancer après chaque évolution des candidats/sujets.
 //
 // Usage : node scripts/generate-candidate-pages.js
 //
@@ -17,6 +20,40 @@ const path = require("path");
 const ROOT = path.join(__dirname, "..");
 const SITE_HTML_PATH = path.join(ROOT, "index.html");
 const OUT_DIR = path.join(ROOT, "candidats");
+const TOPIC_DIR = path.join(ROOT, "sujets");
+const DEFAULT_NEUTRAL = "Position non encore précisée publiquement sur ce sujet.";
+
+// Adresse lisible et stable d'un sujet, tirée de son intitulé.
+function slugify(text, maxLen = 60) {
+  let slug = String(text).normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase().replace(/['’"]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  if (slug.length > maxLen) slug = slug.slice(0, maxLen).replace(/-[^-]*$/, "");
+  return slug;
+}
+function topicSlugs(topics) {
+  const used = new Set();
+  const map = {};
+  topics.forEach((t) => {
+    let slug = slugify(t.statement);
+    if (used.has(slug)) slug += "-" + t.id;
+    used.add(slug);
+    map[t.id] = slug;
+  });
+  return map;
+}
+function breadcrumbLd(items) {
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it.name, item: it.url }))
+  });
+}
+// Balises communes du <head> (favicons, polices).
+const HEAD_ICONS = `<link rel="icon" type="image/png" sizes="48x48" href="/assets/ui/favicon-48.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/ui/favicon-192.png" />
+<link rel="icon" href="/favicon.ico" sizes="32x32 48x48" />
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/ui/apple-touch-icon.png" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">`;
 const SITE_URL = "https://votona.fr";
 
 function extractDataBlock(html) {
@@ -70,6 +107,7 @@ const SHARED_CSS = `
   @media (max-width:420px){ .brand .year{ display:none; } }
   .crumb{ display:inline-flex; align-items:center; gap:4px; font-size:13.5px; font-weight:600; color:var(--ink-soft); text-decoration:none; }
   .crumb:hover{ color:var(--accent); }
+  .crumbs{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .topbar-actions{ display:flex; align-items:center; gap:6px; }
   .icon-btn{ width:34px; height:34px; border-radius:50%; border:1px solid var(--masthead-line); background:transparent; color:var(--masthead-ink); display:flex; align-items:center; justify-content:center; text-decoration:none; }
   .icon-btn:hover{ color:var(--accent); border-color:var(--accent); }`;
@@ -80,7 +118,7 @@ function catIconSvg(cat, categoryIconPaths, size) {
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;">${iconPath}</svg>`;
 }
 
-function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths) {
+function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths, slugs) {
   const title = `${cand.name} (${cand.party}) - Positions à la présidentielle 2027 | Votona`;
   const description = `Découvre les positions de ${cand.name}, candidat${cand.withdrawn ? " (retiré)" : ""} ${cand.party} à la présidentielle 2027, sujet par sujet : retraites, immigration, écologie, Europe, et plus.`;
   const canonical = `${SITE_URL}/candidats/${cand.id}/`;
@@ -95,7 +133,7 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths) {
     return `
     <article class="topic-row">
       <div class="topic-cat">${catIconSvg(t.cat, categoryIconPaths, 13)}${escapeHtml(t.cat)}</div>
-      <h3>${escapeHtml(t.statement)}</h3>
+      <h3><a href="/sujets/${slugs[t.id]}/">${escapeHtml(t.statement)}</a></h3>
       <p class="stance-label">${escapeHtml(icon)} ${escapeHtml(label)}</p>
       ${detail ? `<p class="detail">${escapeHtml(detail)}</p>` : ""}
     </article>`;
@@ -133,11 +171,9 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths) {
 <meta property="og:locale" content="fr_FR" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:image" content="${ogImage}" />
-<link rel="icon" href="/favicon.ico" sizes="32x32 48x48" />
-<link rel="icon" type="image/png" sizes="192x192" href="/assets/ui/favicon-192.png" />
-<link rel="apple-touch-icon" sizes="180x180" href="/assets/ui/apple-touch-icon.png" />
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+${HEAD_ICONS}
 <script type="application/ld+json">${personLd}</script>
+<script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Candidats", url: SITE_URL + "/candidats/" }, { name: cand.name, url: canonical }])}</script>
 <style>${SHARED_CSS}
   main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
   .cand-header{ display:flex; align-items:center; gap:16px; margin:28px 0 6px; }
@@ -150,6 +186,8 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths) {
   .topic-row{ padding:16px 0; border-top:1px solid var(--line); }
   .topic-cat{ display:flex; align-items:center; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin-bottom:6px; }
   .topic-row h3{ font-size:16px; margin:0 0 6px; }
+  .topic-row h3 a{ color:inherit; text-decoration:none; }
+  .topic-row h3 a:hover{ color:var(--accent); text-decoration:underline; }
   .stance-label{ font-weight:700; font-size:13.5px; margin:0 0 4px; color:var(--ink); }
   .detail{ font-size:13.5px; line-height:1.55; color:var(--ink-soft); margin:0; }
   footer{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; }
@@ -159,7 +197,7 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths) {
 <body>
 ${HEADER}
 <main>
-  <a class="crumb" href="../">‹ Tous les candidats</a>
+  <nav class="crumbs"><a class="crumb" href="/candidats/">‹ Tous les candidats</a><a class="crumb" href="/sujets/">Tous les sujets ›</a></nav>
   <div class="cand-header">
     <div class="cand-avatar" style="background:${escapeHtml(cand.color || "#7C3AED")};">${escapeHtml(initials)}</div>
     <div>
@@ -192,14 +230,12 @@ function indexPageHtml(candidates) {
 <head>
 <meta charset="utf-8" />
 <title>Tous les candidats à la présidentielle 2027 | Votona</title>
+<script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Candidats", url: canonical }])}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="description" content="La liste complète des candidats déclarés à l'élection présidentielle française de 2027, avec le détail de leurs positions sujet par sujet sur Votona." />
 <link rel="canonical" href="${canonical}" />
 <meta name="robots" content="index, follow" />
-<link rel="icon" href="/favicon.ico" sizes="32x32 48x48" />
-<link rel="icon" type="image/png" sizes="192x192" href="/assets/ui/favicon-192.png" />
-<link rel="apple-touch-icon" sizes="180x180" href="/assets/ui/apple-touch-icon.png" />
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+${HEAD_ICONS}
 <style>${SHARED_CSS}
   main{ max-width:640px; margin:0 auto; padding:32px 20px 64px; }
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:28px 0 8px; }
@@ -221,7 +257,7 @@ function indexPageHtml(candidates) {
 ${HEADER_INDEX}
 <main>
   <h1>Tous les candidats à la présidentielle 2027</h1>
-  <p class="intro">Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet — retraits de la course inclus.</p>
+  <p class="intro">Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet, retraits de la course inclus. Tu peux aussi <a href="/sujets/" style="color:var(--accent);font-weight:600;">comparer les candidats sujet par sujet</a>.</p>
   <input id="q" type="text" placeholder="Rechercher un candidat ou un parti…" />
   <ul id="list">${items}
   </ul>
@@ -246,19 +282,203 @@ ${HEADER_INDEX}
 `;
 }
 
+function topicPageHtml(topic, candidates, topics, categoryIconPaths, slugs) {
+  const slug = slugs[topic.id];
+  const canonical = `${SITE_URL}/sujets/${slug}/`;
+  const active = candidates.filter((c) => !c.withdrawn);
+  const groups = { pour: [], contre: [], nuance: [], inconnu: [] };
+  active.forEach((c) => {
+    const pos = c.positions && c.positions[topic.id];
+    if (!pos || (pos.stance === "neutre" && (!pos.detail || pos.detail === DEFAULT_NEUTRAL))) groups.inconnu.push({ c, pos });
+    else if (pos.stance === "pour") groups.pour.push({ c, pos });
+    else if (pos.stance === "contre") groups.contre.push({ c, pos });
+    else groups.nuance.push({ c, pos });
+  });
+  const title = `${topic.statement} : que proposent les candidats ? | Votona`;
+  const description = `Pour, contre ou sans position : ce que disent les ${active.length} candidats à la présidentielle 2027 sur « ${topic.statement} ». Positions sourcées, candidat par candidat.`;
+  const card = ({ c, pos }) => `
+      <li class="cand"><a class="cand-name" href="/candidats/${c.id}/"><span class="cand-dot" style="background:${escapeHtml(c.color || "#7C3AED")}"></span>${escapeHtml(c.name)}</a><span class="cand-party">${escapeHtml(c.party)}</span>${pos && pos.detail ? `<p class="detail">${escapeHtml(pos.detail)}</p>` : ""}</li>`;
+  const section = (key, label, icon) => groups[key].length ? `
+  <section class="group g-${key}">
+    <h2>${icon} ${label} <span class="count">${groups[key].length}</span></h2>
+    <ul>${groups[key].map(card).join("")}
+    </ul>
+  </section>` : "";
+  const unknown = groups.inconnu.length ? `
+  <section class="group g-inconnu">
+    <h2>– Position non encore précisée <span class="count">${groups.inconnu.length}</span></h2>
+    <p class="names">${groups.inconnu.map(({ c }) => `<a href="/candidats/${c.id}/">${escapeHtml(c.name)}</a>`).join(" · ")}</p>
+  </section>` : "";
+  const siblings = topics.filter((t) => t.cat === topic.cat && t.id !== topic.id);
+  const siblingsHtml = siblings.length ? `
+  <h2 class="subhead">Autres sujets : ${escapeHtml(topic.cat)}</h2>
+  <ul class="links">${siblings.map((t) => `<li><a href="/sujets/${slugs[t.id]}/">${escapeHtml(t.statement)}</a></li>`).join("")}</ul>` : "";
+
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>${escapeHtml(title)}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="${escapeHtml(description)}" />
+<link rel="canonical" href="${canonical}" />
+<meta name="robots" content="index, follow" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Votona" />
+<meta property="og:url" content="${canonical}" />
+<meta property="og:title" content="${escapeHtml(title)}" />
+<meta property="og:description" content="${escapeHtml(description)}" />
+<meta property="og:image" content="${SITE_URL}/assets/ui/og-home.jpg" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="${SITE_URL}/assets/ui/og-home.jpg" />
+${HEAD_ICONS}
+<script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Sujets", url: SITE_URL + "/sujets/" }, { name: topic.statement, url: canonical }])}</script>
+<style>${SHARED_CSS}
+  main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
+  .crumbs{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .topic-cat{ display:flex; align-items:center; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin:28px 0 8px; }
+  h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(24px,3.6vw,32px); line-height:1.2; margin:0; }
+  .context{ color:var(--ink-soft); line-height:1.6; margin:14px 0 0; }
+  .cta{ display:block; margin:24px 0 8px; padding:16px 24px; border-radius:16px; background:var(--accent); color:#fff; text-align:center; text-decoration:none; font-weight:700; }
+  .group{ margin-top:30px; }
+  .group h2{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:0 0 6px; display:flex; align-items:center; gap:8px; }
+  .g-pour h2{ color:#2c9354; } .g-contre h2{ color:#d1453a; } .g-nuance h2, .g-inconnu h2{ color:var(--ink-soft); }
+  .count{ font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500; color:var(--ink-faint); background:var(--masthead-bg); padding:2px 8px; border-radius:99px; }
+  .group ul{ list-style:none; padding:0; margin:0; }
+  .cand{ padding:12px 0; border-top:1px solid var(--line); }
+  .cand-name{ display:inline-flex; align-items:center; gap:8px; font-weight:700; color:var(--ink); text-decoration:none; }
+  .cand-name:hover{ color:var(--accent); }
+  .cand-dot{ width:10px; height:10px; border-radius:50%; flex:none; }
+  .cand-party{ color:var(--ink-faint); font-size:13px; margin-left:8px; }
+  .detail{ font-size:13.5px; line-height:1.55; color:var(--ink-soft); margin:6px 0 0; }
+  .names{ font-size:14px; line-height:1.9; color:var(--ink-soft); margin:0; }
+  .names a{ color:var(--ink-soft); }
+  h2.subhead{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:40px 0 10px; }
+  ul.links{ padding-left:18px; margin:0; }
+  ul.links li{ margin:8px 0; line-height:1.4; }
+  ul.links a, .all a{ color:var(--accent); }
+  footer{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; }
+  footer a{ color:inherit; }
+</style>
+</head>
+<body>
+${HEADER}
+<main>
+  <nav class="crumbs"><a class="crumb" href="/sujets/">‹ Tous les sujets</a><a class="crumb" href="/candidats/">Tous les candidats ›</a></nav>
+  <div class="topic-cat">${catIconSvg(topic.cat, categoryIconPaths, 13)}${escapeHtml(topic.cat)}</div>
+  <h1>${escapeHtml(topic.statement)} : que proposent les candidats ?</h1>
+  ${topic.context ? `<p class="context">${escapeHtml(topic.context)}</p>` : ""}
+  <a class="cta" href="/">Et toi, tu en penses quoi ? Découvre quel candidat te correspond →</a>
+  ${section("pour", "Pour", "✓")}
+  ${section("contre", "Contre", "✕")}
+  ${section("nuance", "Neutre ou nuancé", "≈")}
+  ${unknown}
+  ${siblingsHtml}
+  <p class="all" style="margin-top:22px;"><a href="/sujets/">Voir les ${topics.length} sujets de la présidentielle 2027</a></p>
+  <footer>
+    Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
+    <a href="/">votona.fr</a>
+  </footer>
+</main>
+</body>
+</html>
+`;
+}
+
+function topicIndexHtml(topics, categories, categoryMeta, categoryIconPaths, slugs) {
+  const canonical = `${SITE_URL}/sujets/`;
+  const blocks = categories.map((cat) => {
+    const list = topics.filter((t) => t.cat === cat);
+    if (!list.length) return "";
+    const meta = categoryMeta[cat] || {};
+    return `
+  <section>
+    <h2>${catIconSvg(cat, categoryIconPaths, 18)}${escapeHtml(cat)}</h2>
+    ${meta.d ? `<p class="cat-d">${escapeHtml(meta.d)}</p>` : ""}
+    <ul>${list.map((t) => `<li><a href="${slugs[t.id]}/">${escapeHtml(t.statement)}</a></li>`).join("")}</ul>
+  </section>`;
+  }).join("");
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Les ${topics.length} sujets de la présidentielle 2027 : positions des candidats | Votona</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Retraites, immigration, nucléaire, Europe, école… Les ${topics.length} grands sujets de la présidentielle 2027 et ce qu'en disent les candidats, sujet par sujet." />
+<link rel="canonical" href="${canonical}" />
+<meta name="robots" content="index, follow" />
+<meta property="og:image" content="${SITE_URL}/assets/ui/og-home.jpg" />
+${HEAD_ICONS}
+<script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Sujets", url: canonical }])}</script>
+<style>${SHARED_CSS}
+  main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
+  h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:28px 0 8px; }
+  p.intro{ color:var(--ink-soft); line-height:1.6; }
+  section{ margin-top:30px; }
+  section h2{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:0 0 2px; display:flex; align-items:center; }
+  .cat-d{ color:var(--ink-faint); font-size:13px; margin:0 0 8px; }
+  section ul{ list-style:none; padding:0; margin:0; }
+  section li{ padding:11px 0; border-top:1px solid var(--line); }
+  section li a{ color:var(--ink); text-decoration:none; font-weight:600; font-size:15px; line-height:1.4; }
+  section li a:hover{ color:var(--accent); }
+  .cta{ display:block; margin:24px 0 8px; padding:16px 24px; border-radius:16px; background:var(--accent); color:#fff; text-align:center; text-decoration:none; font-weight:700; }
+</style>
+</head>
+<body>
+${HEADER_INDEX}
+<main>
+  <nav class="crumbs"><a class="crumb" href="/candidats/">Tous les candidats ›</a></nav>
+  <h1>Les ${topics.length} sujets de la présidentielle 2027</h1>
+  <p class="intro">Pour chaque grand sujet de la campagne, découvre qui est pour, qui est contre et qui ne s'est pas encore prononcé parmi les candidats déclarés.</p>
+  <a class="cta" href="/">Et toi ? Réponds aux questions et découvre quel candidat te correspond →</a>${blocks}
+</main>
+</body>
+</html>
+`;
+}
+
+function sitemapXml(candidates, topics, slugs) {
+  const url = (loc, freq, prio) => `  <url>\n    <loc>${loc}</loc>\n    <changefreq>${freq}</changefreq>\n    <priority>${prio}</priority>\n  </url>`;
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${[
+    url(`${SITE_URL}/`, "daily", "1.0"),
+    url(`${SITE_URL}/candidats/`, "weekly", "0.8"),
+    ...candidates.map((c) => url(`${SITE_URL}/candidats/${c.id}/`, "weekly", "0.7")),
+    url(`${SITE_URL}/sujets/`, "weekly", "0.8"),
+    ...topics.map((t) => url(`${SITE_URL}/sujets/${slugs[t.id]}/`, "weekly", "0.7"))
+  ].join("\n")}
+</urlset>
+`;
+}
+
 function main() {
-  const { TOPICS, CANDIDATES, CATEGORY_META, CATEGORY_ICON_PATHS } = loadData();
+  const { CATEGORIES, TOPICS, CANDIDATES, CATEGORY_META, CATEGORY_ICON_PATHS } = loadData();
+  const slugs = topicSlugs(TOPICS);
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
   CANDIDATES.forEach((cand) => {
     const dir = path.join(OUT_DIR, cand.id);
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path.join(dir, "index.html"), "\uFEFF" + candidatePageHtml(cand, TOPICS, CATEGORY_META, CATEGORY_ICON_PATHS), "utf8");
+    fs.writeFileSync(path.join(dir, "index.html"), "\uFEFF" + candidatePageHtml(cand, TOPICS, CATEGORY_META, CATEGORY_ICON_PATHS, slugs), "utf8");
   });
 
   fs.writeFileSync(path.join(OUT_DIR, "index.html"), "\uFEFF" + indexPageHtml(CANDIDATES), "utf8");
 
-  console.log(`Généré : ${CANDIDATES.length} pages candidats + 1 index dans ${OUT_DIR} (og.jpg non régénéré, voir commentaire en tête de fichier)`);
+  // Pages sujets : on repart d'un dossier propre (un sujet renommé ne laisse pas d'ancienne page).
+  fs.rmSync(TOPIC_DIR, { recursive: true, force: true });
+  fs.mkdirSync(TOPIC_DIR, { recursive: true });
+  TOPICS.forEach((t) => {
+    const dir = path.join(TOPIC_DIR, slugs[t.id]);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, "index.html"), "\uFEFF" + topicPageHtml(t, CANDIDATES, TOPICS, CATEGORY_ICON_PATHS, slugs), "utf8");
+  });
+  fs.writeFileSync(path.join(TOPIC_DIR, "index.html"), "\uFEFF" + topicIndexHtml(TOPICS, CATEGORIES, CATEGORY_META, CATEGORY_ICON_PATHS, slugs), "utf8");
+
+  fs.writeFileSync(path.join(ROOT, "sitemap.xml"), sitemapXml(CANDIDATES, TOPICS, slugs), "utf8");
+
+  console.log(`Généré : ${CANDIDATES.length} pages candidats + ${TOPICS.length} pages sujets + 2 index + sitemap.xml (og.jpg des candidats non régénéré, voir commentaire en tête de fichier)`);
 }
 
 main();
