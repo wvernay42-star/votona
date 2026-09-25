@@ -4249,7 +4249,7 @@ function renderResults(){
   actionBar.innerHTML =
     '<button class="btn btn-ghost" id="btn-goto-kit">Mon Starter Pack</button>' +
     (remaining > 0 ? '<button class="btn btn-accent" id="btn-share">Répondre aux ' + remaining + ' sujet' + (remaining > 1 ? "s" : "") + ' restant' + (remaining > 1 ? "s" : "") + '</button>'
-      : '<button class="btn btn-accent" id="btn-share">📤 Partager mon Starter Pack</button>');
+      : '<button class="btn btn-accent" id="btn-share">📤 Inviter un proche</button>');
   document.getElementById("btn-goto-kit").onclick = function(){ state.screen = "kit"; render(); };
 
   function candidateDetailItemsHtml(cand){
@@ -4307,13 +4307,27 @@ function renderResults(){
 
   wireSignupCta();
 
-  // Pas de partage du classement (positions politiques personnelles) :
-  // une fois tout répondu, on propose de partager le Starter Pack.
+  // Pas de partage du classement (positions politiques personnelles). Une
+  // fois tout répondu, on propose d'inviter un proche avec un message neutre
+  // + lien de parrainage ; le partage du Starter Pack reste accessible via
+  // « Mon Starter Pack » (bouton de gauche), qui a son propre bouton Partager.
   var shareBtn = document.getElementById("btn-share");
   if(shareBtn && remaining > 0){
     shareBtn.onclick = startVoteFlow;
   } else if(shareBtn){
-    shareBtn.onclick = function(){ state.kitModalCat = null; state.screen = "kitShare"; render(); };
+    shareBtn.onclick = function(){
+      var url = buildReferralUrl(profile);
+      var text = "Je viens de faire le test Votona pour la présidentielle 2027 : compare tes positions à celles des candidats, sujet par sujet. Essaie ici :";
+      if(navigator.share){
+        navigator.share({text: text, url: url}).then(function(){ trackShareEvent("results_invite_share"); }).catch(function(){});
+      } else if(navigator.clipboard){
+        navigator.clipboard.writeText(text + " " + url).then(function(){
+          trackShareEvent("results_invite_copy");
+          shareBtn.textContent = "Lien copié !";
+          setTimeout(function(){ shareBtn.textContent = "📤 Inviter un proche"; }, 2200);
+        }).catch(function(){});
+      }
+    };
   }
 }
 
