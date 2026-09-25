@@ -368,6 +368,9 @@
   .poll-party{ font-size:11px; color:var(--ink-faint); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .poll-bar{ height:6px; border-radius:99px; background:var(--line-soft); margin-top:6px; overflow:hidden; }
   .poll-bar > span{ display:block; height:100%; border-radius:99px; }
+  .poll-trend{ font-family:var(--mono); font-size:11px; font-weight:700; flex:none; }
+  .poll-trend.up{ color:var(--good); }
+  .poll-trend.down{ color:var(--bad); }
   .poll-row .badge-new{ font-size:9px; padding:2px 7px; flex:none; }
   .poll-list .poll-row.is-extra{ display:none; }
   .poll-list.expanded .poll-row.is-extra{ display:flex; }
@@ -2357,6 +2360,30 @@ var CANDIDATE_POLL_PCT = {
   royal: 3.0
 };
 var CANDIDATE_POLL_UPDATED_AT = "2026-09-25";
+// Relevé PRÉCÉDENT (tel qu'il était avant la dernière mise à jour) : sert aux
+// flèches de tendance du tableau de bord (places gagnées/perdues). À chaque
+// mise à jour des sondages, recopier ici l'ancien CANDIDATE_POLL_PCT et
+// l'ancienne CANDIDATE_POLL_UPDATED_AT AVANT d'écrire les nouvelles valeurs.
+var CANDIDATE_POLL_PREV = {
+  bardella: 34.0,
+  lepen: 33.0,
+  melenchon: 16.0,
+  philippe: 14.0,
+  glucksmann: 9.0,
+  attal: 8.0,
+  retailleau: 7.0,
+  zemmour: 5.0,
+  faure: 4.5,
+  ruffin: 3.9,
+  tondelier: 3.0,
+  roussel: 2.0,
+  lisnard: 2.0,
+  "dupont-aignan": 2.0,
+  bouamrane: 1.0,
+  arthaud: 1.0,
+  royal: 3.0
+};
+var CANDIDATE_POLL_PREV_AT = "2026-09-22";
 var TOP_CANDIDATES_COUNT = 15;
 function getTopPolledCandidates(candidates, limit){
   limit = limit || TOP_CANDIDATES_COUNT;
@@ -2364,6 +2391,20 @@ function getTopPolledCandidates(candidates, limit){
     .filter(function(c){ return !c.withdrawn && typeof CANDIDATE_POLL_PCT[c.id] === "number"; })
     .sort(function(a, b){ return CANDIDATE_POLL_PCT[b.id] - CANDIDATE_POLL_PCT[a.id]; })
     .slice(0, limit);
+}
+/* Places gagnées (>0) ou perdues (<0) depuis le relevé précédent ; null si le
+   candidat n'y figurait pas. Classement « à la compétition » : deux candidats
+   à égalité partagent la même place (évite des flèches dues à l'ordre). */
+function pollRank(values, id, candidates){
+  var v = values[id];
+  if(typeof v !== "number") return null;
+  return 1 + candidates.filter(function(c){ return !c.withdrawn && typeof values[c.id] === "number" && values[c.id] > v; }).length;
+}
+function getPollRankChange(id, candidates){
+  if(typeof CANDIDATE_POLL_PREV === "undefined") return null;
+  var before = pollRank(CANDIDATE_POLL_PREV, id, candidates);
+  var now = pollRank(CANDIDATE_POLL_PCT, id, candidates);
+  return (before === null || now === null) ? null : before - now;
 }
 // ==POLL_DATA_END==
 
@@ -3860,26 +3901,30 @@ function renderDashboard(){
   var topPolledCandidates = getTopPolledCandidates(candidates);
   var POLL_VISIBLE = 5;
   var maxPoll = topPolledCandidates.length ? CANDIDATE_POLL_PCT[topPolledCandidates[0].id] : 1;
+  var shortDate = function(iso){ var d = String(iso || "").split("-"); return d.length === 3 ? d[2] + "/" + d[1] : String(iso || ""); };
+  var prevDateLabel = typeof CANDIDATE_POLL_PREV_AT === "string" ? shortDate(CANDIDATE_POLL_PREV_AT) : "";
   var pollRows = topPolledCandidates.map(function(c, i){
     var isNew = daysSince(c.addedDate) <= NEW_WINDOW_DAYS;
     var pollPct = CANDIDATE_POLL_PCT[c.id];
     var width = Math.max(4, Math.round((pollPct / maxPoll) * 100));
+    var move = getPollRankChange(c.id, candidates);
+    var trendHtml = move ? '<span class="poll-trend ' + (move > 0 ? 'up' : 'down') + '" title="' + (move > 0 ? '+' : '−') + Math.abs(move) + ' place' + (Math.abs(move) > 1 ? 's' : '') + ' depuis le relevé du ' + escapeHtml(prevDateLabel) + '">' + (move > 0 ? '▲' : '▼') + Math.abs(move) + '</span>' : '';
     return '<a class="poll-row' + (i === 0 ? ' leader' : '') + (i >= POLL_VISIBLE ? ' is-extra' : '') + '" data-search="' + escapeHtml((c.name + " " + c.party).toLowerCase()) + '" href="' + location.origin + '/candidats/' + escapeHtml(c.id) + '/">' +
       '<div class="poll-avatar" style="background:' + c.color + '">' + escapeHtml(initials(c.name)) + '</div>' +
       '<div class="poll-body">' +
         '<div class="poll-top"><span class="poll-name">' + escapeHtml(c.name) + '</span>' +
           (isNew ? '<span class="badge-new">Nouveau</span>' : '') +
+          trendHtml +
           '<span class="poll-pct">' + pollPct.toFixed(1).replace(".0","") + '%</span></div>' +
         '<div class="poll-party">' + escapeHtml(c.party) + '</div>' +
         '<div class="poll-bar"><span style="width:' + width + '%;background:' + (i === 0 ? 'var(--accent)' : c.color) + '"></span></div>' +
       '</div></a>';
   }).join("");
-  var pollDate = String(CANDIDATE_POLL_UPDATED_AT || "").split("-");
-  var pollDateLabel = pollDate.length === 3 ? pollDate[2] + "/" + pollDate[1] : CANDIDATE_POLL_UPDATED_AT;
+  var pollDateLabel = shortDate(CANDIDATE_POLL_UPDATED_AT);
   var pollHtml = topPolledCandidates.length ? '<section class="poll-card" aria-labelledby="poll-title">' +
       '<div class="poll-eyebrow"><span class="ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="6" y1="20" x2="6" y2="13"/><line x1="12" y1="20" x2="12" y2="5"/><line x1="18" y1="20" x2="18" y2="10"/></svg></span>Sondages nationaux</div>' +
       '<h2 id="poll-title">Qui est en tête ?</h2>' +
-      '<div class="poll-meta">Derniers sondages publiés · maj ' + escapeHtml(pollDateLabel) + '</div>' +
+      '<div class="poll-meta">Derniers sondages publiés · maj ' + escapeHtml(pollDateLabel) + (prevDateLabel ? ' · ▲▼ places depuis le ' + escapeHtml(prevDateLabel) : '') + '</div>' +
       '<div class="poll-list" id="candidate-list">' + pollRows + '</div>' +
       '<p class="empty-state" id="candidate-empty" style="display:none;">Aucun candidat ne correspond à ta recherche.</p>' +
       (topPolledCandidates.length > POLL_VISIBLE ?
