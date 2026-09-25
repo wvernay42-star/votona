@@ -1,10 +1,8 @@
-const { SUPABASE_URL, ADMIN_EMAIL, runRelance, runReferralNotifications } = require("./_lib/relance");
+const { SUPABASE_URL, ADMIN_EMAIL, runRelance } = require("./_lib/relance");
 
-// Admin → "Relances email" : réservé à l'admin connecté. La logique d'envoi
-// vit dans _lib/relance.js. Deux actions, toutes deux déclenchées à la main :
-// - par défaut : relance des inactifs (digest de la file d'actus) ;
-// - action "referrals" : notifications de parrainage en attente
-//   (dryRun: true → renvoie seulement le nombre en attente, sans envoyer).
+// Bouton Admin → "Relances email" : réservé à l'admin connecté. La logique
+// d'envoi vit dans _lib/relance.js. (Les notifications de parrainage sont
+// automatiques : voir notify-referrals.js.)
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
@@ -43,20 +41,6 @@ module.exports = async (req, res) => {
   const user = await userRes.json();
   if (!user || !user.email || user.email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
     res.status(403).json({ error: "Réservé à l'admin (connecté avec : " + (user && user.email) + ")" });
-    return;
-  }
-
-  if (body.action === "referrals") {
-    try {
-      const ref = await runReferralNotifications({
-        serviceKey: SUPABASE_SERVICE_ROLE_KEY,
-        brevoKey: BREVO_API_KEY,
-        dryRun: !!body.dryRun
-      });
-      res.status(200).json(ref);
-    } catch (e) {
-      res.status(500).json({ error: e.message });
-    }
     return;
   }
 

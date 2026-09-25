@@ -2693,29 +2693,13 @@ async function saveOverridesToCloud(o){
 
 var relanceQueueItems = [];
 var relanceQueueLoaded = false;
-var referralPending = null; // nb de notifications de parrainage en attente (null = inconnu)
 async function loadRelanceQueue(){
   if(!sb) return;
   try{
     var res = await sb.from("relance_news_queue").select("*").is("consumed_at", null).order("created_at", {ascending:true});
     relanceQueueItems = res.data || [];
   }catch(e){}
-  try{
-    var ref = await callReferralsApi(true);
-    referralPending = ref.ok ? ref.out.pending : null;
-  }catch(e){ referralPending = null; }
   relanceQueueLoaded = true;
-}
-/* Notifications de parrainage : même fonction Vercel que la relance,
-   action "referrals". dryRun → renvoie seulement le nombre en attente. */
-async function callReferralsApi(dryRun){
-  var session = (await sb.auth.getSession()).data.session;
-  var res = await fetch("/api/send-relance", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({accessToken: session ? session.access_token : null, action: "referrals", dryRun: !!dryRun})
-  });
-  return {ok: res.ok, out: await res.json()};
 }
 
 /* ============================================================
@@ -3232,10 +3216,12 @@ async function maybeNotifyReferralCompletion(referredName){
   referralCompletionSent = true;
   safeSet(LS_REFERRER_PID, null);
   try{
-    await sb.from("referral_completions").insert({
+    var ins = await sb.from("referral_completions").insert({
       referrer_profile_id: referrerPid,
       referred_name: referredName
     });
+    // Envoi automatique de l'email au parrain (api/notify-referrals.js).
+    if(!ins.error) fetch("/api/notify-referrals", {method: "POST", keepalive: true}).catch(function(){});
   }catch(e){}
 }
 
@@ -4714,17 +4700,6 @@ function renderAdmin(){
           '</div>' +
           '<div class="meta" id="relance-send-result" style="margin-top:6px;"></div>'
         ) : '') +
-      '</section>' +
-      '<section class="block" style="margin-top:16px;"><h2 style="font-size:15px;">Notifications de parrainage</h2>' +
-        '<div class="meta" style="font-size:12.5px; color:var(--ink-faint);">Prévient un parrain quand une personne arrivée par son lien de partage répond à sa première question.</div>' +
-        (referralPending === null
-          ? '<p class="empty-state">Nombre en attente indisponible (connecte-toi avec ton email admin).</p>'
-          : referralPending === 0
-            ? '<p class="empty-state">Rien en attente.</p>'
-            : '<div class="form-actions" style="margin-top:10px;">' +
-                '<button class="btn btn-accent btn-sm" id="btn-referral-send">Envoyer les notifications de parrainage (' + referralPending + ')</button>' +
-              '</div>') +
-        '<div class="meta" id="referral-send-result" style="margin-top:6px; font-size:12.5px; color:var(--ink-soft);"></div>' +
       '</section>';
     }
   } else if(state.adminTab === "candidates"){
@@ -4822,28 +4797,6 @@ function renderAdmin(){
         frame.srcdoc = buildRelanceEmailHtml(relanceQueueItems);
         frame.style.display = "block";
         previewBtn.textContent = "Masquer l'aperçu";
-      }
-    };
-    var referralBtn = document.getElementById("btn-referral-send");
-    if(referralBtn) referralBtn.onclick = async function(){
-      if(!isLoggedIn()){ alert("Connecte-toi (Mon compte) avec ton email admin pour envoyer les notifications."); return; }
-      if(!confirm("Envoyer les " + referralPending + " notification(s) de parrainage en attente ? Cette action est irréversible.")) return;
-      var resultEl = document.getElementById("referral-send-result");
-      referralBtn.disabled = true;
-      resultEl.textContent = "Envoi en cours…";
-      try{
-        var r = await callReferralsApi(false);
-        if(!r.ok){ resultEl.textContent = "Échec : " + (r.out.error || "erreur"); referralBtn.disabled = false; return; }
-        var msg = r.out.sent + " email(s) envoyé(s)" +
-          (r.out.notEligible ? ", " + r.out.notEligible + " parrain(s) non éligible(s) (sans compte ou non opt-in) marqué(s) comme traité(s)" : "") +
-          (r.out.failed ? ", " + r.out.failed + " échec(s) gardé(s) en attente" : "") + ".";
-        await loadRelanceQueue();
-        render();
-        var el = document.getElementById("referral-send-result");
-        if(el) el.textContent = msg;
-      }catch(e){
-        resultEl.textContent = "Échec de l'envoi : " + e.message;
-        referralBtn.disabled = false;
       }
     };
     var sendBtn = document.getElementById("btn-queue-send");

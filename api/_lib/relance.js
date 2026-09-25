@@ -1,6 +1,6 @@
 // Logique de la relance email des inactifs, utilisée par
 // api/send-relance.js (bouton Admin → "Relances email", envoi 100 % manuel).
-// runReferralNotifications : bouton Admin → "Envoyer les notifications de parrainage".
+// runReferralNotifications : envoi automatique, via api/notify-referrals.js.
 // Aucune clé ici : elles sont passées en paramètre par l'appelant.
 
 const SUPABASE_URL = "https://vvvlhxniiykbdssmadbs.supabase.co";
@@ -149,21 +149,38 @@ async function runRelance({ serviceKey, brevoKey, dryRun = false, skipWhenNoReci
 }
 
 // Prévient un parrain quand une personne arrivée par son lien de partage
-// répond à sa première question (table referral_completions). Chaque
-// ligne est marquée notifiée, même si le parrain n'est pas éligible
-// (profil sans compte ou non opt-in) : on ne la retraitera pas.
-async function runReferralNotifications({ serviceKey, brevoKey, dryRun = false }) {
+// répond à sa première question (table referral_completions). Envoi
+// automatique : appelé par api/notify-referrals.js juste après l'insertion
+// de la ligne côté site. Traite toutes les lignes en attente (rattrape donc
+// aussi d'éventuels échecs précédents).
+// Chaque ligne est d'abord « réservée » (notified_at posé seulement si encore
+// null) : deux appels simultanés ne peuvent pas envoyer deux fois le même
+// email. Parrain non éligible (profil sans compte ou non opt-in) → ligne
+// marquée traitée sans email ; envoi Brevo en échec → réservation annulée,
+// retentée au prochain appel.
+async function runReferralNotifications({ serviceKey, brevoKey }) {
   const sbHeaders = sbHeadersFor(serviceKey);
   const res = await fetch(
-    SUPABASE_URL + "/rest/v1/referral_completions?notified_at=is.null&select=id,referrer_profile_id,referred_name",
+    SUPABASE_URL + "/rest/v1/referral_completions?notified_at=is.null&select=id,referrer_profile_id,referred_name&order=created_at.asc&limit=50",
     { headers: sbHeaders }
   );
   if (!res.ok) throw new Error("Lecture des parrainages impossible (" + res.status + ")");
   const rows = await res.json();
   const result = { pending: Array.isArray(rows) ? rows.length : 0, sent: 0, notEligible: 0, failed: 0 };
-  if (dryRun || !result.pending) return result;
+  if (!result.pending) return result;
+
+  const rowUrl = (id) => SUPABASE_URL + "/rest/v1/referral_completions?id=eq." + encodeURIComponent(id);
 
   for (const row of rows) {
+    // Réservation atomique : ne réussit que si personne ne l'a prise entre-temps.
+    const claim = await fetch(rowUrl(row.id) + "&notified_at=is.null", {
+      method: "PATCH",
+      headers: Object.assign({}, sbHeaders, { Prefer: "return=representation" }),
+      body: JSON.stringify({ notified_at: new Date().toISOString() })
+    });
+    const claimed = claim.ok ? await claim.json().catch(() => []) : [];
+    if (!Array.isArray(claimed) || !claimed.length) continue;
+
     let referrer = null;
     try {
       const pr = await fetch(
@@ -176,23 +193,24 @@ async function runReferralNotifications({ serviceKey, brevoKey, dryRun = false }
 
     if (!referrer || !referrer.user_id || !referrer.news_opt_in) {
       result.notEligible++;
-    } else {
-      const email = await getUserEmail(sbHeaders, referrer.user_id);
-      const referredName = (row.referred_name || "").trim() || "Quelqu'un";
-      const ok = email && await sendBrevoEmail(
-        brevoKey,
-        email,
-        referredName + " a répondu grâce à toi",
-        buildReferralEmailHtml(referredName)
-      );
-      if (!ok) { result.failed++; continue; } // non marquée : retentée au prochain passage
-      result.sent++;
+      continue;
     }
 
-    await fetch(SUPABASE_URL + "/rest/v1/referral_completions?id=eq." + row.id, {
+    const email = await getUserEmail(sbHeaders, referrer.user_id);
+    const referredName = (row.referred_name || "").trim() || "Quelqu'un";
+    const ok = email && await sendBrevoEmail(
+      brevoKey,
+      email,
+      referredName + " a répondu grâce à toi",
+      buildReferralEmailHtml(referredName)
+    );
+    if (ok) { result.sent++; continue; }
+
+    result.failed++;
+    await fetch(rowUrl(row.id), {
       method: "PATCH",
       headers: Object.assign({}, sbHeaders, { Prefer: "return=minimal" }),
-      body: JSON.stringify({ notified_at: new Date().toISOString() })
+      body: JSON.stringify({ notified_at: null })
     });
   }
   return result;
