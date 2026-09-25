@@ -42,13 +42,24 @@
   .topbar-actions{ display:flex; align-items:center; gap:6px; }
   .icon-btn{ width:34px; height:34px; border-radius:50%; border:1px solid var(--masthead-line); background:transparent; color:var(--masthead-ink); display:flex; align-items:center; justify-content:center; text-decoration:none; }
   .icon-btn:hover{ color:var(--accent); border-color:var(--accent); }
+  /* Boutons : mêmes valeurs que .btn / .btn-accent / .btn-ghost d'index.html. */
+  .btn{ display:flex; align-items:center; justify-content:center; gap:8px; box-sizing:border-box; width:100%; border-radius:18px; padding:14px 22px; font-family:'Work Sans',Arial,sans-serif; font-size:15px; font-weight:800; line-height:1.25; text-align:center; text-decoration:none; cursor:pointer; transition:transform .1s ease, background .15s ease, color .15s ease, border-color .15s ease; }
+  .btn:active{ transform:translateY(2px); }
+  .btn-accent{ background:var(--accent); color:#fff; border-bottom:4px solid color-mix(in srgb, var(--accent) 70%, black); animation:softPulse 2.6s ease-in-out infinite; }
+  .btn-accent:hover{ background:color-mix(in srgb, var(--accent) 90%, black); }
+  .btn-accent:active{ border-bottom-width:1px; }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); }
+  .btn-ghost:hover{ color:var(--accent); border-color:var(--accent); }
+  .btn-row{ max-width:420px; margin-left:auto; margin-right:auto; }
+  @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
+  @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }
   main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
   .cand-header{ display:flex; align-items:center; gap:16px; margin:28px 0 6px; }
   .cand-avatar{ width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Baloo 2',sans-serif; font-weight:700; font-size:20px; flex:none; }
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:0; }
   .party{ color:var(--ink-soft); font-size:15px; margin:2px 0 0; }
   .withdrawn-badge{ display:inline-block; margin-top:14px; padding:6px 14px; border-radius:99px; background:#fbe0dd; color:#a63a2e; font-size:13px; font-weight:700; }
-  .cta{ display:block; margin:28px 0; padding:16px 24px; border-radius:16px; background:var(--accent); color:#fff; text-align:center; text-decoration:none; font-weight:700; }
+  .cta{ margin:28px 0; }
   h2.subhead{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:36px 0 16px; }
   .topic-row{ padding:16px 0; border-top:1px solid var(--line); }
   .topic-cat{ display:flex; align-items:center; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin-bottom:6px; }
@@ -86,7 +97,7 @@
   </div>
   
   <p style="color:var(--ink-soft); line-height:1.6; margin-top:18px;">Positions de Olivier Faure sur 18 des 35 sujets de la présidentielle 2027 suivis par Votona, établies à partir de déclarations, votes ou programmes publics.</p>
-  <a class="cta" href="../../?screen=results">Compare tes propres positions à celles de Olivier Faure sur Votona →</a>
+  <a class="btn btn-accent cta" href="../../?screen=results">Compare tes propres positions à celles de Olivier Faure</a>
   <h2 class="subhead">Ses positions connues <span class="count">18</span></h2>
   
     <article class="topic-row">

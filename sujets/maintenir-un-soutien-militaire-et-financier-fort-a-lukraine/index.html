@@ -41,12 +41,23 @@
   .topbar-actions{ display:flex; align-items:center; gap:6px; }
   .icon-btn{ width:34px; height:34px; border-radius:50%; border:1px solid var(--masthead-line); background:transparent; color:var(--masthead-ink); display:flex; align-items:center; justify-content:center; text-decoration:none; }
   .icon-btn:hover{ color:var(--accent); border-color:var(--accent); }
+  /* Boutons : mêmes valeurs que .btn / .btn-accent / .btn-ghost d'index.html. */
+  .btn{ display:flex; align-items:center; justify-content:center; gap:8px; box-sizing:border-box; width:100%; border-radius:18px; padding:14px 22px; font-family:'Work Sans',Arial,sans-serif; font-size:15px; font-weight:800; line-height:1.25; text-align:center; text-decoration:none; cursor:pointer; transition:transform .1s ease, background .15s ease, color .15s ease, border-color .15s ease; }
+  .btn:active{ transform:translateY(2px); }
+  .btn-accent{ background:var(--accent); color:#fff; border-bottom:4px solid color-mix(in srgb, var(--accent) 70%, black); animation:softPulse 2.6s ease-in-out infinite; }
+  .btn-accent:hover{ background:color-mix(in srgb, var(--accent) 90%, black); }
+  .btn-accent:active{ border-bottom-width:1px; }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); }
+  .btn-ghost:hover{ color:var(--accent); border-color:var(--accent); }
+  .btn-row{ max-width:420px; margin-left:auto; margin-right:auto; }
+  @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
+  @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }
   main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
   .crumbs{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .topic-cat{ display:flex; align-items:center; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin:28px 0 8px; }
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(24px,3.6vw,32px); line-height:1.2; margin:0; }
   .context{ color:var(--ink-soft); line-height:1.6; margin:14px 0 0; }
-  .cta{ display:block; margin:24px 0 8px; padding:16px 24px; border-radius:16px; background:var(--accent); color:#fff; text-align:center; text-decoration:none; font-weight:700; }
+  .cta{ margin:24px 0 8px; }
   .group{ margin-top:30px; }
   .group h2{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:0 0 6px; display:flex; align-items:center; gap:8px; }
   .g-pour h2{ color:#2c9354; } .g-contre h2{ color:#d1453a; } .g-nuance h2, .g-inconnu h2{ color:var(--ink-soft); }
@@ -71,9 +82,7 @@
   .r-meta .s-pour{ color:#2c9354; font-weight:600; } .r-meta .s-contre{ color:#d1453a; font-weight:600; }
   .r-arrow{ position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:22px; color:var(--ink-faint); }
   ul.related a:hover .r-arrow{ color:var(--accent); }
-  .all{ text-align:center; margin-top:26px; }
-  .all a{ display:inline-block; padding:11px 22px; border-radius:99px; border:1.5px solid var(--accent); color:var(--accent); font-weight:700; font-size:14px; text-decoration:none; }
-  .all a:hover{ background:var(--accent); color:#fff; }
+  .all{ margin-top:26px; }
   footer{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; }
   footer a{ color:inherit; }
 </style>
@@ -85,7 +94,7 @@
   <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Défense &amp; numérique</div>
   <h1>Maintenir un soutien militaire et financier fort à l&#39;Ukraine face à la Russie : que proposent les candidats ?</h1>
   <p class="context">Ce soutien recouvre la livraison d&#39;armements et d&#39;équipements militaires, ainsi que des financements directs ou via des prêts européens garantis, destinés à aider l&#39;Ukraine à se défendre face à l&#39;invasion russe engagée en 2022.</p>
-  <a class="cta" href="/">Et toi, tu en penses quoi ? Découvre quel candidat te correspond →</a>
+  <a class="btn btn-accent cta" href="/">Et toi, tu en penses quoi ? Découvre quel candidat te correspond</a>
   
   <section class="group g-pour">
     <h2>✓ Pour <span class="count">8</span></h2>
@@ -131,7 +140,7 @@
     <li><a href="/sujets/encadrer-strictement-lintelligence-artificielle-par-une/"><span class="r-title">Encadrer strictement l&#39;intelligence artificielle par une régulation nationale ou européenne renforcée</span><span class="r-meta"><span class="s-pour">3 pour</span> · <span>7 nuancés</span></span><span class="r-arrow" aria-hidden="true">›</span></a></li>
     <li><a href="/sujets/interdire-lacces-aux-reseaux-sociaux-aux-mineurs-de-moins/"><span class="r-title">Interdire l&#39;accès aux réseaux sociaux aux mineurs de moins de 15 ans</span><span class="r-meta"><span class="s-pour">2 pour</span> · <span class="s-contre">1 contre</span> · <span>6 nuancés</span></span><span class="r-arrow" aria-hidden="true">›</span></a></li>
   </ul>
-  <p class="all"><a href="/sujets/">Voir les 35 sujets de la présidentielle 2027 ›</a></p>
+  <a class="btn btn-ghost btn-row all" href="/sujets/">Voir les 35 sujets de la présidentielle 2027</a>
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
     <a href="/">votona.fr</a>

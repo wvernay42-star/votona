@@ -41,12 +41,23 @@
   .topbar-actions{ display:flex; align-items:center; gap:6px; }
   .icon-btn{ width:34px; height:34px; border-radius:50%; border:1px solid var(--masthead-line); background:transparent; color:var(--masthead-ink); display:flex; align-items:center; justify-content:center; text-decoration:none; }
   .icon-btn:hover{ color:var(--accent); border-color:var(--accent); }
+  /* Boutons : mêmes valeurs que .btn / .btn-accent / .btn-ghost d'index.html. */
+  .btn{ display:flex; align-items:center; justify-content:center; gap:8px; box-sizing:border-box; width:100%; border-radius:18px; padding:14px 22px; font-family:'Work Sans',Arial,sans-serif; font-size:15px; font-weight:800; line-height:1.25; text-align:center; text-decoration:none; cursor:pointer; transition:transform .1s ease, background .15s ease, color .15s ease, border-color .15s ease; }
+  .btn:active{ transform:translateY(2px); }
+  .btn-accent{ background:var(--accent); color:#fff; border-bottom:4px solid color-mix(in srgb, var(--accent) 70%, black); animation:softPulse 2.6s ease-in-out infinite; }
+  .btn-accent:hover{ background:color-mix(in srgb, var(--accent) 90%, black); }
+  .btn-accent:active{ border-bottom-width:1px; }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); }
+  .btn-ghost:hover{ color:var(--accent); border-color:var(--accent); }
+  .btn-row{ max-width:420px; margin-left:auto; margin-right:auto; }
+  @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
+  @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }
   main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
   .crumbs{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .topic-cat{ display:flex; align-items:center; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin:28px 0 8px; }
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(24px,3.6vw,32px); line-height:1.2; margin:0; }
   .context{ color:var(--ink-soft); line-height:1.6; margin:14px 0 0; }
-  .cta{ display:block; margin:24px 0 8px; padding:16px 24px; border-radius:16px; background:var(--accent); color:#fff; text-align:center; text-decoration:none; font-weight:700; }
+  .cta{ margin:24px 0 8px; }
   .group{ margin-top:30px; }
   .group h2{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:0 0 6px; display:flex; align-items:center; gap:8px; }
   .g-pour h2{ color:#2c9354; } .g-contre h2{ color:#d1453a; } .g-nuance h2, .g-inconnu h2{ color:var(--ink-soft); }
@@ -71,9 +82,7 @@
   .r-meta .s-pour{ color:#2c9354; font-weight:600; } .r-meta .s-contre{ color:#d1453a; font-weight:600; }
   .r-arrow{ position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:22px; color:var(--ink-faint); }
   ul.related a:hover .r-arrow{ color:var(--accent); }
-  .all{ text-align:center; margin-top:26px; }
-  .all a{ display:inline-block; padding:11px 22px; border-radius:99px; border:1.5px solid var(--accent); color:var(--accent); font-weight:700; font-size:14px; text-decoration:none; }
-  .all a:hover{ background:var(--accent); color:#fff; }
+  .all{ margin-top:26px; }
   footer{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; }
   footer a{ color:inherit; }
 </style>
@@ -85,7 +94,7 @@
   <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>Protection sociale</div>
   <h1>Conditionner le RSA à 15 heures d&#39;activité hebdomadaire : que proposent les candidats ?</h1>
   <p class="context">Le RSA est une allocation minimale versée aux foyers sans ressources suffisantes. La conditionner à 15 heures d&#39;activité hebdomadaire imposerait aux bénéficiaires de justifier de cette durée en formation, recherche d&#39;emploi ou activité professionnelle pour continuer à la percevoir.</p>
-  <a class="cta" href="/">Et toi, tu en penses quoi ? Découvre quel candidat te correspond →</a>
+  <a class="btn btn-accent cta" href="/">Et toi, tu en penses quoi ? Découvre quel candidat te correspond</a>
   
   <section class="group g-pour">
     <h2>✓ Pour <span class="count">7</span></h2>
@@ -125,7 +134,7 @@
     <li><a href="/sujets/allonger-le-delai-de-carence-non-indemnise-pour-les-arrets/"><span class="r-title">Allonger le délai de carence non indemnisé pour les arrêts de travail courts</span><span class="r-meta"><span class="s-pour">1 pour</span></span><span class="r-arrow" aria-hidden="true">›</span></a></li>
     <li><a href="/sujets/geler-la-revalorisation-des-pensions-de-retraite-depassant/"><span class="r-title">Geler la revalorisation des pensions de retraite dépassant 2 034 euros mensuels pour financer le budget 2027</span><span class="r-meta"><span class="s-contre">4 contre</span> · <span>1 nuancé</span></span><span class="r-arrow" aria-hidden="true">›</span></a></li>
   </ul>
-  <p class="all"><a href="/sujets/">Voir les 35 sujets de la présidentielle 2027 ›</a></p>
+  <a class="btn btn-ghost btn-row all" href="/sujets/">Voir les 35 sujets de la présidentielle 2027</a>
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
     <a href="/">votona.fr</a>

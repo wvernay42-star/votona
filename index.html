@@ -191,21 +191,28 @@
   }
 
   /* ---------- Buttons ---------- */
+  /* Système unique pour tous les boutons d'action de l'app (et des pages
+     candidats/sujets générées, qui reprennent les mêmes valeurs) :
+     - .btn-accent : action principale (violet, relief en bas) ;
+     - .btn-ghost  : action secondaire (contour) ;
+     - .btn-sm     : petite taille, même forme.
+     Même rayon, même graisse, même hauteur ; icônes en SVG (.btn-ic), pas d'emoji. */
   .btn{
     appearance:none; border:none; cursor:pointer; border-radius:18px; padding:14px 22px;
-    font-size:15px; font-weight:800; font-family:var(--sans); display:inline-flex; align-items:center;
-    justify-content:center; gap:8px; transition:transform .1s ease, border-bottom-width .1s ease;
+    font-size:15px; font-weight:800; line-height:1.25; font-family:var(--sans); display:inline-flex; align-items:center;
+    justify-content:center; gap:8px; text-align:center; text-decoration:none; box-sizing:border-box;
+    transition:transform .1s ease, border-bottom-width .1s ease, background .15s ease, color .15s ease, border-color .15s ease;
   }
   .btn:active{ transform:translateY(2px); }
-  .btn-primary{ background:var(--ink); color:var(--bg); width:100%; }
-  :root[data-theme="dark"] .btn-primary, @media (prefers-color-scheme: dark){ }
-  .btn-accent{
+  .btn-ic{ width:18px; height:18px; flex:none; }
+  .btn-accent, .btn-primary{
     background:var(--accent); color:var(--accent-ink); width:100%;
     border-bottom:4px solid color-mix(in srgb, var(--accent) 70%, black);
   }
-  .btn-accent:active{ border-bottom-width:1px; }
+  .btn-accent:hover, .btn-primary:hover{ background:color-mix(in srgb, var(--accent) 90%, black); }
+  .btn-accent:active, .btn-primary:active{ border-bottom-width:1px; }
   .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); }
-  .btn-ghost:hover{ color:var(--ink); border-color:var(--ink-faint); }
+  .btn-ghost:hover{ color:var(--accent); border-color:var(--accent); }
   .btn-block{ width:100%; }
   .btn-sm{ padding:8px 14px; font-size:13px; border-radius:14px; }
   .btn[disabled]{ opacity:.4; cursor:not-allowed; }
@@ -466,7 +473,7 @@
     -webkit-backdrop-filter:blur(14px) saturate(1.4); backdrop-filter:blur(14px) saturate(1.4);
     border-top:1px solid var(--line-soft); max-width:680px; margin:0 auto;
   }
-  .results-action-bar .btn{ flex:1; }
+  .results-action-bar .btn{ flex:1; min-width:0; padding:14px 12px; }
   body.has-results-bar .appfoot{ padding-bottom:calc(var(--results-bar-h, 78px) + 10px + env(safe-area-inset-bottom)); }
   .podium{ display:flex; align-items:flex-end; gap:10px; margin:22px 0 28px; }
   .podium-step{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; min-width:0; cursor:pointer; }
@@ -648,8 +655,7 @@
   .media-type-tag.podcast{ background:color-mix(in srgb, var(--accent) 18%, transparent); color:var(--accent); }
   .media-type-tag.docu{ background:color-mix(in srgb, var(--gold) 22%, transparent); color:var(--gold); }
 
-  .pop-share-btn{ background:var(--accent); color:#fff; border-radius:16px; font-weight:700; margin-top:18px; }
-  .btn-block.pop-share-btn{ display:block; max-width:340px; margin-left:auto; margin-right:auto; }
+  .btn-block.pop-share-btn{ display:flex; max-width:340px; margin:18px auto 0; }
 
   .practical-list{ display:flex; flex-direction:column; gap:10px; margin-top:16px; }
   .practical-item{
@@ -3799,7 +3805,7 @@ function renderProfiles(){
     '<div class="profile-grid">' + cardsHtml + '</div>' +
     (ids.length ? '' : '<p class="empty-state">Aucun profil pour l\'instant — crée le premier ci-dessous.</p>') +
     '<div style="margin-top:16px; max-width:420px; margin-left:auto; margin-right:auto;">' +
-      '<button class="btn btn-ghost btn-block" id="btn-new-profile">+ Créer un profil</button>' +
+      '<button class="btn ' + (ids.length ? 'btn-ghost' : 'btn-accent') + ' btn-block" id="btn-new-profile">+ Créer un profil</button>' +
       '<div class="new-profile-form" id="new-profile-form">' +
         '<div><label class="field-label">Prénom ou pseudo</label>' +
         '<input type="text" id="new-profile-name" maxlength="30" placeholder="ex. Camille" /></div>' +
@@ -3829,7 +3835,7 @@ function renderProfiles(){
       '</div></section>' +
     '<section class="landing-section landing-narrow"><h2>Une question ?</h2>' +
       '<div class="sub">Fonctionnement du classement, données, candidats retirés : tout est expliqué dans la FAQ.</div>' +
-      '<button class="btn btn-ghost btn-block" id="btn-open-faq">Consulter la FAQ complète →</button></section>' +
+      '<button class="btn btn-ghost btn-block" id="btn-open-faq">Consulter la FAQ complète</button></section>' +
     '<section class="landing-section landing-narrow final-cta"><h2>Prêt à te lancer ?</h2>' +
       '<div class="sub">Quelques minutes suffisent pour découvrir tes affinités avec les candidats déclarés.</div>' +
       '<button class="btn btn-accent btn-block" id="btn-final-cta">' + (ids.length ? "Choisir mon profil" : "Créer mon profil") + '</button></section>';
@@ -4019,7 +4025,7 @@ function renderDashboard(){
         '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div></div>' +
       '<div class="stat-tile"><div class="num">' + (affinityResults.length ? affinityResults[0].pct + '%' : '—') + '</div><div class="lbl">Ta meilleure affinité' + (affinityResults.length ? ' · ' + escapeHtml(affinityResults[0].candidate.name) : '') + '</div></div>' +
     '</div>' +
-    '<button class="btn btn-accent btn-block" id="btn-vote">' + (answered === 0 ? "Commencer le questionnaire" : answered < topics.length ? "Continuer (" + (topics.length-answered) + " restants)" : "Revoir mes réponses") + '</button>' +
+    '<button class="btn btn-accent btn-block" id="btn-vote">' + (answered === 0 ? "Commencer le questionnaire" : answered < topics.length ? "Continuer (" + (topics.length-answered) + " restant" + (topics.length-answered > 1 ? "s" : "") + ")" : "Revoir mes réponses") + '</button>' +
     '</div>' +
     pollHtml;
 
@@ -4102,6 +4108,8 @@ function startVoteFlow(){
   render();
 }
 
+var ICON_SHARE = '<svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+var ICON_DOWNLOAD = '<svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>';
 var STANCE_LABEL = {pour:"D'accord", contre:"Pas d'accord", neutre:"Neutre"};
 var STANCE_ICON = {pour:"✓", contre:"✕", neutre:"–"};
 var STANCE_COLORVAR = {pour:"--good", contre:"--bad", neutre:"--neutral"};
@@ -4198,7 +4206,7 @@ function renderVote(){
         topicHeaderHtml(topic) +
         '<div style="margin-top:14px; font-size:13px; color:var(--ink-soft);">Ton avis : <strong style="color:var(' + STANCE_COLORVAR[stance] + ')">' + STANCE_LABEL[stance] + '</strong></div>' +
       '</div>' +
-      '<button class="btn btn-primary btn-block" id="next-topic" style="margin-top:20px;">Sujet suivant</button>' +
+      '<button class="btn btn-accent btn-block" id="next-topic" style="margin-top:20px;">Sujet suivant</button>' +
       '<div style="margin-top:20px; font-size:12px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.05em; font-family:var(--mono);">Position des candidats</div>' +
       groupsHtml;
   }
@@ -4326,8 +4334,8 @@ function renderResults(){
   var remaining = topics.length - answered;
   actionBar.innerHTML =
     '<button class="btn btn-ghost" id="btn-goto-kit">Mon Starter Pack</button>' +
-    (remaining > 0 ? '<button class="btn btn-accent" id="btn-share">Répondre aux ' + remaining + ' sujet' + (remaining > 1 ? "s" : "") + ' restant' + (remaining > 1 ? "s" : "") + '</button>'
-      : '<button class="btn btn-accent" id="btn-share">📤 Inviter un proche</button>');
+    (remaining > 0 ? '<button class="btn btn-accent" id="btn-share">Continuer (' + remaining + ' restant' + (remaining > 1 ? "s" : "") + ')</button>'
+      : '<button class="btn btn-accent" id="btn-share">' + ICON_SHARE + 'Inviter un proche</button>');
   document.getElementById("btn-goto-kit").onclick = function(){ state.screen = "kit"; render(); };
 
   function candidateDetailItemsHtml(cand){
@@ -4402,7 +4410,7 @@ function renderResults(){
         navigator.clipboard.writeText(text + " " + url).then(function(){
           trackShareEvent("results_invite_copy");
           shareBtn.textContent = "Lien copié !";
-          setTimeout(function(){ shareBtn.textContent = "📤 Inviter un proche"; }, 2200);
+          setTimeout(function(){ shareBtn.innerHTML = ICON_SHARE + "Inviter un proche"; }, 2200);
         }).catch(function(){});
       }
     };
@@ -4472,7 +4480,7 @@ function renderKit(){
     (topArchetype.archetype ? '<div class="blister-nameplate">' + escapeHtml(topArchetype.archetype) + '</div>' : '') +
     '<div class="blister-sub">Niveau ' + level.level + ' · ' + escapeHtml(level.name) + ' · ' + level.answered + '/' + level.total + ' sujets' + nextCaption + '</div>' +
     '</div>' +
-    '<button class="btn btn-block pop-share-btn" id="kit-share-btn">📤 Partager mon profil</button>' : '';
+    '<button class="btn btn-accent btn-block pop-share-btn" id="kit-share-btn">' + ICON_SHARE + 'Partager mon profil</button>' : '';
 
   var modalHtml = "";
   if(state.kitModalCat === "practical"){
@@ -4587,8 +4595,8 @@ function renderKitShare(){
 
   var html = '<div class="share-canvas-wrap" id="share-canvas-wrap"><p class="intro-copy">Génération de ton image…</p></div>' +
     '<div id="share-actions" style="display:none; max-width:340px; margin:0 auto;">' +
-      '<button class="btn btn-accent btn-block" id="kit-share-native" style="margin-top:16px;">📤 Partager</button>' +
-      '<button class="btn btn-ghost btn-block" id="kit-share-download" style="margin-top:10px;">⬇️ Télécharger l\'image</button>' +
+      '<button class="btn btn-accent btn-block" id="kit-share-native" style="margin-top:16px;">' + ICON_SHARE + 'Partager</button>' +
+      '<button class="btn btn-ghost btn-block" id="kit-share-download" style="margin-top:10px;">' + ICON_DOWNLOAD + 'Télécharger l\'image</button>' +
     '</div>';
 
   document.getElementById("app").innerHTML = html;

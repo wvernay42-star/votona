@@ -121,7 +121,18 @@ const SHARED_CSS = `
   .crumbs{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .topbar-actions{ display:flex; align-items:center; gap:6px; }
   .icon-btn{ width:34px; height:34px; border-radius:50%; border:1px solid var(--masthead-line); background:transparent; color:var(--masthead-ink); display:flex; align-items:center; justify-content:center; text-decoration:none; }
-  .icon-btn:hover{ color:var(--accent); border-color:var(--accent); }`;
+  .icon-btn:hover{ color:var(--accent); border-color:var(--accent); }
+  /* Boutons : mêmes valeurs que .btn / .btn-accent / .btn-ghost d'index.html. */
+  .btn{ display:flex; align-items:center; justify-content:center; gap:8px; box-sizing:border-box; width:100%; border-radius:18px; padding:14px 22px; font-family:'Work Sans',Arial,sans-serif; font-size:15px; font-weight:800; line-height:1.25; text-align:center; text-decoration:none; cursor:pointer; transition:transform .1s ease, background .15s ease, color .15s ease, border-color .15s ease; }
+  .btn:active{ transform:translateY(2px); }
+  .btn-accent{ background:var(--accent); color:#fff; border-bottom:4px solid color-mix(in srgb, var(--accent) 70%, black); animation:softPulse 2.6s ease-in-out infinite; }
+  .btn-accent:hover{ background:color-mix(in srgb, var(--accent) 90%, black); }
+  .btn-accent:active{ border-bottom-width:1px; }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); }
+  .btn-ghost:hover{ color:var(--accent); border-color:var(--accent); }
+  .btn-row{ max-width:420px; margin-left:auto; margin-right:auto; }
+  @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
+  @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }`;
 
 function catIconSvg(cat, categoryIconPaths, size) {
   const iconPath = categoryIconPaths[cat];
@@ -210,7 +221,7 @@ ${HEAD_ICONS}
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:0; }
   .party{ color:var(--ink-soft); font-size:15px; margin:2px 0 0; }
   .withdrawn-badge{ display:inline-block; margin-top:14px; padding:6px 14px; border-radius:99px; background:#fbe0dd; color:#a63a2e; font-size:13px; font-weight:700; }
-  .cta{ display:block; margin:28px 0; padding:16px 24px; border-radius:16px; background:var(--accent); color:#fff; text-align:center; text-decoration:none; font-weight:700; }
+  .cta{ margin:28px 0; }
   h2.subhead{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:36px 0 16px; }
   .topic-row{ padding:16px 0; border-top:1px solid var(--line); }
   .topic-cat{ display:flex; align-items:center; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin-bottom:6px; }
@@ -248,7 +259,7 @@ ${HEADER}
   </div>
   ${withdrawnBadge}
   <p style="color:var(--ink-soft); line-height:1.6; margin-top:18px;">${indexable ? `Positions de ${escapeHtml(cand.name)} sur ${known.length === topics.length ? "" : `${known.length} des `}${topics.length} sujets de la présidentielle 2027 suivis par Votona, établies à partir de déclarations, votes ou programmes publics.` : `Votona suit ${topics.length} sujets de la présidentielle 2027 et y relève, pour chaque candidat, les positions tirées de déclarations, votes ou programmes publics.`}</p>
-  <a class="cta" href="../../?screen=results">Compare tes propres positions à celles de ${escapeHtml(cand.name)} sur Votona →</a>
+  <a class="btn btn-accent cta" href="../../?screen=results">Compare tes propres positions à celles de ${escapeHtml(cand.name)}</a>
   ${positionsHtml}
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques — ni exhaustives ni officielles.<br />
@@ -280,8 +291,7 @@ ${HEAD_ICONS}
   main{ max-width:640px; margin:0 auto; padding:32px 20px 64px; }
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:28px 0 8px; }
   p.intro{ color:var(--ink-soft); line-height:1.6; }
-  .btn-sujets{ display:inline-block; margin-top:6px; padding:11px 22px; border-radius:99px; border:1.5px solid var(--accent); color:var(--accent); font-weight:700; font-size:14px; text-decoration:none; transition:background .15s, color .15s; }
-  .btn-sujets:hover{ background:var(--accent); color:#fff; }
+  .btn-sujets{ margin-top:6px; }
   input#q{ width:100%; padding:12px 16px; border-radius:14px; border:1px solid var(--line); font-size:14px; font-family:inherit; margin-top:18px; background:#fff; color:var(--ink); }
   input#q:focus{ outline:2px solid var(--accent); outline-offset:1px; }
   ul{ list-style:none; padding:0; margin:20px 0; }
@@ -300,7 +310,7 @@ ${HEADER_INDEX}
 <main>
   <h1>Tous les candidats à la présidentielle 2027</h1>
   <p class="intro">Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet, retraits de la course inclus.</p>
-  <a class="btn-sujets" href="/sujets/">Comparer les candidats sujet par sujet ›</a>
+  <a class="btn btn-ghost btn-sujets" href="/sujets/">Comparer les candidats sujet par sujet</a>
   <input id="q" type="text" placeholder="Rechercher un candidat ou un parti…" />
   <ul id="list">${items}
   </ul>
@@ -397,7 +407,7 @@ ${HEAD_ICONS}
   .topic-cat{ display:flex; align-items:center; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin:28px 0 8px; }
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(24px,3.6vw,32px); line-height:1.2; margin:0; }
   .context{ color:var(--ink-soft); line-height:1.6; margin:14px 0 0; }
-  .cta{ display:block; margin:24px 0 8px; padding:16px 24px; border-radius:16px; background:var(--accent); color:#fff; text-align:center; text-decoration:none; font-weight:700; }
+  .cta{ margin:24px 0 8px; }
   .group{ margin-top:30px; }
   .group h2{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:0 0 6px; display:flex; align-items:center; gap:8px; }
   .g-pour h2{ color:#2c9354; } .g-contre h2{ color:#d1453a; } .g-nuance h2, .g-inconnu h2{ color:var(--ink-soft); }
@@ -422,9 +432,7 @@ ${HEAD_ICONS}
   .r-meta .s-pour{ color:#2c9354; font-weight:600; } .r-meta .s-contre{ color:#d1453a; font-weight:600; }
   .r-arrow{ position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:22px; color:var(--ink-faint); }
   ul.related a:hover .r-arrow{ color:var(--accent); }
-  .all{ text-align:center; margin-top:26px; }
-  .all a{ display:inline-block; padding:11px 22px; border-radius:99px; border:1.5px solid var(--accent); color:var(--accent); font-weight:700; font-size:14px; text-decoration:none; }
-  .all a:hover{ background:var(--accent); color:#fff; }
+  .all{ margin-top:26px; }
   footer{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; }
   footer a{ color:inherit; }
 </style>
@@ -436,13 +444,13 @@ ${HEADER}
   <div class="topic-cat">${catIconSvg(topic.cat, categoryIconPaths, 13)}${escapeHtml(topic.cat)}</div>
   <h1>${escapeHtml(topic.statement)} : que proposent les candidats ?</h1>
   ${topic.context ? `<p class="context">${escapeHtml(topic.context)}</p>` : ""}
-  <a class="cta" href="/">Et toi, tu en penses quoi ? Découvre quel candidat te correspond →</a>
+  <a class="btn btn-accent cta" href="/">Et toi, tu en penses quoi ? Découvre quel candidat te correspond</a>
   ${section("pour", "Pour", "✓")}
   ${section("contre", "Contre", "✕")}
   ${section("nuance", "Neutre ou nuancé", "≈")}
   ${unknown}
   ${siblingsHtml}
-  <p class="all"><a href="/sujets/">Voir les ${topics.length} sujets de la présidentielle 2027 ›</a></p>
+  <a class="btn btn-ghost btn-row all" href="/sujets/">Voir les ${topics.length} sujets de la présidentielle 2027</a>
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
     <a href="/">votona.fr</a>
@@ -489,7 +497,7 @@ ${HEAD_ICONS}
   section li{ padding:11px 0; border-top:1px solid var(--line); }
   section li a{ color:var(--ink); text-decoration:none; font-weight:600; font-size:15px; line-height:1.4; }
   section li a:hover{ color:var(--accent); }
-  .cta{ display:block; margin:24px 0 8px; padding:16px 24px; border-radius:16px; background:var(--accent); color:#fff; text-align:center; text-decoration:none; font-weight:700; }
+  .cta{ margin:24px 0 8px; }
 </style>
 </head>
 <body>
@@ -498,7 +506,7 @@ ${HEADER_INDEX}
   <nav class="crumbs"><a class="crumb" href="/candidats/">Tous les candidats ›</a></nav>
   <h1>Les ${topics.length} sujets de la présidentielle 2027</h1>
   <p class="intro">Pour chaque grand sujet de la campagne, découvre qui est pour, qui est contre et qui ne s'est pas encore prononcé parmi les candidats déclarés.</p>
-  <a class="cta" href="/">Et toi ? Réponds aux questions et découvre quel candidat te correspond →</a>${blocks}
+  <a class="btn btn-accent cta" href="/">Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>${blocks}
 </main>
 </body>
 </html>
