@@ -343,6 +343,36 @@
   }
 
   section.block{ margin-top:32px; }
+
+  /* Sondages : « Qui est en tête ? » (tableau de bord) */
+  .poll-card{ margin:18px 0 20px; padding:18px 18px 16px; border-radius:24px; background:var(--bg-raised);
+    border:2px solid color-mix(in srgb, var(--accent) 22%, var(--line-soft)); }
+  .poll-eyebrow{ display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10.5px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent); font-weight:600; }
+  .poll-eyebrow .ic{ width:24px; height:24px; border-radius:8px; background:var(--accent-soft); display:flex; align-items:center; justify-content:center; flex:none; }
+  .poll-card h2{ font-size:20px; margin:10px 0 2px; }
+  .poll-meta{ font-family:var(--mono); font-size:11px; color:var(--ink-faint); }
+  .poll-list{ display:grid; gap:4px; margin-top:14px; }
+  .poll-row{ display:flex; align-items:center; gap:11px; padding:9px 10px; border-radius:16px; text-decoration:none; color:inherit; }
+  .poll-row:hover{ background:var(--line-soft); }
+  .poll-row.leader{ background:var(--accent-soft); padding:13px 12px; margin-bottom:4px; }
+  .poll-row.leader:hover{ background:color-mix(in srgb, var(--accent) 22%, var(--accent-soft)); }
+  .poll-avatar{ width:34px; height:34px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center;
+    color:#fff; font-family:var(--display); font-weight:700; font-size:12.5px; }
+  .poll-body{ flex:1; min-width:0; }
+  .poll-top{ display:flex; align-items:baseline; gap:8px; }
+  .poll-name{ font-size:13.5px; font-weight:700; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .poll-row.leader .poll-name{ font-size:14.5px; }
+  .poll-pct{ font-family:var(--mono); font-size:12.5px; font-weight:700; color:var(--ink-soft); flex:none; }
+  .poll-row.leader .poll-pct{ color:var(--accent); font-size:14px; }
+  .poll-party{ font-size:11px; color:var(--ink-faint); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .poll-bar{ height:6px; border-radius:99px; background:var(--line-soft); margin-top:6px; overflow:hidden; }
+  .poll-bar > span{ display:block; height:100%; border-radius:99px; }
+  .poll-row .badge-new{ font-size:9px; padding:2px 7px; flex:none; }
+  .poll-list .poll-row.is-extra{ display:none; }
+  .poll-list.expanded .poll-row.is-extra{ display:flex; }
+  .poll-more{ margin-top:10px; }
+  .poll-source{ margin-top:12px; font-size:11.5px; line-height:1.5; color:var(--ink-faint); }
   section.block h2{ font-size:19px; margin-bottom:3px; }
   section.block .sub{ font-size:13px; color:var(--ink-faint); }
 
@@ -3828,14 +3858,37 @@ function renderDashboard(){
   }
 
   var topPolledCandidates = getTopPolledCandidates(candidates);
-  var candRows = topPolledCandidates.map(function(c){
+  var POLL_VISIBLE = 5;
+  var maxPoll = topPolledCandidates.length ? CANDIDATE_POLL_PCT[topPolledCandidates[0].id] : 1;
+  var pollRows = topPolledCandidates.map(function(c, i){
     var isNew = daysSince(c.addedDate) <= NEW_WINDOW_DAYS;
-    var searchKey = (c.name + " " + c.party).toLowerCase();
     var pollPct = CANDIDATE_POLL_PCT[c.id];
-    return '<a class="candidate-row' + (c.withdrawn ? ' withdrawn' : '') + '" data-search="' + escapeHtml(searchKey) + '" href="' + location.origin + '/candidats/' + escapeHtml(c.id) + '/"><div class="cand-dot" style="background:' + c.color + '"></div>' +
-      '<div class="cand-name">' + escapeHtml(c.name) + '<div class="cand-party">' + escapeHtml(c.party) + '</div></div>' +
-      (c.withdrawn ? '<span class="badge-withdrawn">Retiré</span>' : isNew ? '<span class="badge-new">Nouveau</span>' : '<span class="cand-poll-pct mono">' + pollPct.toFixed(1).replace(".0","") + '%</span>') + '</a>';
+    var width = Math.max(4, Math.round((pollPct / maxPoll) * 100));
+    return '<a class="poll-row' + (i === 0 ? ' leader' : '') + (i >= POLL_VISIBLE ? ' is-extra' : '') + '" data-search="' + escapeHtml((c.name + " " + c.party).toLowerCase()) + '" href="' + location.origin + '/candidats/' + escapeHtml(c.id) + '/">' +
+      '<div class="poll-avatar" style="background:' + c.color + '">' + escapeHtml(initials(c.name)) + '</div>' +
+      '<div class="poll-body">' +
+        '<div class="poll-top"><span class="poll-name">' + escapeHtml(c.name) + '</span>' +
+          (isNew ? '<span class="badge-new">Nouveau</span>' : '') +
+          '<span class="poll-pct">' + pollPct.toFixed(1).replace(".0","") + '%</span></div>' +
+        '<div class="poll-party">' + escapeHtml(c.party) + '</div>' +
+        '<div class="poll-bar"><span style="width:' + width + '%;background:' + (i === 0 ? 'var(--accent)' : c.color) + '"></span></div>' +
+      '</div></a>';
   }).join("");
+  var pollDate = String(CANDIDATE_POLL_UPDATED_AT || "").split("-");
+  var pollDateLabel = pollDate.length === 3 ? pollDate[2] + "/" + pollDate[1] : CANDIDATE_POLL_UPDATED_AT;
+  var pollHtml = topPolledCandidates.length ? '<section class="poll-card" aria-labelledby="poll-title">' +
+      '<div class="poll-eyebrow"><span class="ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="6" y1="20" x2="6" y2="13"/><line x1="12" y1="20" x2="12" y2="5"/><line x1="18" y1="20" x2="18" y2="10"/></svg></span>Sondages nationaux</div>' +
+      '<h2 id="poll-title">Qui est en tête ?</h2>' +
+      '<div class="poll-meta">Derniers sondages publiés · maj ' + escapeHtml(pollDateLabel) + '</div>' +
+      '<div class="poll-list" id="candidate-list">' + pollRows + '</div>' +
+      '<p class="empty-state" id="candidate-empty" style="display:none;">Aucun candidat ne correspond à ta recherche.</p>' +
+      (topPolledCandidates.length > POLL_VISIBLE ?
+        '<div class="poll-more" id="poll-more">' +
+          '<button class="btn btn-ghost btn-block btn-sm" id="poll-expand">Voir le top ' + topPolledCandidates.length + '</button>' +
+          '<input type="text" id="cand-search" placeholder="Rechercher un candidat ou un parti…" style="display:none;" />' +
+        '</div>' : '') +
+      '<div class="poll-source">Source : derniers sondages d\'intentions de vote publiés par les instituts (Ifop, Ipsos, Elabe, Harris Interactive, OpinionWay…), relevés chaque jour. Ton classement personnel (page Résultats) prend en compte tous les candidats, pas seulement ceux en tête des sondages.</div>' +
+    '</section>' : '';
 
   var badgeHtml = "";
   var levelProgressHtml = "";
@@ -3882,6 +3935,7 @@ function renderDashboard(){
   var html = '<div class="dash-head"><div id="sponsor-slot-dash" style="margin-bottom:16px;"></div>' +
     bannerHtml +
     badgeHtml +
+    pollHtml +
     levelProgressHtml +
     provisionalHtml +
     '<div class="stat-row">' +
@@ -3892,22 +3946,24 @@ function renderDashboard(){
     '<button class="btn btn-accent btn-block" id="btn-vote">' + (answered === 0 ? "Commencer le questionnaire" : answered < topics.length ? "Continuer (" + (topics.length-answered) + " restants)" : "Revoir mes réponses") + '</button>' +
     (answered > 0 ? '<div style="margin-top:10px;"><button class="btn btn-ghost btn-block" id="btn-results">Voir mes résultats</button></div>' : '') +
     (answered > 0 ? '<div style="margin-top:10px;"><button class="btn btn-ghost btn-block" id="btn-kit">Voir mon Starter Pack</button></div>' : '') +
-    '</div>' +
-    '<section class="block" style="margin-top:22px;"><h2>Top ' + topPolledCandidates.length + ' selon les sondages</h2><div class="sub">Basé sur les sondages d\'intentions de vote (dernière mise à jour : ' + escapeHtml(CANDIDATE_POLL_UPDATED_AT) + '). Ton classement personnel (page Résultats) prend en compte tous les candidats, pas seulement ceux-ci.</div>' +
-      (topPolledCandidates.length > 6 ? '<input type="text" id="cand-search" placeholder="Rechercher un candidat ou un parti…" style="margin-top:12px;" />' : '') +
-      '<div class="candidate-list" id="candidate-list">' + candRows + '</div>' +
-      '<p class="empty-state" id="candidate-empty" style="display:none;">Aucun candidat ne correspond à ta recherche.</p>' +
-    '</section>';
+    '</div>';
 
   document.getElementById("app").innerHTML = html;
   wireMascotFallbacks();
   var starterBadge = document.getElementById("dash-starter-badge");
   if(starterBadge) starterBadge.onclick = function(){ state.screen = "kit"; render(); };
 
+  var pollExpand = document.getElementById("poll-expand");
+  if(pollExpand) pollExpand.onclick = function(){
+    document.getElementById("candidate-list").classList.add("expanded");
+    pollExpand.style.display = "none";
+    var search = document.getElementById("cand-search");
+    if(search) search.style.display = "";
+  };
   var candSearch = document.getElementById("cand-search");
   if(candSearch) candSearch.oninput = function(){
     var q = candSearch.value.trim().toLowerCase();
-    var rows = document.querySelectorAll("#candidate-list .candidate-row");
+    var rows = document.querySelectorAll("#candidate-list .poll-row");
     var visibleCount = 0;
     rows.forEach(function(row){
       var match = !q || (row.getAttribute("data-search") || "").indexOf(q) !== -1;
