@@ -1,0 +1,28 @@
+# Signale à IndexNow (Bing & co) les pages modifiées après chaque mise en
+# production, y compris les pushes de la routine « veille quotidienne ».
+# Lancement manuel possible (onglet Actions) pour signaler tout le sitemap.
+name: IndexNow
+
+on:
+  push:
+    branches: [main]
+    paths: ["index.html", "candidats/**", "sitemap.xml"]
+  workflow_dispatch:
+
+jobs:
+  indexnow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # Laisse à Vercel le temps de déployer la nouvelle version avant que Bing ne la visite.
+      - name: Attendre le déploiement Vercel
+        if: github.event_name == 'push'
+        run: sleep 120
+      - name: Signaler les pages modifiées
+        if: github.event_name == 'push'
+        run: python3 scripts/indexnow.py --changed "${{ github.event.before }}" "${{ github.sha }}"
+      - name: Signaler tout le sitemap
+        if: github.event_name == 'workflow_dispatch'
+        run: python3 scripts/indexnow.py --all
