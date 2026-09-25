@@ -3935,7 +3935,6 @@ function renderDashboard(){
   var html = '<div class="dash-head"><div id="sponsor-slot-dash" style="margin-bottom:16px;"></div>' +
     bannerHtml +
     badgeHtml +
-    pollHtml +
     levelProgressHtml +
     provisionalHtml +
     '<div class="stat-row">' +
@@ -3944,11 +3943,26 @@ function renderDashboard(){
       '<div class="stat-tile"><div class="num">' + topPolledCandidates.length + '</div><div class="lbl">Candidats en tête</div></div>' +
     '</div>' +
     '<button class="btn btn-accent btn-block" id="btn-vote">' + (answered === 0 ? "Commencer le questionnaire" : answered < topics.length ? "Continuer (" + (topics.length-answered) + " restants)" : "Revoir mes réponses") + '</button>' +
-    (answered > 0 ? '<div style="margin-top:10px;"><button class="btn btn-ghost btn-block" id="btn-results">Voir mes résultats</button></div>' : '') +
-    (answered > 0 ? '<div style="margin-top:10px;"><button class="btn btn-ghost btn-block" id="btn-kit">Voir mon Starter Pack</button></div>' : '') +
-    '</div>';
+    '</div>' +
+    pollHtml;
 
   document.getElementById("app").innerHTML = html;
+
+  // Barre fixe en bas d'écran, même composant que la page Résultats.
+  var dashBar = document.getElementById("results-action-bar");
+  if(answered > 0){
+    if(!dashBar){
+      dashBar = document.createElement("div");
+      dashBar.id = "results-action-bar";
+      dashBar.className = "results-action-bar";
+      document.body.appendChild(dashBar);
+    }
+    dashBar.innerHTML =
+      '<button class="btn btn-ghost" id="btn-kit">Mon Starter Pack</button>' +
+      '<button class="btn btn-accent" id="btn-results">Mes résultats</button>';
+  } else if(dashBar){
+    dashBar.remove();
+  }
   wireMascotFallbacks();
   var starterBadge = document.getElementById("dash-starter-badge");
   if(starterBadge) starterBadge.onclick = function(){ state.screen = "kit"; render(); };
@@ -5098,7 +5112,7 @@ function renderSponsor(){
 function render(){
   renderTopbar();
   var existingActionBar = document.getElementById("results-action-bar");
-  if(existingActionBar && state.screen !== "results") existingActionBar.remove();
+  if(existingActionBar && state.screen !== "results" && state.screen !== "dashboard") existingActionBar.remove();
   document.getElementById("app").classList.toggle("app-wide", state.screen === "profiles" || state.screen === "dashboard" || state.screen === "kit");
   if(state.screen === "profiles") renderProfiles();
   else if(state.screen === "dashboard") renderDashboard();
