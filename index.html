@@ -4249,7 +4249,7 @@ function renderResults(){
   actionBar.innerHTML =
     '<button class="btn btn-ghost" id="btn-goto-kit">Mon Starter Pack</button>' +
     (remaining > 0 ? '<button class="btn btn-accent" id="btn-share">Répondre aux ' + remaining + ' sujet' + (remaining > 1 ? "s" : "") + ' restant' + (remaining > 1 ? "s" : "") + '</button>'
-      : podiumOrder.length ? '<button class="btn btn-accent" id="btn-share">📤 Partager</button>' : '');
+      : '<button class="btn btn-accent" id="btn-share">📤 Partager mon Starter Pack</button>');
   document.getElementById("btn-goto-kit").onclick = function(){ state.screen = "kit"; render(); };
 
   function candidateDetailItemsHtml(cand){
@@ -4307,25 +4307,13 @@ function renderResults(){
 
   wireSignupCta();
 
+  // Pas de partage du classement (positions politiques personnelles) :
+  // une fois tout répondu, on propose de partager le Starter Pack.
   var shareBtn = document.getElementById("btn-share");
   if(shareBtn && remaining > 0){
     shareBtn.onclick = startVoteFlow;
   } else if(shareBtn){
-    shareBtn.onclick = function(){
-    var lines = podiumOrder.map(function(r, i){
-      return (i+1) + ". " + r.candidate.name + " (" + r.pct + "%)";
-    });
-    var text = "Mon classement sur Votona :\n" + lines.join("\n") + "\n\nFais le test toi aussi : " + buildReferralUrl(profile);
-    if(navigator.share){
-      navigator.share({text: text}).then(function(){ trackShareEvent("results_native_share"); }).catch(function(){});
-    } else if(navigator.clipboard){
-      navigator.clipboard.writeText(text).then(function(){
-        trackShareEvent("results_clipboard_copy");
-        shareBtn.textContent = "Copié !";
-        setTimeout(function(){ shareBtn.textContent = "📤 Partager"; }, 2200);
-      }).catch(function(){});
-    }
-    };
+    shareBtn.onclick = function(){ state.kitModalCat = null; state.screen = "kitShare"; render(); };
   }
 }
 
