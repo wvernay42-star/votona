@@ -395,10 +395,10 @@ function topicPageHtml(topic, candidates, topics, categoryIconPaths, slugs) {
 <meta property="og:url" content="${canonical}" />
 <meta property="og:title" content="${escapeHtml(title)}" />
 <meta property="og:description" content="${escapeHtml(description)}" />
-<meta property="og:image" content="${SITE_URL}/assets/ui/og-home.jpg" />
+<meta property="og:image" content="${SITE_URL}/assets/og/sujets/${slug}.jpg" />
 <meta property="og:locale" content="fr_FR" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="${SITE_URL}/assets/ui/og-home.jpg" />
+<meta name="twitter:image" content="${SITE_URL}/assets/og/sujets/${slug}.jpg" />
 ${HEAD_ICONS}
 <script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Sujets", url: SITE_URL + "/sujets/" }, { name: topic.statement, url: canonical }])}</script>
 <style>${SHARED_CSS}
@@ -557,4 +557,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { loadData };
+module.exports = { loadData, topicSlugs, SITE_URL };

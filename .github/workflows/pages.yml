@@ -1,5 +1,5 @@
 # Garde les pages générées (candidats/, sujets/, sitemap.xml, images de
-# partage) en phase avec index.html : à chaque push sur main qui touche
+# partage des candidats et des sujets) en phase avec index.html : à chaque push sur main qui touche
 # index.html (veille quotidienne, mise en production...), relance les
 # générateurs et commite le résultat s'il a changé. Ne modifie jamais index.html.
 # Le commit poussé ici ne relance aucun workflow (jeton GITHUB_TOKEN) :
@@ -34,7 +34,7 @@ jobs:
       - name: Repérer les images de partage manquantes
         id: og
         run: |
-          missing=$(node -e 'const fs=require("fs");const {loadData}=require("./scripts/generate-candidate-pages.js");console.log(loadData().CANDIDATES.filter(c=>!fs.existsSync("candidats/"+c.id+"/og.jpg")).length)')
+          missing=$(node scripts/generate-og-images.js --count-missing)
           echo "manquantes=$missing" >> "$GITHUB_OUTPUT"
 
       - name: Créer les images de partage manquantes
@@ -47,7 +47,7 @@ jobs:
       - name: Commiter et pousser si quelque chose a changé
         id: commit
         run: |
-          git add candidats sujets sitemap.xml
+          git add -A candidats sujets sitemap.xml assets/og
           if git diff --cached --quiet; then
             echo "Pages déjà à jour, rien à commiter."
             echo "pousse=non" >> "$GITHUB_OUTPUT"
