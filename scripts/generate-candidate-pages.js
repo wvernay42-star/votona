@@ -10,9 +10,9 @@
 //
 // Usage : node scripts/generate-candidate-pages.js
 //
-// Ne régénère PAS candidats/<id>/og.jpg (image de partage) : ces images
-// sont produites via canvas dans le navigateur (voir session du
-// 2026-09-25), pas encore automatisé ici faute de lib canvas en Node.
+// Ne génère PAS candidats/<id>/og.jpg (image de partage) : c'est le rôle de
+// scripts/generate-og-images.js (Playwright), lancé comme ce script par
+// l'action GitHub .github/workflows/pages.yml à chaque push sur main.
 
 const fs = require("fs");
 const path = require("path");
@@ -542,7 +542,8 @@ function main() {
 
   fs.writeFileSync(path.join(ROOT, "sitemap.xml"), sitemapXml(CANDIDATES, TOPICS, slugs), "utf8");
 
-  console.log(`Généré : ${CANDIDATES.length} pages candidats + ${TOPICS.length} pages sujets + 2 index + sitemap.xml (og.jpg des candidats non régénéré, voir commentaire en tête de fichier)`);
+  console.log(`Généré : ${CANDIDATES.length} pages candidats + ${TOPICS.length} pages sujets + 2 index + sitemap.xml`);
 }
 
-main();
+if (require.main === module) main();
+module.exports = { loadData };

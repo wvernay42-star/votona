@@ -1,0 +1,72 @@
+# Garde les pages générées (candidats/, sujets/, sitemap.xml, images de
+# partage) en phase avec index.html : à chaque push sur main qui touche
+# index.html (veille quotidienne, mise en production...), relance les
+# générateurs et commite le résultat s'il a changé. Ne modifie jamais index.html.
+# Le commit poussé ici ne relance aucun workflow (jeton GITHUB_TOKEN) :
+# ce job prévient donc lui-même IndexNow des pages régénérées.
+name: Pages générées
+
+on:
+  push:
+    branches: [main]
+    paths: ["index.html", "scripts/generate-candidate-pages.js", "scripts/generate-og-images.js"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-generees
+  cancel-in-progress: false
+
+jobs:
+  regenerer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Régénérer les pages candidats, sujets et le sitemap
+        run: node scripts/generate-candidate-pages.js
+
+      - name: Repérer les images de partage manquantes
+        id: og
+        run: |
+          missing=$(node -e 'const fs=require("fs");const {loadData}=require("./scripts/generate-candidate-pages.js");console.log(loadData().CANDIDATES.filter(c=>!fs.existsSync("candidats/"+c.id+"/og.jpg")).length)')
+          echo "manquantes=$missing" >> "$GITHUB_OUTPUT"
+
+      - name: Créer les images de partage manquantes
+        if: steps.og.outputs.manquantes != '0'
+        run: |
+          npm install --no-save --no-package-lock playwright@1
+          npx playwright install --with-deps chromium
+          node scripts/generate-og-images.js
+
+      - name: Commiter et pousser si quelque chose a changé
+        id: commit
+        run: |
+          git add candidats sujets sitemap.xml
+          if git diff --cached --quiet; then
+            echo "Pages déjà à jour, rien à commiter."
+            echo "pousse=non" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Pages générées : mise à jour automatique après modification d'index.html"
+          for i in 1 2 3 4; do
+            git pull --rebase origin main && git push origin HEAD:main && break
+            sleep $((i * 5))
+          done
+          git fetch origin main
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
+          echo "pousse=oui" >> "$GITHUB_OUTPUT"
+
+      # Laisse à Vercel le temps de déployer avant que Bing ne visite les pages.
+      - name: Signaler les pages régénérées à IndexNow
+        if: steps.commit.outputs.pousse == 'oui'
+        run: |
+          sleep 120
+          python3 scripts/indexnow.py --changed "$(git rev-parse HEAD~1)" "$(git rev-parse HEAD)"
