@@ -54,6 +54,9 @@
   .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); }
   .btn-ghost:hover{ color:var(--accent); border-color:var(--accent); }
   .btn-row{ max-width:420px; margin-left:auto; margin-right:auto; }
+  .btn-ic{ width:19px; height:19px; flex:none; }
+  .btn-mascot{ width:34px; height:auto; flex:none; margin:-8px 2px -8px -4px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.25)); transition:transform .35s cubic-bezier(.34,1.56,.64,1); }
+  .btn:hover .btn-mascot{ transform:rotate(-10deg) scale(1.1); }
   @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
   @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }
   main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
@@ -80,8 +83,30 @@
   .chip:hover{ border-color:var(--accent); color:var(--accent); }
   .chip.on{ background:var(--accent); border-color:var(--accent); color:#fff; }
   .no-match{ display:none; color:var(--ink-faint); font-size:14px; padding:16px 0; }
-  .stance-label.s-pour{ color:#2c9354; } .stance-label.s-contre{ color:#d1453a; }
-  @media (min-width:700px){ .theme-nav, .filters{ flex-wrap:wrap; overflow:visible; gap:5px; } .theme-nav a{ padding:6px 10px; } }
+  .pill{ display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:99px; font-size:12.5px; font-weight:800; }
+  .p-pour{ background:#e3f4e9; color:#1f7a44; } .p-contre{ background:#fbe4e1; color:#b3372d; } .p-neutre{ background:#efece4; color:#5b6071; }
+  .s-pour{ color:#2c9354; } .s-contre{ color:#d1453a; } .s-neutre{ color:#6b7183; }
+  .cand-header{ position:relative; overflow:hidden; }
+  .cand-id{ position:relative; z-index:1; min-width:0; }
+  .cand-stat{ margin:8px 0 0; display:inline-block; padding:3px 10px; border-radius:99px; background:#fff; font-size:12px; font-weight:700; color:var(--ink-soft); }
+  .hero-props{ position:absolute; right:0; top:0; bottom:0; width:190px; pointer-events:none; }
+  .hp{ position:absolute; filter:drop-shadow(0 4px 8px rgba(0,0,0,.15)); }
+  .hp1{ right:26px; top:14px; transform:rotate(10deg); } .hp2{ right:92px; top:52px; transform:rotate(-12deg); }
+  .hp3{ right:30px; bottom:12px; transform:rotate(-6deg); } .hp4{ right:120px; top:8px; transform:rotate(14deg); opacity:.9; }
+  @media (max-width:640px){ .hero-props{ display:none; } }
+  .glance{ margin:26px 0 8px; }
+  .glance .subhead{ margin-top:0; }
+  .gbar{ display:flex; gap:3px; height:12px; border-radius:99px; overflow:hidden; }
+  .g-pour{ background:#2c9354; } .g-contre{ background:#d1453a; } .g-neutre{ background:#b8b3a6; }
+  .glegend{ font-size:13px; margin:8px 0 14px; color:var(--ink-faint); }
+  .tiles{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+  .tile{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; padding:12px 14px; border-radius:16px; text-decoration:none; color:var(--ink); background:linear-gradient(150deg, color-mix(in srgb, var(--th) 22%, #fff), color-mix(in srgb, var(--th) 6%, #fff)); border:1px solid color-mix(in srgb, var(--th) 30%, #fff); transition:transform .15s, box-shadow .15s; }
+  a.tile:hover{ transform:translateY(-2px); box-shadow:0 6px 16px color-mix(in srgb, var(--th) 25%, transparent); }
+  .tile.off{ filter:grayscale(1); opacity:.55; }
+  .tl-name{ font-weight:800; font-size:14px; }
+  .tl-n{ display:flex; gap:8px; font-size:13px; }
+  .tl-none{ color:var(--ink-faint); font-weight:600; }
+  @media (min-width:700px){ .theme-nav, .filters{ flex-wrap:wrap; overflow:visible; gap:5px; } .theme-nav a{ padding:5px 9px; gap:5px; font-size:12.5px; } .theme-nav a .prop{ width:16px; height:16px; } }
   .topic-cat{ display:flex; align-items:center; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin-bottom:6px; }
   .topic-row h4{ font-size:16px; margin:0 0 6px; }
   .topic-row h4 a{ color:inherit; text-decoration:none; }
@@ -110,15 +135,24 @@
   <nav class="crumbs"><a class="crumb" href="/candidats/">‹ Tous les candidats</a><a class="crumb" href="/sujets/">Tous les sujets ›</a></nav>
   <div class="cand-header" style="--cc:#8A6E4B">
     <div class="cand-avatar" style="background:#8A6E4B;">XB</div>
-    <div>
+    <div class="cand-id">
       <h1>Xavier Bertrand</h1>
       <p class="party">Les Républicains (indépendant)</p>
+      <p class="cand-stat">23 positions connues sur 35 sujets</p>
     </div>
+    <div class="hero-props" aria-hidden="true"><img class="hp hp1" src="/assets/props/economie.webp" width="58" height="58" alt="" loading="lazy" /><img class="hp hp2" src="/assets/props/protection-sociale.webp" width="46" height="46" alt="" loading="lazy" /><img class="hp hp3" src="/assets/props/securite.webp" width="40" height="40" alt="" loading="lazy" /><img class="hp hp4" src="/assets/props/ecologie.webp" width="34" height="34" alt="" loading="lazy" /></div>
   </div>
   
   <p style="color:var(--ink-soft); line-height:1.6; margin-top:18px;">Positions de Xavier Bertrand sur 23 des 35 sujets de la présidentielle 2027 suivis par Votona, établies à partir de déclarations, votes ou programmes publics.</p>
-  <a class="btn btn-accent cta" href="../../?screen=results">Compare tes propres positions à celles de Xavier Bertrand</a>
-  <a class="btn btn-ghost cmp" href="/comparer/?a=bertrand">Comparer avec un autre candidat</a>
+  <a class="btn btn-accent cta" href="../../?screen=results"><img class="btn-mascot" src="/assets/ui/logo-head.webp" width="34" height="29" alt="" />Compare tes propres positions à celles de Xavier Bertrand</a>
+  <a class="btn btn-ghost cmp" href="/comparer/?a=bertrand"><svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M2 20c0-3 2.2-5 5-5s5 2 5 5"/><path d="M12 20c0-3 2.2-5 5-5s5 2 5 5"/></svg>Comparer avec un autre candidat</a>
+  
+  <section class="glance">
+    <h2 class="subhead">Son profil en un coup d'œil</h2>
+    <div class="gbar" role="img" aria-label="10 d'accord, 7 pas d'accord, 6 neutres"><span class="g-pour" style="flex:10"></span><span class="g-contre" style="flex:7"></span><span class="g-neutre" style="flex:6"></span></div>
+    <p class="glegend"><b class="s-pour">✓ 10 d'accord</b> · <b class="s-contre">✕ 7 pas d'accord</b> · <b class="s-neutre">– 6 neutres</b> · <span>? 12 non précisés</span></p>
+    <div class="tiles"><a class="tile" href="#theme-economie" style="--th:#FFB703"><img class="prop" src="/assets/props/economie.webp" width="38" height="38" alt="" loading="lazy" /><span class="tl-name">Économie</span><span class="tl-n"><b class="s-pour">✓1</b><b class="s-contre">✕3</b></span></a><a class="tile" href="#theme-protection-sociale" style="--th:#3A86FF"><img class="prop" src="/assets/props/protection-sociale.webp" width="38" height="38" alt="" loading="lazy" /><span class="tl-name">Social</span><span class="tl-n"><b class="s-pour">✓2</b><b class="s-neutre">–1</b></span></a><a class="tile" href="#theme-securite" style="--th:#FF6B6B"><img class="prop" src="/assets/props/securite.webp" width="38" height="38" alt="" loading="lazy" /><span class="tl-name">Sécurité</span><span class="tl-n"><b class="s-pour">✓2</b><b class="s-neutre">–1</b></span></a><a class="tile" href="#theme-ecologie" style="--th:#06D6A0"><img class="prop" src="/assets/props/ecologie.webp" width="38" height="38" alt="" loading="lazy" /><span class="tl-name">Écologie</span><span class="tl-n"><b class="s-pour">✓1</b><b class="s-contre">✕1</b><b class="s-neutre">–1</b></span></a><a class="tile" href="#theme-europe" style="--th:#6C5CE7"><img class="prop" src="/assets/props/europe.webp" width="38" height="38" alt="" loading="lazy" /><span class="tl-name">Europe</span><span class="tl-n"><b class="s-pour">✓1</b><b class="s-contre">✕1</b><b class="s-neutre">–1</b></span></a><a class="tile" href="#theme-societe" style="--th:#FF5DA2"><img class="prop" src="/assets/props/societe.webp" width="38" height="38" alt="" loading="lazy" /><span class="tl-name">Société</span><span class="tl-n"><b class="s-pour">✓1</b><b class="s-contre">✕2</b><b class="s-neutre">–1</b></span></a><a class="tile" href="#theme-defense" style="--th:#00B4D8"><img class="prop" src="/assets/props/defense.webp" width="38" height="38" alt="" loading="lazy" /><span class="tl-name">Défense</span><span class="tl-n"><b class="s-pour">✓2</b><b class="s-neutre">–1</b></span></a></div>
+  </section>
   <h2 class="subhead">Ses positions connues <span class="count">23</span></h2>
   <div class="toolbar" id="toolbar">
     <nav class="theme-nav" aria-label="Aller à un thème"><a href="#theme-economie" data-target="theme-economie" style="--th:#FFB703"><img class="prop" src="/assets/props/economie.webp" width="18" height="18" alt="" loading="lazy" />Économie</a><a href="#theme-protection-sociale" data-target="theme-protection-sociale" style="--th:#3A86FF"><img class="prop" src="/assets/props/protection-sociale.webp" width="18" height="18" alt="" loading="lazy" />Social</a><a href="#theme-securite" data-target="theme-securite" style="--th:#FF6B6B"><img class="prop" src="/assets/props/securite.webp" width="18" height="18" alt="" loading="lazy" />Sécurité</a><a href="#theme-ecologie" data-target="theme-ecologie" style="--th:#06D6A0"><img class="prop" src="/assets/props/ecologie.webp" width="18" height="18" alt="" loading="lazy" />Écologie</a><a href="#theme-europe" data-target="theme-europe" style="--th:#6C5CE7"><img class="prop" src="/assets/props/europe.webp" width="18" height="18" alt="" loading="lazy" />Europe</a><a href="#theme-societe" data-target="theme-societe" style="--th:#FF5DA2"><img class="prop" src="/assets/props/societe.webp" width="18" height="18" alt="" loading="lazy" />Société</a><a href="#theme-defense" data-target="theme-defense" style="--th:#00B4D8"><img class="prop" src="/assets/props/defense.webp" width="18" height="18" alt="" loading="lazy" />Défense</a></nav>
@@ -130,22 +164,22 @@
     <h3 class="theme-h"><img class="prop" src="/assets/props/economie.webp" width="30" height="30" alt="" loading="lazy" />Économie &amp; travail</h3>
     <article class="topic-row" data-stance="contre">
       <h4><a href="/sujets/ramener-lage-legal-de-depart-a-la-retraite-a-60-ans/">Ramener l&#39;âge légal de départ à la retraite à 60 ans</a></h4>
-      <p class="stance-label s-contre">✕ Pas d&#39;accord</p>
+      <p class="stance-label"><span class="pill p-contre">✕ Pas d&#39;accord</span></p>
       <p class="detail">Défend le maintien de l&#39;âge légal à 64 ans.</p>
     </article>
     <article class="topic-row" data-stance="contre">
       <h4><a href="/sujets/retablir-un-impot-renforce-sur-les-grandes-fortunes/">Rétablir un impôt renforcé sur les grandes fortunes</a></h4>
-      <p class="stance-label s-contre">✕ Pas d&#39;accord</p>
+      <p class="stance-label"><span class="pill p-contre">✕ Pas d&#39;accord</span></p>
       <p class="detail">Privilégie la stabilité fiscale à un ISF renforcé.</p>
     </article>
     <article class="topic-row" data-stance="pour">
       <h4><a href="/sujets/reduire-la-dette-publique-en-priorite-par-la-baisse-des/">Réduire la dette publique en priorité par la baisse des dépenses de l&#39;État</a></h4>
-      <p class="stance-label s-pour">✓ D&#39;accord</p>
+      <p class="stance-label"><span class="pill p-pour">✓ D&#39;accord</span></p>
       <p class="detail">Priorise la réduction des dépenses publiques.</p>
     </article>
     <article class="topic-row" data-stance="contre">
       <h4><a href="/sujets/alourdir-la-fiscalite-sur-les-tres-gros-heritages-mega/">Alourdir la fiscalité sur les très gros héritages (&quot;méga-successions&quot;)</a></h4>
-      <p class="stance-label s-contre">✕ Pas d&#39;accord</p>
+      <p class="stance-label"><span class="pill p-contre">✕ Pas d&#39;accord</span></p>
       <p class="detail">Proche de la ligne des Républicains, favorable à une baisse plutôt qu&#39;une hausse des droits de succession.</p>
     </article>
   </section>
@@ -153,17 +187,17 @@
     <h3 class="theme-h"><img class="prop" src="/assets/props/protection-sociale.webp" width="30" height="30" alt="" loading="lazy" />Protection sociale</h3>
     <article class="topic-row" data-stance="pour">
       <h4><a href="/sujets/conditionner-le-rsa-a-15-heures-dactivite-hebdomadaire/">Conditionner le RSA à 15 heures d&#39;activité hebdomadaire</a></h4>
-      <p class="stance-label s-pour">✓ D&#39;accord</p>
+      <p class="stance-label"><span class="pill p-pour">✓ D&#39;accord</span></p>
       <p class="detail">Favorable à une activité conditionnée pour les allocataires du RSA.</p>
     </article>
     <article class="topic-row" data-stance="neutre">
       <h4><a href="/sujets/augmenter-significativement-le-smic/">Augmenter significativement le SMIC</a></h4>
-      <p class="stance-label s-neutre">– Neutre</p>
+      <p class="stance-label"><span class="pill p-neutre">– Neutre</span></p>
       <p class="detail">Renvoie la question aux négociations sociales.</p>
     </article>
     <article class="topic-row" data-stance="pour">
       <h4><a href="/sujets/durcir-les-conditions-dindemnisation-du-chomage/">Durcir les conditions d&#39;indemnisation du chômage</a></h4>
-      <p class="stance-label s-pour">✓ D&#39;accord</p>
+      <p class="stance-label"><span class="pill p-pour">✓ D&#39;accord</span></p>
       <p class="detail">Favorable à un durcissement incitatif au retour à l&#39;emploi.</p>
     </article>
   </section>
@@ -171,17 +205,17 @@
     <h3 class="theme-h"><img class="prop" src="/assets/props/securite.webp" width="30" height="30" alt="" loading="lazy" />Sécurité &amp; immigration</h3>
     <article class="topic-row" data-stance="pour">
       <h4><a href="/sujets/reduire-drastiquement-limmigration-par-des-quotas-stricts/">Réduire drastiquement l&#39;immigration par des quotas stricts</a></h4>
-      <p class="stance-label s-pour">✓ D&#39;accord</p>
+      <p class="stance-label"><span class="pill p-pour">✓ D&#39;accord</span></p>
       <p class="detail">Défend une ligne ferme sur la réduction de l&#39;immigration.</p>
     </article>
     <article class="topic-row" data-stance="pour">
       <h4><a href="/sujets/renforcer-les-moyens-de-la-police-et-allonger-les-peines-de/">Renforcer les moyens de la police et allonger les peines de prison</a></h4>
-      <p class="stance-label s-pour">✓ D&#39;accord</p>
+      <p class="stance-label"><span class="pill p-pour">✓ D&#39;accord</span></p>
       <p class="detail">Ancien porteur de politiques sécuritaires en région, favorable au renforcement policier.</p>
     </article>
     <article class="topic-row" data-stance="neutre">
       <h4><a href="/sujets/reserver-certaines-aides-sociales-aux-seuls-citoyens/">Réserver certaines aides sociales aux seuls citoyens français</a></h4>
-      <p class="stance-label s-neutre">– Neutre</p>
+      <p class="stance-label"><span class="pill p-neutre">– Neutre</span></p>
       <p class="detail">Position nuancée, sans reprendre la formule de &#39;priorité nationale&#39;.</p>
     </article>
   </section>
@@ -189,17 +223,17 @@
     <h3 class="theme-h"><img class="prop" src="/assets/props/ecologie.webp" width="30" height="30" alt="" loading="lazy" />Écologie</h3>
     <article class="topic-row" data-stance="pour">
       <h4><a href="/sujets/relancer-massivement-la-filiere-nucleaire/">Relancer massivement la filière nucléaire</a></h4>
-      <p class="stance-label s-pour">✓ D&#39;accord</p>
+      <p class="stance-label"><span class="pill p-pour">✓ D&#39;accord</span></p>
       <p class="detail">Favorable à la relance du nucléaire.</p>
     </article>
     <article class="topic-row" data-stance="neutre">
       <h4><a href="/sujets/renforcer-la-taxe-carbone-sur-les-entreprises-polluantes/">Renforcer la taxe carbone sur les entreprises polluantes</a></h4>
-      <p class="stance-label s-neutre">– Neutre</p>
+      <p class="stance-label"><span class="pill p-neutre">– Neutre</span></p>
       <p class="detail">Pas d&#39;axe fort affiché sur la fiscalité carbone.</p>
     </article>
     <article class="topic-row" data-stance="contre">
       <h4><a href="/sujets/interdire-rapidement-les-pesticides-de-synthese-en/">Interdire rapidement les pesticides de synthèse en agriculture</a></h4>
-      <p class="stance-label s-contre">✕ Pas d&#39;accord</p>
+      <p class="stance-label"><span class="pill p-contre">✕ Pas d&#39;accord</span></p>
       <p class="detail">Défend une limitation des pesticides au strict nécessaire plutôt qu&#39;une interdiction rapide.</p>
     </article>
   </section>
@@ -207,17 +241,17 @@
     <h3 class="theme-h"><img class="prop" src="/assets/props/europe.webp" width="30" height="30" alt="" loading="lazy" />Europe &amp; institutions</h3>
     <article class="topic-row" data-stance="neutre">
       <h4><a href="/sujets/approfondir-lintegration-europeenne-y-compris-une-dette/">Approfondir l&#39;intégration européenne, y compris une dette commune</a></h4>
-      <p class="stance-label s-neutre">– Neutre</p>
+      <p class="stance-label"><span class="pill p-neutre">– Neutre</span></p>
       <p class="detail">Position européenne modérée, sans ligne fédéraliste affirmée.</p>
     </article>
     <article class="topic-row" data-stance="contre">
       <h4><a href="/sujets/instaurer-une-dose-de-proportionnelle-aux-elections/">Instaurer une dose de proportionnelle aux élections législatives</a></h4>
-      <p class="stance-label s-contre">✕ Pas d&#39;accord</p>
+      <p class="stance-label"><span class="pill p-contre">✕ Pas d&#39;accord</span></p>
       <p class="detail">Reste attaché au scrutin majoritaire actuel.</p>
     </article>
     <article class="topic-row" data-stance="pour">
       <h4><a href="/sujets/sopposer-a-la-ratification-de-laccord-de-libre-echange/">S&#39;opposer à la ratification de l&#39;accord de libre-échange entre l&#39;Union européenne et le Mercosur</a></h4>
-      <p class="stance-label s-pour">✓ D&#39;accord</p>
+      <p class="stance-label"><span class="pill p-pour">✓ D&#39;accord</span></p>
       <p class="detail">Proche de la ligne des Républicains, qui ont voté la résolution transpartisane de l&#39;Assemblée nationale contre l&#39;accord UE-Mercosur.</p>
     </article>
   </section>
@@ -225,22 +259,22 @@
     <h3 class="theme-h"><img class="prop" src="/assets/props/societe.webp" width="30" height="30" alt="" loading="lazy" />Société</h3>
     <article class="topic-row" data-stance="neutre">
       <h4><a href="/sujets/recruter-massivement-du-personnel-soignant-et-revaloriser/">Recruter massivement du personnel soignant et revaloriser les salaires à l&#39;hôpital public</a></h4>
-      <p class="stance-label s-neutre">– Neutre</p>
+      <p class="stance-label"><span class="pill p-neutre">– Neutre</span></p>
       <p class="detail">Soutient les moyens de l&#39;hôpital tout en défendant la maîtrise des dépenses publiques.</p>
     </article>
     <article class="topic-row" data-stance="contre">
       <h4><a href="/sujets/reconnaitre-un-droit-a-laide-active-a-mourir-comme-la-loi/">Reconnaître un droit à l&#39;aide active à mourir, comme la loi promulguée en août 2026</a></h4>
-      <p class="stance-label s-contre">✕ Pas d&#39;accord</p>
+      <p class="stance-label"><span class="pill p-contre">✕ Pas d&#39;accord</span></p>
       <p class="detail">Une large majorité des députés LR, dont il est proche, a voté contre la loi sur l&#39;aide à mourir.</p>
     </article>
     <article class="topic-row" data-stance="contre">
       <h4><a href="/sujets/encadrer-plus-strictement-les-loyers-dans-les-zones-tendues/">Encadrer plus strictement les loyers dans les zones tendues</a></h4>
-      <p class="stance-label s-contre">✕ Pas d&#39;accord</p>
+      <p class="stance-label"><span class="pill p-contre">✕ Pas d&#39;accord</span></p>
       <p class="detail">Favorable à la construction plutôt qu&#39;à l&#39;encadrement des loyers.</p>
     </article>
     <article class="topic-row" data-stance="pour">
       <h4><a href="/sujets/redonner-davantage-dautonomie-et-de-selection-aux/">Redonner davantage d&#39;autonomie et de sélection aux établissements scolaires</a></h4>
-      <p class="stance-label s-pour">✓ D&#39;accord</p>
+      <p class="stance-label"><span class="pill p-pour">✓ D&#39;accord</span></p>
       <p class="detail">Défend l&#39;autonomie des établissements scolaires, ligne portée en tant que président de région.</p>
     </article>
   </section>
@@ -248,17 +282,17 @@
     <h3 class="theme-h"><img class="prop" src="/assets/props/defense.webp" width="30" height="30" alt="" loading="lazy" />Défense &amp; numérique</h3>
     <article class="topic-row" data-stance="pour">
       <h4><a href="/sujets/augmenter-fortement-le-budget-de-la-defense-face-aux/">Augmenter fortement le budget de la défense face aux tensions internationales</a></h4>
-      <p class="stance-label s-pour">✓ D&#39;accord</p>
+      <p class="stance-label"><span class="pill p-pour">✓ D&#39;accord</span></p>
       <p class="detail">Favorable à une hausse du budget de la défense face aux tensions internationales.</p>
     </article>
     <article class="topic-row" data-stance="pour">
       <h4><a href="/sujets/maintenir-un-soutien-militaire-et-financier-fort-a-lukraine/">Maintenir un soutien militaire et financier fort à l&#39;Ukraine face à la Russie</a></h4>
-      <p class="stance-label s-pour">✓ D&#39;accord</p>
+      <p class="stance-label"><span class="pill p-pour">✓ D&#39;accord</span></p>
       <p class="detail">Soutient le maintien de l&#39;aide militaire à l&#39;Ukraine.</p>
     </article>
     <article class="topic-row" data-stance="neutre">
       <h4><a href="/sujets/encadrer-strictement-lintelligence-artificielle-par-une/">Encadrer strictement l&#39;intelligence artificielle par une régulation nationale ou européenne renforcée</a></h4>
-      <p class="stance-label s-neutre">– Neutre</p>
+      <p class="stance-label"><span class="pill p-neutre">– Neutre</span></p>
       <p class="detail">Pas d&#39;axe fort affiché sur la régulation de l&#39;IA.</p>
     </article>
   </section>

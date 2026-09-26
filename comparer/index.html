@@ -53,6 +53,9 @@
   .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); }
   .btn-ghost:hover{ color:var(--accent); border-color:var(--accent); }
   .btn-row{ max-width:420px; margin-left:auto; margin-right:auto; }
+  .btn-ic{ width:19px; height:19px; flex:none; }
+  .btn-mascot{ width:34px; height:auto; flex:none; margin:-8px 2px -8px -4px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.25)); transition:transform .35s cubic-bezier(.34,1.56,.64,1); }
+  .btn:hover .btn-mascot{ transform:rotate(-10deg) scale(1.1); }
   @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
   @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }
   main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
@@ -128,7 +131,7 @@
   </div>
   <div id="result"></div>
   <noscript><p class="hint">Active JavaScript pour comparer deux candidats, ou consulte leurs fiches : <a href="/candidats/bardella/">Jordan Bardella</a> · <a href="/candidats/philippe/">Édouard Philippe</a> · <a href="/candidats/attal/">Gabriel Attal</a> · <a href="/candidats/retailleau/">Bruno Retailleau</a> · <a href="/candidats/melenchon/">Jean-Luc Mélenchon</a> · <a href="/candidats/glucksmann/">Raphaël Glucksmann</a> · <a href="/candidats/tondelier/">Marine Tondelier</a> · <a href="/candidats/bertrand/">Xavier Bertrand</a> · <a href="/candidats/lepen/">Marine Le Pen</a> · <a href="/candidats/lisnard/">David Lisnard</a> · <a href="/candidats/dupont-aignan/">Nicolas Dupont-Aignan</a> · <a href="/candidats/guedj/">Jérôme Guedj</a> · <a href="/candidats/faure/">Olivier Faure</a> · <a href="/candidats/arthaud/">Nathalie Arthaud</a> · <a href="/candidats/philippot/">Florian Philippot</a> · <a href="/candidats/asselineau/">François Asselineau</a> · <a href="/candidats/egger/">Clara Egger</a> · <a href="/candidats/kazib/">Anasse Kazib</a> · <a href="/candidats/branco/">Juan Branco</a> · <a href="/candidats/labib/">Selma Labib</a> · <a href="/candidats/ruffin/">François Ruffin</a> · <a href="/candidats/mikolajczak/">Antoine Mikolajczak</a> · <a href="/candidats/brun/">Philippe Brun</a> · <a href="/candidats/royal/">Ségolène Royal</a> · <a href="/candidats/massard/">Lydie Massard</a> · <a href="/candidats/lalanne/">Francis Lalanne</a> · <a href="/candidats/mathieu/">Benoît Mathieu</a> · <a href="/candidats/cazeneuve/">Bernard Cazeneuve</a> · <a href="/candidats/batho/">Delphine Batho</a> · <a href="/candidats/bouamrane/">Karim Bouamrane</a> · <a href="/candidats/verdier/">Fabien Verdier</a> · <a href="/candidats/maurel/">Emmanuel Maurel</a> · <a href="/candidats/roussel/">Fabien Roussel</a> · <a href="/candidats/zemmour/">Éric Zemmour</a> · <a href="/candidats/becht/">Olivier Becht</a></p></noscript>
-  <a class="btn btn-accent cta" style="margin-top:30px;" href="/">Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>
+  <a class="btn btn-accent cta" style="margin-top:30px;" href="/"><img class="btn-mascot" src="/assets/ui/logo-head.webp" width="34" height="29" alt="" />Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
     <a href="/">votona.fr</a>

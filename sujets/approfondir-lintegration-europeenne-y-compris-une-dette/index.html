@@ -53,6 +53,9 @@
   .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); }
   .btn-ghost:hover{ color:var(--accent); border-color:var(--accent); }
   .btn-row{ max-width:420px; margin-left:auto; margin-right:auto; }
+  .btn-ic{ width:19px; height:19px; flex:none; }
+  .btn-mascot{ width:34px; height:auto; flex:none; margin:-8px 2px -8px -4px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.25)); transition:transform .35s cubic-bezier(.34,1.56,.64,1); }
+  .btn:hover .btn-mascot{ transform:rotate(-10deg) scale(1.1); }
   @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
   @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }
   main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
@@ -105,7 +108,7 @@
     <img class="hero-char" src="/assets/characters/europe-n3.webp" width="339" height="577" alt="" />
   </div>
   <p class="context">Une dette commune européenne consiste à emprunter collectivement au niveau de l&#39;Union plutôt que chaque État séparément, comme lors du plan de relance de 2020. Approfondir l&#39;intégration peut aussi inclure davantage de décisions prises à la majorité plutôt qu&#39;à l&#39;unanimité entre États membres.</p>
-  <a class="btn btn-accent cta" href="/">Et toi, tu en penses quoi ? Découvre quel candidat te correspond</a>
+  <a class="btn btn-accent cta" href="/"><img class="btn-mascot" src="/assets/ui/logo-head.webp" width="34" height="29" alt="" />Et toi, tu en penses quoi ? Découvre quel candidat te correspond</a>
   
   <section class="group g-pour">
     <h2>✓ Pour <span class="count">8</span></h2>
@@ -154,7 +157,7 @@
     <li><a href="/sujets/sopposer-a-la-ratification-de-laccord-de-libre-echange/"><span class="r-title">S&#39;opposer à la ratification de l&#39;accord de libre-échange entre l&#39;Union européenne et le Mercosur</span><span class="r-meta"><span class="s-pour">17 pour</span></span><span class="r-arrow" aria-hidden="true">›</span></a></li>
     <li><a href="/sujets/convoquer-une-assemblee-constituante-pour-instaurer-une-vie/"><span class="r-title">Convoquer une assemblée constituante pour instaurer une VIe République</span><span class="r-meta"><span class="s-pour">2 pour</span> · <span>2 nuancés</span></span><span class="r-arrow" aria-hidden="true">›</span></a></li>
   </ul>
-  <a class="btn btn-ghost btn-row all" href="/sujets/">Voir les 35 sujets de la présidentielle 2027</a>
+  <a class="btn btn-ghost btn-row all" href="/sujets/"><svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Voir les 35 sujets de la présidentielle 2027</a>
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
     <a href="/">votona.fr</a>

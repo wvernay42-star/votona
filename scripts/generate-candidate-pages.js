@@ -134,6 +134,9 @@ const SHARED_CSS = `
   .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); }
   .btn-ghost:hover{ color:var(--accent); border-color:var(--accent); }
   .btn-row{ max-width:420px; margin-left:auto; margin-right:auto; }
+  .btn-ic{ width:19px; height:19px; flex:none; }
+  .btn-mascot{ width:34px; height:auto; flex:none; margin:-8px 2px -8px -4px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.25)); transition:transform .35s cubic-bezier(.34,1.56,.64,1); }
+  .btn:hover .btn-mascot{ transform:rotate(-10deg) scale(1.1); }
   @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
   @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }`;
 
@@ -148,6 +151,12 @@ function propImg(cat, size, cls = "prop") {
 }
 function charSrc(cat) { const t = THEMES[cat]; return t && t.slug ? `/assets/characters/${t.slug}-n3.webp` : ""; }
 function initialsOf(name) { return String(name || "").split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase(); }
+
+// Icônes des boutons : l'ourson Votona sur les appels à faire le test,
+// pictogrammes au trait sur les boutons secondaires.
+const BTN_MASCOT = '<img class="btn-mascot" src="/assets/ui/logo-head.webp" width="34" height="29" alt="" />';
+const ICON_VS = '<svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M2 20c0-3 2.2-5 5-5s5 2 5 5"/><path d="M12 20c0-3 2.2-5 5-5s5 2 5 5"/></svg>';
+const ICON_GRID = '<svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>';
 
 // Nom court d'un thème, pour les pastilles du sommaire.
 function shortCat(cat) {
@@ -167,6 +176,7 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths, slugs)
   const ogImage = `${SITE_URL}/candidats/${cand.id}/og.jpg`;
 
   const known = topics.filter((t) => isKnown(cand.positions && cand.positions[t.id]));
+  const catId = (cat) => "theme-" + ((categoryMeta[cat] && categoryMeta[cat].slug) || slugify(cat));
   const unknown = topics.filter((t) => !isKnown(cand.positions && cand.positions[t.id]));
   const indexable = known.length > 0;
 
@@ -179,14 +189,13 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths, slugs)
     return `
     <article class="topic-row" data-stance="${escapeHtml(stance)}">
       <h4><a href="/sujets/${slugs[t.id]}/">${escapeHtml(t.statement)}</a></h4>
-      <p class="stance-label s-${escapeHtml(stance)}">${escapeHtml(icon)} ${escapeHtml(label)}</p>
+      <p class="stance-label"><span class="pill p-${escapeHtml(stance)}">${escapeHtml(icon)} ${escapeHtml(label)}</span></p>
       ${detail ? `<p class="detail">${escapeHtml(detail)}</p>` : ""}
     </article>`;
   };
   // Positions connues regroupées par thème (ordre des thèmes de l'app), avec
   // une ancre par thème pour le sommaire collant.
   const cats = Object.keys(categoryMeta).filter((cat) => known.some((t) => t.cat === cat));
-  const catId = (cat) => "theme-" + ((categoryMeta[cat] && categoryMeta[cat].slug) || slugify(cat));
   const rows = cats.map((cat) => `
   <section class="theme" id="${catId(cat)}" style="--th:${themeColor(cat)}">
     <h3 class="theme-h">${propImg(cat, 30)}${escapeHtml(cat)}</h3>${known.filter((t) => t.cat === cat).map(row).join("")}
@@ -250,6 +259,33 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths, slugs)
     <p><a href="/sujets/">Voir ce que proposent les autres candidats, sujet par sujet ›</a></p>
   </div>`;
 
+  // En-tête : accessoires des thèmes où le candidat a pris position, en décor.
+  const heroProps = Object.keys(categoryMeta).filter((cat) => known.some((t) => t.cat === cat)).slice(0, 4)
+    .map((cat, i) => propImg(cat, [58, 46, 40, 34][i], `hp hp${i + 1}`)).join("");
+  // « Son profil en un coup d'œil » : barre d'ensemble + une tuile par thème.
+  const nPour = known.filter((t) => cand.positions[t.id].stance === "pour").length;
+  const nContre = known.filter((t) => cand.positions[t.id].stance === "contre").length;
+  const nNeutre = known.length - nPour - nContre;
+  const tiles = Object.keys(categoryMeta).map((cat) => {
+    const list = topics.filter((t) => t.cat === cat);
+    const k = list.filter((t) => isKnown(cand.positions && cand.positions[t.id]));
+    const c = (st) => k.filter((t) => cand.positions[t.id].stance === st).length;
+    const body = k.length
+      ? `<span class="tl-n">${c("pour") ? `<b class="s-pour">✓${c("pour")}</b>` : ""}${c("contre") ? `<b class="s-contre">✕${c("contre")}</b>` : ""}${c("neutre") ? `<b class="s-neutre">–${c("neutre")}</b>` : ""}</span>`
+      : `<span class="tl-n tl-none">pas encore</span>`;
+    const inner = `${propImg(cat, 38)}<span class="tl-name">${escapeHtml(shortCat(cat))}</span>${body}`;
+    return k.length
+      ? `<a class="tile" href="#${catId(cat)}" style="--th:${themeColor(cat)}">${inner}</a>`
+      : `<span class="tile off" style="--th:${themeColor(cat)}">${inner}</span>`;
+  }).join("");
+  const glance = indexable ? `
+  <section class="glance">
+    <h2 class="subhead">Son profil en un coup d'œil</h2>
+    <div class="gbar" role="img" aria-label="${nPour} d'accord, ${nContre} pas d'accord, ${nNeutre} neutres">${nPour ? `<span class="g-pour" style="flex:${nPour}"></span>` : ""}${nContre ? `<span class="g-contre" style="flex:${nContre}"></span>` : ""}${nNeutre ? `<span class="g-neutre" style="flex:${nNeutre}"></span>` : ""}</div>
+    <p class="glegend">${[nPour ? `<b class="s-pour">✓ ${nPour} d'accord</b>` : "", nContre ? `<b class="s-contre">✕ ${nContre} pas d'accord</b>` : "", nNeutre ? `<b class="s-neutre">– ${nNeutre} neutre${nNeutre > 1 ? "s" : ""}</b>` : "", unknown.length ? `<span>? ${unknown.length} non précisé${unknown.length > 1 ? "s" : ""}</span>` : ""].filter(Boolean).join(" · ")}</p>
+    <div class="tiles">${tiles}</div>
+  </section>` : "";
+
   const withdrawnBadge = cand.withdrawn
     ? `<p class="withdrawn-badge">Candidature retirée de la course</p>`
     : "";
@@ -310,8 +346,30 @@ ${HEAD_ICONS}
   .chip:hover{ border-color:var(--accent); color:var(--accent); }
   .chip.on{ background:var(--accent); border-color:var(--accent); color:#fff; }
   .no-match{ display:none; color:var(--ink-faint); font-size:14px; padding:16px 0; }
-  .stance-label.s-pour{ color:#2c9354; } .stance-label.s-contre{ color:#d1453a; }
-  @media (min-width:700px){ .theme-nav, .filters{ flex-wrap:wrap; overflow:visible; gap:5px; } .theme-nav a{ padding:6px 10px; } }
+  .pill{ display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:99px; font-size:12.5px; font-weight:800; }
+  .p-pour{ background:#e3f4e9; color:#1f7a44; } .p-contre{ background:#fbe4e1; color:#b3372d; } .p-neutre{ background:#efece4; color:#5b6071; }
+  .s-pour{ color:#2c9354; } .s-contre{ color:#d1453a; } .s-neutre{ color:#6b7183; }
+  .cand-header{ position:relative; overflow:hidden; }
+  .cand-id{ position:relative; z-index:1; min-width:0; }
+  .cand-stat{ margin:8px 0 0; display:inline-block; padding:3px 10px; border-radius:99px; background:#fff; font-size:12px; font-weight:700; color:var(--ink-soft); }
+  .hero-props{ position:absolute; right:0; top:0; bottom:0; width:190px; pointer-events:none; }
+  .hp{ position:absolute; filter:drop-shadow(0 4px 8px rgba(0,0,0,.15)); }
+  .hp1{ right:26px; top:14px; transform:rotate(10deg); } .hp2{ right:92px; top:52px; transform:rotate(-12deg); }
+  .hp3{ right:30px; bottom:12px; transform:rotate(-6deg); } .hp4{ right:120px; top:8px; transform:rotate(14deg); opacity:.9; }
+  @media (max-width:640px){ .hero-props{ display:none; } }
+  .glance{ margin:26px 0 8px; }
+  .glance .subhead{ margin-top:0; }
+  .gbar{ display:flex; gap:3px; height:12px; border-radius:99px; overflow:hidden; }
+  .g-pour{ background:#2c9354; } .g-contre{ background:#d1453a; } .g-neutre{ background:#b8b3a6; }
+  .glegend{ font-size:13px; margin:8px 0 14px; color:var(--ink-faint); }
+  .tiles{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+  .tile{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; padding:12px 14px; border-radius:16px; text-decoration:none; color:var(--ink); background:linear-gradient(150deg, color-mix(in srgb, var(--th) 22%, #fff), color-mix(in srgb, var(--th) 6%, #fff)); border:1px solid color-mix(in srgb, var(--th) 30%, #fff); transition:transform .15s, box-shadow .15s; }
+  a.tile:hover{ transform:translateY(-2px); box-shadow:0 6px 16px color-mix(in srgb, var(--th) 25%, transparent); }
+  .tile.off{ filter:grayscale(1); opacity:.55; }
+  .tl-name{ font-weight:800; font-size:14px; }
+  .tl-n{ display:flex; gap:8px; font-size:13px; }
+  .tl-none{ color:var(--ink-faint); font-weight:600; }
+  @media (min-width:700px){ .theme-nav, .filters{ flex-wrap:wrap; overflow:visible; gap:5px; } .theme-nav a{ padding:5px 9px; gap:5px; font-size:12.5px; } .theme-nav a .prop{ width:16px; height:16px; } }
   .topic-cat{ display:flex; align-items:center; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin-bottom:6px; }
   .topic-row h4{ font-size:16px; margin:0 0 6px; }
   .topic-row h4 a{ color:inherit; text-decoration:none; }
@@ -340,15 +398,18 @@ ${HEADER}
   <nav class="crumbs"><a class="crumb" href="/candidats/">‹ Tous les candidats</a><a class="crumb" href="/sujets/">Tous les sujets ›</a></nav>
   <div class="cand-header" style="--cc:${escapeHtml(cand.color || "#7C3AED")}">
     <div class="cand-avatar" style="background:${escapeHtml(cand.color || "#7C3AED")};">${escapeHtml(initials)}</div>
-    <div>
+    <div class="cand-id">
       <h1>${escapeHtml(cand.name)}</h1>
       <p class="party">${escapeHtml(cand.party)}</p>
+      <p class="cand-stat">${indexable ? `${known.length} position${known.length > 1 ? "s" : ""} connue${known.length > 1 ? "s" : ""} sur ${topics.length} sujets` : "Positions à venir"}</p>
     </div>
+    <div class="hero-props" aria-hidden="true">${heroProps}</div>
   </div>
   ${withdrawnBadge}
   <p style="color:var(--ink-soft); line-height:1.6; margin-top:18px;">${indexable ? `Positions de ${escapeHtml(cand.name)} sur ${known.length === topics.length ? "" : `${known.length} des `}${topics.length} sujets de la présidentielle 2027 suivis par Votona, établies à partir de déclarations, votes ou programmes publics.` : `Votona suit ${topics.length} sujets de la présidentielle 2027 et y relève, pour chaque candidat, les positions tirées de déclarations, votes ou programmes publics.`}</p>
-  <a class="btn btn-accent cta" href="../../?screen=results">Compare tes propres positions à celles de ${escapeHtml(cand.name)}</a>
-  ${indexable ? `<a class="btn btn-ghost cmp" href="/comparer/?a=${encodeURIComponent(cand.id)}">Comparer avec un autre candidat</a>` : ""}
+  <a class="btn btn-accent cta" href="../../?screen=results">${BTN_MASCOT}Compare tes propres positions à celles de ${escapeHtml(cand.name)}</a>
+  ${indexable ? `<a class="btn btn-ghost cmp" href="/comparer/?a=${encodeURIComponent(cand.id)}">${ICON_VS}Comparer avec un autre candidat</a>` : ""}
+  ${glance}
   ${positionsHtml}
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques — ni exhaustives ni officielles.<br />
@@ -402,7 +463,7 @@ ${HEADER_INDEX}
 <main>
   <h1>Tous les candidats à la présidentielle 2027</h1>
   <p class="intro">Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet, retraits de la course inclus.</p>
-  <div class="btn-pair"><a class="btn btn-ghost" href="/comparer/">Comparer deux candidats</a><a class="btn btn-ghost" href="/sujets/">Voir les candidats sujet par sujet</a></div>
+  <div class="btn-pair"><a class="btn btn-ghost" href="/comparer/">${ICON_VS}Comparer deux candidats</a><a class="btn btn-ghost" href="/sujets/">${ICON_GRID}Voir les candidats sujet par sujet</a></div>
   <input id="q" type="text" placeholder="Rechercher un candidat ou un parti…" />
   <ul id="list">${items}
   </ul>
@@ -544,13 +605,13 @@ ${HEADER}
     ${charSrc(topic.cat) ? `<img class="hero-char" src="${charSrc(topic.cat)}" width="339" height="577" alt="" />` : ""}
   </div>
   ${topic.context ? `<p class="context">${escapeHtml(topic.context)}</p>` : ""}
-  <a class="btn btn-accent cta" href="/">Et toi, tu en penses quoi ? Découvre quel candidat te correspond</a>
+  <a class="btn btn-accent cta" href="/">${BTN_MASCOT}Et toi, tu en penses quoi ? Découvre quel candidat te correspond</a>
   ${section("pour", "Pour", "✓")}
   ${section("contre", "Contre", "✕")}
   ${section("nuance", "Neutre ou nuancé", "≈")}
   ${unknown}
   ${siblingsHtml}
-  <a class="btn btn-ghost btn-row all" href="/sujets/">Voir les ${topics.length} sujets de la présidentielle 2027</a>
+  <a class="btn btn-ghost btn-row all" href="/sujets/">${ICON_GRID}Voir les ${topics.length} sujets de la présidentielle 2027</a>
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
     <a href="/">votona.fr</a>
@@ -635,7 +696,7 @@ ${HEADER_INDEX}
   <nav class="crumbs"><a class="crumb" href="/candidats/">Tous les candidats ›</a></nav>
   <h1>Les ${topics.length} sujets de la présidentielle 2027</h1>
   <p class="intro">Pour chaque grand sujet de la campagne, découvre qui est pour, qui est contre et qui ne s'est pas encore prononcé parmi les candidats déclarés.</p>
-  <a class="btn btn-accent cta" href="/">Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>
+  <a class="btn btn-accent cta" href="/">${BTN_MASCOT}Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>
   <input id="q" type="search" placeholder="Rechercher un sujet (retraite, nucléaire, SMIC…)" aria-label="Rechercher un sujet" />${divisive}${blocks}
   <p id="empty">Aucun sujet ne correspond à cette recherche.</p>
   <script>
@@ -768,7 +829,7 @@ ${HEADER}
   </div>
   <div id="result"></div>
   <noscript><p class="hint">Active JavaScript pour comparer deux candidats, ou consulte leurs fiches : ${noscript}</p></noscript>
-  <a class="btn btn-accent cta" style="margin-top:30px;" href="/">Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>
+  <a class="btn btn-accent cta" style="margin-top:30px;" href="/">${BTN_MASCOT}Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
     <a href="/">votona.fr</a>

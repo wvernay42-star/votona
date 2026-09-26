@@ -44,6 +44,9 @@
   .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); }
   .btn-ghost:hover{ color:var(--accent); border-color:var(--accent); }
   .btn-row{ max-width:420px; margin-left:auto; margin-right:auto; }
+  .btn-ic{ width:19px; height:19px; flex:none; }
+  .btn-mascot{ width:34px; height:auto; flex:none; margin:-8px 2px -8px -4px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.25)); transition:transform .35s cubic-bezier(.34,1.56,.64,1); }
+  .btn:hover .btn-mascot{ transform:rotate(-10deg) scale(1.1); }
   @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
   @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }
   main{ max-width:640px; margin:0 auto; padding:32px 20px 64px; }
@@ -71,7 +74,7 @@
 <main>
   <h1>Tous les candidats à la présidentielle 2027</h1>
   <p class="intro">Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet, retraits de la course inclus.</p>
-  <div class="btn-pair"><a class="btn btn-ghost" href="/comparer/">Comparer deux candidats</a><a class="btn btn-ghost" href="/sujets/">Voir les candidats sujet par sujet</a></div>
+  <div class="btn-pair"><a class="btn btn-ghost" href="/comparer/"><svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M2 20c0-3 2.2-5 5-5s5 2 5 5"/><path d="M12 20c0-3 2.2-5 5-5s5 2 5 5"/></svg>Comparer deux candidats</a><a class="btn btn-ghost" href="/sujets/"><svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Voir les candidats sujet par sujet</a></div>
   <input id="q" type="text" placeholder="Rechercher un candidat ou un parti…" />
   <ul id="list">
     <li data-search="jordan bardella rassemblement national"><a href="bardella/"><span class="av-sm" style="background:#2457A6">JB</span><span class="who"><span>Jordan Bardella</span><span class="party">Rassemblement National</span></span></a></li>

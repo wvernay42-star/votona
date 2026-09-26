@@ -45,6 +45,9 @@
   .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); }
   .btn-ghost:hover{ color:var(--accent); border-color:var(--accent); }
   .btn-row{ max-width:420px; margin-left:auto; margin-right:auto; }
+  .btn-ic{ width:19px; height:19px; flex:none; }
+  .btn-mascot{ width:34px; height:auto; flex:none; margin:-8px 2px -8px -4px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.25)); transition:transform .35s cubic-bezier(.34,1.56,.64,1); }
+  .btn:hover .btn-mascot{ transform:rotate(-10deg) scale(1.1); }
   @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
   @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }
   main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
@@ -81,7 +84,7 @@
   <nav class="crumbs"><a class="crumb" href="/candidats/">Tous les candidats ›</a></nav>
   <h1>Les 35 sujets de la présidentielle 2027</h1>
   <p class="intro">Pour chaque grand sujet de la campagne, découvre qui est pour, qui est contre et qui ne s'est pas encore prononcé parmi les candidats déclarés.</p>
-  <a class="btn btn-accent cta" href="/">Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>
+  <a class="btn btn-accent cta" href="/"><img class="btn-mascot" src="/assets/ui/logo-head.webp" width="34" height="29" alt="" />Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>
   <input id="q" type="search" placeholder="Rechercher un sujet (retraite, nucléaire, SMIC…)" aria-label="Rechercher un sujet" />
   <section class="divisive" id="divisive">
     <h2>Les sujets qui divisent le plus les candidats</h2>

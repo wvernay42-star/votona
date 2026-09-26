@@ -54,6 +54,9 @@
   .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); }
   .btn-ghost:hover{ color:var(--accent); border-color:var(--accent); }
   .btn-row{ max-width:420px; margin-left:auto; margin-right:auto; }
+  .btn-ic{ width:19px; height:19px; flex:none; }
+  .btn-mascot{ width:34px; height:auto; flex:none; margin:-8px 2px -8px -4px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.25)); transition:transform .35s cubic-bezier(.34,1.56,.64,1); }
+  .btn:hover .btn-mascot{ transform:rotate(-10deg) scale(1.1); }
   @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
   @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }
   main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
@@ -80,8 +83,30 @@
   .chip:hover{ border-color:var(--accent); color:var(--accent); }
   .chip.on{ background:var(--accent); border-color:var(--accent); color:#fff; }
   .no-match{ display:none; color:var(--ink-faint); font-size:14px; padding:16px 0; }
-  .stance-label.s-pour{ color:#2c9354; } .stance-label.s-contre{ color:#d1453a; }
-  @media (min-width:700px){ .theme-nav, .filters{ flex-wrap:wrap; overflow:visible; gap:5px; } .theme-nav a{ padding:6px 10px; } }
+  .pill{ display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:99px; font-size:12.5px; font-weight:800; }
+  .p-pour{ background:#e3f4e9; color:#1f7a44; } .p-contre{ background:#fbe4e1; color:#b3372d; } .p-neutre{ background:#efece4; color:#5b6071; }
+  .s-pour{ color:#2c9354; } .s-contre{ color:#d1453a; } .s-neutre{ color:#6b7183; }
+  .cand-header{ position:relative; overflow:hidden; }
+  .cand-id{ position:relative; z-index:1; min-width:0; }
+  .cand-stat{ margin:8px 0 0; display:inline-block; padding:3px 10px; border-radius:99px; background:#fff; font-size:12px; font-weight:700; color:var(--ink-soft); }
+  .hero-props{ position:absolute; right:0; top:0; bottom:0; width:190px; pointer-events:none; }
+  .hp{ position:absolute; filter:drop-shadow(0 4px 8px rgba(0,0,0,.15)); }
+  .hp1{ right:26px; top:14px; transform:rotate(10deg); } .hp2{ right:92px; top:52px; transform:rotate(-12deg); }
+  .hp3{ right:30px; bottom:12px; transform:rotate(-6deg); } .hp4{ right:120px; top:8px; transform:rotate(14deg); opacity:.9; }
+  @media (max-width:640px){ .hero-props{ display:none; } }
+  .glance{ margin:26px 0 8px; }
+  .glance .subhead{ margin-top:0; }
+  .gbar{ display:flex; gap:3px; height:12px; border-radius:99px; overflow:hidden; }
+  .g-pour{ background:#2c9354; } .g-contre{ background:#d1453a; } .g-neutre{ background:#b8b3a6; }
+  .glegend{ font-size:13px; margin:8px 0 14px; color:var(--ink-faint); }
+  .tiles{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+  .tile{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; padding:12px 14px; border-radius:16px; text-decoration:none; color:var(--ink); background:linear-gradient(150deg, color-mix(in srgb, var(--th) 22%, #fff), color-mix(in srgb, var(--th) 6%, #fff)); border:1px solid color-mix(in srgb, var(--th) 30%, #fff); transition:transform .15s, box-shadow .15s; }
+  a.tile:hover{ transform:translateY(-2px); box-shadow:0 6px 16px color-mix(in srgb, var(--th) 25%, transparent); }
+  .tile.off{ filter:grayscale(1); opacity:.55; }
+  .tl-name{ font-weight:800; font-size:14px; }
+  .tl-n{ display:flex; gap:8px; font-size:13px; }
+  .tl-none{ color:var(--ink-faint); font-weight:600; }
+  @media (min-width:700px){ .theme-nav, .filters{ flex-wrap:wrap; overflow:visible; gap:5px; } .theme-nav a{ padding:5px 9px; gap:5px; font-size:12.5px; } .theme-nav a .prop{ width:16px; height:16px; } }
   .topic-cat{ display:flex; align-items:center; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin-bottom:6px; }
   .topic-row h4{ font-size:16px; margin:0 0 6px; }
   .topic-row h4 a{ color:inherit; text-decoration:none; }
@@ -110,14 +135,17 @@
   <nav class="crumbs"><a class="crumb" href="/candidats/">‹ Tous les candidats</a><a class="crumb" href="/sujets/">Tous les sujets ›</a></nav>
   <div class="cand-header" style="--cc:#6B8F71">
     <div class="cand-avatar" style="background:#6B8F71;">FV</div>
-    <div>
+    <div class="cand-id">
       <h1>Fabien Verdier</h1>
       <p class="party">Gauche socialiste et démocratique</p>
+      <p class="cand-stat">Positions à venir</p>
     </div>
+    <div class="hero-props" aria-hidden="true"></div>
   </div>
   
   <p style="color:var(--ink-soft); line-height:1.6; margin-top:18px;">Votona suit 35 sujets de la présidentielle 2027 et y relève, pour chaque candidat, les positions tirées de déclarations, votes ou programmes publics.</p>
-  <a class="btn btn-accent cta" href="../../?screen=results">Compare tes propres positions à celles de Fabien Verdier</a>
+  <a class="btn btn-accent cta" href="../../?screen=results"><img class="btn-mascot" src="/assets/ui/logo-head.webp" width="34" height="29" alt="" />Compare tes propres positions à celles de Fabien Verdier</a>
+  
   
   <div class="empty-note">
     <p><strong>Aucune position publique connue pour l'instant.</strong></p>
