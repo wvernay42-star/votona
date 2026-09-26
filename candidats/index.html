@@ -8,6 +8,7 @@
 <meta name="description" content="La liste complète des candidats déclarés à l'élection présidentielle française de 2027, avec le détail de leurs positions sujet par sujet sur Votona." />
 <link rel="canonical" href="https://votona.fr/candidats/" />
 <meta name="robots" content="index, follow" />
+<meta property="og:image" content="https://votona.fr/assets/ui/og-home.jpg" />
 <link rel="icon" type="image/png" sizes="48x48" href="/assets/ui/favicon-48.png" />
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/ui/favicon-192.png" />
 <link rel="icon" href="/favicon.ico" sizes="32x32 48x48" />
@@ -49,118 +50,100 @@
   .btn:hover .btn-mascot{ transform:rotate(-10deg) scale(1.1); }
   @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
   @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }
-  main{ max-width:640px; margin:0 auto; padding:32px 20px 64px; }
-  h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:28px 0 8px; }
-  p.intro{ color:var(--ink-soft); line-height:1.6; }
-  .btn-pair{ display:flex; gap:8px; margin-top:6px; }
+  main{ max-width:880px; margin:0 auto; padding:32px 20px 64px; }
+  .hero{ position:relative; overflow:hidden; margin-top:6px; padding:28px 300px 28px 28px; border-radius:26px; background:linear-gradient(135deg, #ece3fd, #faf7ff 70%); border:1px solid #e0d3fb; }
+  .hero h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,36px); line-height:1.12; margin:0 0 10px; }
+  .hero p{ color:var(--ink-soft); line-height:1.6; margin:0; }
+  .stats{ display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0; }
+  .stats span{ padding:5px 12px; border-radius:99px; background:#fff; font-size:13px; font-weight:700; color:var(--ink-soft); }
+  .stats b{ color:var(--accent); }
+  .crew{ position:absolute; bottom:-30px; height:200px; width:auto; filter:drop-shadow(0 8px 14px rgba(0,0,0,.18)); }
+  .c1{ right:170px; height:170px; transform:rotate(-6deg); } .c2{ right:88px; height:205px; z-index:1; } .c3{ right:10px; height:175px; transform:rotate(6deg); }
+  @media (max-width:680px){ .hero{ padding:22px 20px 170px; } .c1{ right:auto; left:calc(50% - 150px); height:140px; } .c2{ right:auto; left:calc(50% - 60px); height:170px; } .c3{ right:auto; left:calc(50% + 40px); height:140px; } }
+  .btn-pair{ display:flex; gap:8px; margin-top:18px; }
   .btn-pair .btn{ flex:1; padding:12px 14px; font-size:14px; }
   @media (max-width:520px){ .btn-pair{ flex-direction:column; } }
-  input#q{ width:100%; padding:12px 16px; border-radius:14px; border:1px solid var(--line); font-size:14px; font-family:inherit; margin-top:18px; background:#fff; color:var(--ink); }
+  input#q{ width:100%; padding:13px 16px; border-radius:14px; border:1px solid var(--line); font-size:14.5px; font-family:inherit; margin-top:18px; background:#fff; color:var(--ink); }
   input#q:focus{ outline:2px solid var(--accent); outline-offset:1px; }
-  ul{ list-style:none; padding:0; margin:20px 0; }
-  li{ padding:14px 0; border-top:1px solid var(--line); }
-  li.hidden{ display:none; }
-  li a{ display:flex; align-items:center; gap:12px; color:var(--ink); text-decoration:none; font-weight:700; font-size:15.5px; }
-  li a:hover{ color:var(--accent); }
-  .cand-dot{ width:10px; height:10px; border-radius:50%; flex:none; }
-  .who{ display:flex; flex-direction:column; min-width:0; }
-  .party{ color:var(--ink-faint); font-weight:400; font-size:13px; }
-  .withdrawn-tag{ color:var(--ink-faint); font-weight:400; font-size:12.5px; }
+  #list{ list-style:none; padding:0; margin:18px 0; display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
+  #list li[hidden]{ display:none; }
+  #list a{ display:flex; align-items:center; gap:14px; height:100%; padding:14px 16px; border-radius:18px; text-decoration:none; color:var(--ink); background:linear-gradient(150deg, color-mix(in srgb, var(--cc) 14%, #fff), #fff 75%); border:1px solid color-mix(in srgb, var(--cc) 24%, var(--line)); transition:transform .15s, box-shadow .15s, border-color .15s; }
+  #list a:hover{ transform:translateY(-2px); border-color:var(--cc); box-shadow:0 8px 20px color-mix(in srgb, var(--cc) 22%, transparent); }
+  #list .out a{ filter:grayscale(.8); opacity:.7; }
+  .av{ flex:none; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:18px; box-shadow:0 4px 10px color-mix(in srgb, var(--cc) 35%, transparent); }
+  .who{ display:flex; flex-direction:column; gap:2px; min-width:0; flex:1; }
+  .nm{ font-weight:800; font-size:15.5px; line-height:1.25; }
+  .party{ color:var(--ink-faint); font-size:12.5px; }
+  .mbar{ display:flex; gap:2px; height:6px; border-radius:99px; overflow:hidden; margin-top:7px; }
+  .mbar i{ display:block; }
+  .g-pour{ background:#2c9354; } .g-contre{ background:#d1453a; } .g-neutre{ background:#b8b3a6; } .g-none{ background:#ebe7de; }
+  .meta{ font-size:11.5px; font-weight:700; color:var(--ink-faint); margin-top:3px; }
+  .legend{ font-size:12.5px; color:var(--ink-faint); margin:6px 0 0; }
+  .legend i{ display:inline-block; width:9px; height:9px; border-radius:3px; margin:0 4px 0 8px; vertical-align:-1px; }
   #empty{ display:none; color:var(--ink-faint); font-size:13.5px; padding:14px 0; }
 </style>
 </head>
 <body>
 <header class="topbar"><a class="brand" href="/" title="Accueil Votona"><span class="mark"><img src="/assets/ui/logo-head.webp" alt="" width="40" height="32" /></span><span class="name">Votona</span><span class="year">PRÉSIDENTIELLE 2027</span></a><div class="topbar-actions"><a class="icon-btn" href="/?screen=account" title="Mon compte"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></a><a class="icon-btn" href="/?screen=faq" title="Questions fréquentes"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 1 1 3.9 2.4c-1 .5-1.7 1.1-1.7 2.4"/><line x1="12" y1="17.2" x2="12" y2="17.21"/></svg></a></div></header>
 <main>
-  <h1>Tous les candidats à la présidentielle 2027</h1>
-  <p class="intro">Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet, retraits de la course inclus.</p>
+  <section class="hero">
+    <h1>Tous les candidats à la présidentielle 2027</h1>
+    <p>Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet, retraits de la course inclus.</p>
+    <div class="stats"><span><b>35</b> candidats en course</span><span><b>35</b> sujets suivis</span></div>
+    <img class="crew c1" src="/assets/characters/economie-n3.webp" width="339" height="577" alt="" /><img class="crew c2" src="/assets/characters/ecologie-n3.webp" width="339" height="577" alt="" /><img class="crew c3" src="/assets/characters/securite-n3.webp" width="339" height="577" alt="" />
+  </section>
   <div class="btn-pair"><a class="btn btn-ghost" href="/comparer/"><svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M2 20c0-3 2.2-5 5-5s5 2 5 5"/><path d="M12 20c0-3 2.2-5 5-5s5 2 5 5"/></svg>Comparer deux candidats</a><a class="btn btn-ghost" href="/sujets/"><svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Voir les candidats sujet par sujet</a></div>
-  <input id="q" type="text" placeholder="Rechercher un candidat ou un parti…" />
+  <input id="q" type="search" placeholder="Rechercher un candidat ou un parti…" aria-label="Rechercher un candidat ou un parti" />
+  <p class="legend">Positions :<i class="g-pour"></i>d'accord<i class="g-contre"></i>pas d'accord<i class="g-neutre"></i>neutre<i class="g-none"></i>non précisée</p>
   <ul id="list">
-    <li data-search="jordan bardella rassemblement national"><a href="bardella/"><span class="av-sm" style="background:#2457A6">JB</span><span class="who"><span>Jordan Bardella</span><span class="party">Rassemblement National</span></span></a></li>
-
-    <li data-search="édouard philippe horizons"><a href="philippe/"><span class="av-sm" style="background:#2FA39A">ÉP</span><span class="who"><span>Édouard Philippe</span><span class="party">Horizons</span></span></a></li>
-
-    <li data-search="gabriel attal renaissance"><a href="attal/"><span class="av-sm" style="background:#E3A73B">GA</span><span class="who"><span>Gabriel Attal</span><span class="party">Renaissance</span></span></a></li>
-
-    <li data-search="bruno retailleau les républicains"><a href="retailleau/"><span class="av-sm" style="background:#7A3B57">BR</span><span class="who"><span>Bruno Retailleau</span><span class="party">Les Républicains</span></span></a></li>
-
-    <li data-search="jean-luc mélenchon la france insoumise"><a href="melenchon/"><span class="av-sm" style="background:#C2472E">JM</span><span class="who"><span>Jean-Luc Mélenchon</span><span class="party">La France Insoumise</span></span></a></li>
-
-    <li data-search="raphaël glucksmann place publique"><a href="glucksmann/"><span class="av-sm" style="background:#5C7CD6">RG</span><span class="who"><span>Raphaël Glucksmann</span><span class="party">Place Publique</span></span></a></li>
-
-    <li data-search="marine tondelier les écologistes"><a href="tondelier/"><span class="av-sm" style="background:#4C9A45">MT</span><span class="who"><span>Marine Tondelier</span><span class="party">Les Écologistes</span></span></a></li>
-
-    <li data-search="xavier bertrand les républicains (indépendant)"><a href="bertrand/"><span class="av-sm" style="background:#8A6E4B">XB</span><span class="who"><span>Xavier Bertrand</span><span class="party">Les Républicains (indépendant)</span></span></a></li>
-
-    <li data-search="marine le pen rassemblement national"><a href="lepen/"><span class="av-sm" style="background:#1D3557">ML</span><span class="who"><span>Marine Le Pen</span><span class="party">Rassemblement National</span></span></a></li>
-
-    <li data-search="david lisnard nouvelle énergie"><a href="lisnard/"><span class="av-sm" style="background:#D97B29">DL</span><span class="who"><span>David Lisnard</span><span class="party">Nouvelle Énergie</span></span></a></li>
-
-    <li data-search="nicolas dupont-aignan debout la france"><a href="dupont-aignan/"><span class="av-sm" style="background:#6B4E9C">ND</span><span class="who"><span>Nicolas Dupont-Aignan</span><span class="party">Debout la France</span></span></a></li>
-
-    <li data-search="jérôme guedj parti socialiste"><a href="guedj/"><span class="av-sm" style="background:#2E8B7A">JG</span><span class="who"><span>Jérôme Guedj</span><span class="party">Parti socialiste</span></span></a></li>
-
-    <li data-search="olivier faure parti socialiste"><a href="faure/"><span class="av-sm" style="background:#D6478C">OF</span><span class="who"><span>Olivier Faure</span><span class="party">Parti socialiste</span></span></a></li>
-
-    <li data-search="nathalie arthaud lutte ouvrière"><a href="arthaud/"><span class="av-sm" style="background:#A32020">NA</span><span class="who"><span>Nathalie Arthaud</span><span class="party">Lutte Ouvrière</span></span></a></li>
-
-    <li data-search="florian philippot les patriotes"><a href="philippot/"><span class="av-sm" style="background:#34495E">FP</span><span class="who"><span>Florian Philippot</span><span class="party">Les Patriotes</span></span></a></li>
-
-    <li data-search="françois asselineau union populaire républicaine"><a href="asselineau/"><span class="av-sm" style="background:#556B2F">FA</span><span class="who"><span>François Asselineau</span><span class="party">Union Populaire Républicaine</span></span></a></li>
-
-    <li data-search="clara egger solution démocratique"><a href="egger/"><span class="av-sm" style="background:#9FA8DA">CE</span><span class="who"><span>Clara Egger</span><span class="party">Solution Démocratique</span></span></a></li>
-
-    <li data-search="anasse kazib révolution permanente"><a href="kazib/"><span class="av-sm" style="background:#B22222">AK</span><span class="who"><span>Anasse Kazib</span><span class="party">Révolution Permanente</span></span></a></li>
-
-    <li data-search="juan branco les ruches"><a href="branco/"><span class="av-sm" style="background:#7C4DFF">JB</span><span class="who"><span>Juan Branco</span><span class="party">Les Ruches</span></span></a></li>
-
-    <li data-search="selma labib npa-révolutionnaires"><a href="labib/"><span class="av-sm" style="background:#C0392B">SL</span><span class="who"><span>Selma Labib</span><span class="party">NPA-Révolutionnaires</span></span></a></li>
-
-    <li data-search="françois ruffin debout !"><a href="ruffin/"><span class="av-sm" style="background:#1ABC9C">FR</span><span class="who"><span>François Ruffin</span><span class="party">Debout !</span></span></a></li>
-
-    <li data-search="antoine mikolajczak équinoxe"><a href="mikolajczak/"><span class="av-sm" style="background:#00A99D">AM</span><span class="who"><span>Antoine Mikolajczak</span><span class="party">Équinoxe</span></span></a></li>
-
-    <li data-search="philippe brun parti socialiste"><a href="brun/"><span class="av-sm" style="background:#FF5722">PB</span><span class="who"><span>Philippe Brun</span><span class="party">Parti socialiste</span></span></a></li>
-
-    <li data-search="ségolène royal parti socialiste"><a href="royal/"><span class="av-sm" style="background:#8E44AD">SR</span><span class="who"><span>Ségolène Royal</span><span class="party">Parti socialiste</span></span></a></li>
-
-    <li data-search="lydie massard union démocratique bretonne"><a href="massard/"><span class="av-sm" style="background:#D4A017">LM</span><span class="who"><span>Lydie Massard</span><span class="party">Union démocratique bretonne</span></span></a></li>
-
-    <li data-search="francis lalanne france libre"><a href="lalanne/"><span class="av-sm" style="background:#C71585">FL</span><span class="who"><span>Francis Lalanne</span><span class="party">France Libre</span></span></a></li>
-
-    <li data-search="benoît mathieu sans étiquette"><a href="mathieu/"><span class="av-sm" style="background:#4682B4">BM</span><span class="who"><span>Benoît Mathieu</span><span class="party">Sans étiquette</span></span></a></li>
-
-    <li data-search="bernard cazeneuve la convention"><a href="cazeneuve/"><span class="av-sm" style="background:#546E7A">BC</span><span class="who"><span>Bernard Cazeneuve</span><span class="party">La Convention</span></span></a></li>
-
-    <li data-search="delphine batho génération écologie"><a href="batho/"><span class="av-sm" style="background:#2E7D32">DB</span><span class="who"><span>Delphine Batho</span><span class="party">Génération Écologie</span></span></a></li>
-
-    <li data-search="karim bouamrane la france humaine et forte"><a href="bouamrane/"><span class="av-sm" style="background:#FF8F00">KB</span><span class="who"><span>Karim Bouamrane</span><span class="party">La France Humaine et Forte</span></span></a></li>
-
-    <li data-search="fabien verdier gauche socialiste et démocratique"><a href="verdier/"><span class="av-sm" style="background:#6B8F71">FV</span><span class="who"><span>Fabien Verdier</span><span class="party">Gauche socialiste et démocratique</span></span></a></li>
-
-    <li data-search="emmanuel maurel gauche républicaine et socialiste"><a href="maurel/"><span class="av-sm" style="background:#E07A5F">EM</span><span class="who"><span>Emmanuel Maurel</span><span class="party">Gauche républicaine et socialiste</span></span></a></li>
-
-    <li data-search="fabien roussel parti communiste français"><a href="roussel/"><span class="av-sm" style="background:#9B1C31">FR</span><span class="who"><span>Fabien Roussel</span><span class="party">Parti communiste français</span></span></a></li>
-
-    <li data-search="éric zemmour reconquête"><a href="zemmour/"><span class="av-sm" style="background:#1A1A2E">ÉZ</span><span class="who"><span>Éric Zemmour</span><span class="party">Reconquête</span></span></a></li>
-
-    <li data-search="olivier becht sans étiquette"><a href="becht/"><span class="av-sm" style="background:#3D7EA6">OB</span><span class="who"><span>Olivier Becht</span><span class="party">Sans étiquette</span></span></a></li>
+    <li data-search="Jordan Bardella Rassemblement National" style="--cc:#2457A6"><a href="bardella/"><span class="av" style="background:#2457A6">JB</span><span class="who"><span class="nm">Jordan Bardella</span><span class="party">Rassemblement National</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:12"></i><i class="g-contre" style="flex:9"></i><i class="g-neutre" style="flex:9"></i><i class="g-none" style="flex:5"></i></span><span class="meta">30/35 positions connues</span></span></a></li>
+    <li data-search="Édouard Philippe Horizons" style="--cc:#2FA39A"><a href="philippe/"><span class="av" style="background:#2FA39A">ÉP</span><span class="who"><span class="nm">Édouard Philippe</span><span class="party">Horizons</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:14"></i><i class="g-contre" style="flex:6"></i><i class="g-neutre" style="flex:7"></i><i class="g-none" style="flex:8"></i></span><span class="meta">27/35 positions connues</span></span></a></li>
+    <li data-search="Gabriel Attal Renaissance" style="--cc:#E3A73B"><a href="attal/"><span class="av" style="background:#E3A73B">GA</span><span class="who"><span class="nm">Gabriel Attal</span><span class="party">Renaissance</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:15"></i><i class="g-contre" style="flex:5"></i><i class="g-neutre" style="flex:7"></i><i class="g-none" style="flex:8"></i></span><span class="meta">27/35 positions connues</span></span></a></li>
+    <li data-search="Bruno Retailleau Les Républicains" style="--cc:#7A3B57"><a href="retailleau/"><span class="av" style="background:#7A3B57">BR</span><span class="who"><span class="nm">Bruno Retailleau</span><span class="party">Les Républicains</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:12"></i><i class="g-contre" style="flex:10"></i><i class="g-neutre" style="flex:5"></i><i class="g-none" style="flex:8"></i></span><span class="meta">27/35 positions connues</span></span></a></li>
+    <li data-search="Jean-Luc Mélenchon La France Insoumise" style="--cc:#C2472E"><a href="melenchon/"><span class="av" style="background:#C2472E">JM</span><span class="who"><span class="nm">Jean-Luc Mélenchon</span><span class="party">La France Insoumise</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:15"></i><i class="g-contre" style="flex:14"></i><i class="g-neutre" style="flex:2"></i><i class="g-none" style="flex:4"></i></span><span class="meta">31/35 positions connues</span></span></a></li>
+    <li data-search="Raphaël Glucksmann Place Publique" style="--cc:#5C7CD6"><a href="glucksmann/"><span class="av" style="background:#5C7CD6">RG</span><span class="who"><span class="nm">Raphaël Glucksmann</span><span class="party">Place Publique</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:14"></i><i class="g-contre" style="flex:5"></i><i class="g-neutre" style="flex:5"></i><i class="g-none" style="flex:11"></i></span><span class="meta">24/35 positions connues</span></span></a></li>
+    <li data-search="Marine Tondelier Les Écologistes" style="--cc:#4C9A45"><a href="tondelier/"><span class="av" style="background:#4C9A45">MT</span><span class="who"><span class="nm">Marine Tondelier</span><span class="party">Les Écologistes</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:15"></i><i class="g-contre" style="flex:8"></i><i class="g-neutre" style="flex:3"></i><i class="g-none" style="flex:9"></i></span><span class="meta">26/35 positions connues</span></span></a></li>
+    <li data-search="Xavier Bertrand Les Républicains (indépendant)" style="--cc:#8A6E4B"><a href="bertrand/"><span class="av" style="background:#8A6E4B">XB</span><span class="who"><span class="nm">Xavier Bertrand</span><span class="party">Les Républicains (indépendant)</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:10"></i><i class="g-contre" style="flex:7"></i><i class="g-neutre" style="flex:6"></i><i class="g-none" style="flex:12"></i></span><span class="meta">23/35 positions connues</span></span></a></li>
+    <li data-search="Marine Le Pen Rassemblement National" style="--cc:#1D3557"><a href="lepen/"><span class="av" style="background:#1D3557">ML</span><span class="who"><span class="nm">Marine Le Pen</span><span class="party">Rassemblement National</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:14"></i><i class="g-contre" style="flex:9"></i><i class="g-neutre" style="flex:6"></i><i class="g-none" style="flex:6"></i></span><span class="meta">29/35 positions connues</span></span></a></li>
+    <li data-search="David Lisnard Nouvelle Énergie" style="--cc:#D97B29"><a href="lisnard/"><span class="av" style="background:#D97B29">DL</span><span class="who"><span class="nm">David Lisnard</span><span class="party">Nouvelle Énergie</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:5"></i><i class="g-contre" style="flex:4"></i><i class="g-neutre" style="flex:1"></i><i class="g-none" style="flex:25"></i></span><span class="meta">10/35 positions connues</span></span></a></li>
+    <li data-search="Nicolas Dupont-Aignan Debout la France" style="--cc:#6B4E9C"><a href="dupont-aignan/"><span class="av" style="background:#6B4E9C">ND</span><span class="who"><span class="nm">Nicolas Dupont-Aignan</span><span class="party">Debout la France</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:3"></i><i class="g-contre" style="flex:4"></i><i class="g-neutre" style="flex:1"></i><i class="g-none" style="flex:27"></i></span><span class="meta">8/35 positions connues</span></span></a></li>
+    <li data-search="Jérôme Guedj Parti socialiste" style="--cc:#2E8B7A"><a href="guedj/"><span class="av" style="background:#2E8B7A">JG</span><span class="who"><span class="nm">Jérôme Guedj</span><span class="party">Parti socialiste</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:5"></i><i class="g-contre" style="flex:1"></i><i class="g-neutre" style="flex:3"></i><i class="g-none" style="flex:26"></i></span><span class="meta">9/35 positions connues</span></span></a></li>
+    <li data-search="Olivier Faure Parti socialiste" style="--cc:#D6478C"><a href="faure/"><span class="av" style="background:#D6478C">OF</span><span class="who"><span class="nm">Olivier Faure</span><span class="party">Parti socialiste</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:9"></i><i class="g-contre" style="flex:7"></i><i class="g-neutre" style="flex:2"></i><i class="g-none" style="flex:17"></i></span><span class="meta">18/35 positions connues</span></span></a></li>
+    <li data-search="Nathalie Arthaud Lutte Ouvrière" style="--cc:#A32020"><a href="arthaud/"><span class="av" style="background:#A32020">NA</span><span class="who"><span class="nm">Nathalie Arthaud</span><span class="party">Lutte Ouvrière</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:7"></i><i class="g-contre" style="flex:7"></i><i class="g-neutre" style="flex:1"></i><i class="g-none" style="flex:20"></i></span><span class="meta">15/35 positions connues</span></span></a></li>
+    <li data-search="Florian Philippot Les Patriotes" style="--cc:#34495E"><a href="philippot/"><span class="av" style="background:#34495E">FP</span><span class="who"><span class="nm">Florian Philippot</span><span class="party">Les Patriotes</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:6"></i><i class="g-contre" style="flex:2"></i><i class="g-none" style="flex:27"></i></span><span class="meta">8/35 positions connues</span></span></a></li>
+    <li data-search="François Asselineau Union Populaire Républicaine" style="--cc:#556B2F"><a href="asselineau/"><span class="av" style="background:#556B2F">FA</span><span class="who"><span class="nm">François Asselineau</span><span class="party">Union Populaire Républicaine</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:3"></i><i class="g-contre" style="flex:1"></i><i class="g-neutre" style="flex:1"></i><i class="g-none" style="flex:30"></i></span><span class="meta">5/35 positions connues</span></span></a></li>
+    <li data-search="Clara Egger Solution Démocratique" style="--cc:#9FA8DA"><a href="egger/"><span class="av" style="background:#9FA8DA">CE</span><span class="who"><span class="nm">Clara Egger</span><span class="party">Solution Démocratique</span><span class="mbar" aria-hidden="true"><i class="g-neutre" style="flex:1"></i><i class="g-none" style="flex:34"></i></span><span class="meta">1/35 positions connues</span></span></a></li>
+    <li data-search="Anasse Kazib Révolution Permanente" style="--cc:#B22222"><a href="kazib/"><span class="av" style="background:#B22222">AK</span><span class="who"><span class="nm">Anasse Kazib</span><span class="party">Révolution Permanente</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:1"></i><i class="g-contre" style="flex:2"></i><i class="g-none" style="flex:32"></i></span><span class="meta">3/35 positions connues</span></span></a></li>
+    <li data-search="Juan Branco Les Ruches" style="--cc:#7C4DFF"><a href="branco/"><span class="av" style="background:#7C4DFF">JB</span><span class="who"><span class="nm">Juan Branco</span><span class="party">Les Ruches</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:1"></i><i class="g-contre" style="flex:3"></i><i class="g-none" style="flex:31"></i></span><span class="meta">4/35 positions connues</span></span></a></li>
+    <li data-search="Selma Labib NPA-Révolutionnaires" style="--cc:#C0392B"><a href="labib/"><span class="av" style="background:#C0392B">SL</span><span class="who"><span class="nm">Selma Labib</span><span class="party">NPA-Révolutionnaires</span><span class="meta">Positions à venir</span></span></a></li>
+    <li data-search="François Ruffin Debout !" style="--cc:#1ABC9C"><a href="ruffin/"><span class="av" style="background:#1ABC9C">FR</span><span class="who"><span class="nm">François Ruffin</span><span class="party">Debout !</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:4"></i><i class="g-contre" style="flex:2"></i><i class="g-neutre" style="flex:2"></i><i class="g-none" style="flex:27"></i></span><span class="meta">8/35 positions connues</span></span></a></li>
+    <li data-search="Antoine Mikolajczak Équinoxe" style="--cc:#00A99D"><a href="mikolajczak/"><span class="av" style="background:#00A99D">AM</span><span class="who"><span class="nm">Antoine Mikolajczak</span><span class="party">Équinoxe</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:1"></i><i class="g-neutre" style="flex:1"></i><i class="g-none" style="flex:33"></i></span><span class="meta">2/35 positions connues</span></span></a></li>
+    <li data-search="Philippe Brun Parti socialiste" style="--cc:#FF5722"><a href="brun/"><span class="av" style="background:#FF5722">PB</span><span class="who"><span class="nm">Philippe Brun</span><span class="party">Parti socialiste</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:3"></i><i class="g-neutre" style="flex:3"></i><i class="g-none" style="flex:29"></i></span><span class="meta">6/35 positions connues</span></span></a></li>
+    <li data-search="Ségolène Royal Parti socialiste" style="--cc:#8E44AD"><a href="royal/"><span class="av" style="background:#8E44AD">SR</span><span class="who"><span class="nm">Ségolène Royal</span><span class="party">Parti socialiste</span><span class="meta">Positions à venir</span></span></a></li>
+    <li data-search="Lydie Massard Union démocratique bretonne" style="--cc:#D4A017"><a href="massard/"><span class="av" style="background:#D4A017">LM</span><span class="who"><span class="nm">Lydie Massard</span><span class="party">Union démocratique bretonne</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:1"></i><i class="g-none" style="flex:34"></i></span><span class="meta">1/35 positions connues</span></span></a></li>
+    <li data-search="Francis Lalanne France Libre" style="--cc:#C71585"><a href="lalanne/"><span class="av" style="background:#C71585">FL</span><span class="who"><span class="nm">Francis Lalanne</span><span class="party">France Libre</span><span class="meta">Positions à venir</span></span></a></li>
+    <li data-search="Benoît Mathieu Sans étiquette" style="--cc:#4682B4"><a href="mathieu/"><span class="av" style="background:#4682B4">BM</span><span class="who"><span class="nm">Benoît Mathieu</span><span class="party">Sans étiquette</span><span class="meta">Positions à venir</span></span></a></li>
+    <li data-search="Bernard Cazeneuve La Convention" style="--cc:#546E7A"><a href="cazeneuve/"><span class="av" style="background:#546E7A">BC</span><span class="who"><span class="nm">Bernard Cazeneuve</span><span class="party">La Convention</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:2"></i><i class="g-contre" style="flex:2"></i><i class="g-none" style="flex:31"></i></span><span class="meta">4/35 positions connues</span></span></a></li>
+    <li data-search="Delphine Batho Génération Écologie" style="--cc:#2E7D32"><a href="batho/"><span class="av" style="background:#2E7D32">DB</span><span class="who"><span class="nm">Delphine Batho</span><span class="party">Génération Écologie</span><span class="mbar" aria-hidden="true"><i class="g-contre" style="flex:1"></i><i class="g-neutre" style="flex:1"></i><i class="g-none" style="flex:33"></i></span><span class="meta">2/35 positions connues</span></span></a></li>
+    <li data-search="Karim Bouamrane La France Humaine et Forte" style="--cc:#FF8F00"><a href="bouamrane/"><span class="av" style="background:#FF8F00">KB</span><span class="who"><span class="nm">Karim Bouamrane</span><span class="party">La France Humaine et Forte</span><span class="meta">Positions à venir</span></span></a></li>
+    <li data-search="Fabien Verdier Gauche socialiste et démocratique" style="--cc:#6B8F71"><a href="verdier/"><span class="av" style="background:#6B8F71">FV</span><span class="who"><span class="nm">Fabien Verdier</span><span class="party">Gauche socialiste et démocratique</span><span class="meta">Positions à venir</span></span></a></li>
+    <li data-search="Emmanuel Maurel Gauche républicaine et socialiste" style="--cc:#E07A5F"><a href="maurel/"><span class="av" style="background:#E07A5F">EM</span><span class="who"><span class="nm">Emmanuel Maurel</span><span class="party">Gauche républicaine et socialiste</span><span class="mbar" aria-hidden="true"><i class="g-neutre" style="flex:1"></i><i class="g-none" style="flex:34"></i></span><span class="meta">1/35 positions connues</span></span></a></li>
+    <li data-search="Fabien Roussel Parti communiste français" style="--cc:#9B1C31"><a href="roussel/"><span class="av" style="background:#9B1C31">FR</span><span class="who"><span class="nm">Fabien Roussel</span><span class="party">Parti communiste français</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:10"></i><i class="g-contre" style="flex:10"></i><i class="g-neutre" style="flex:6"></i><i class="g-none" style="flex:9"></i></span><span class="meta">26/35 positions connues</span></span></a></li>
+    <li data-search="Éric Zemmour Reconquête" style="--cc:#1A1A2E"><a href="zemmour/"><span class="av" style="background:#1A1A2E">ÉZ</span><span class="who"><span class="nm">Éric Zemmour</span><span class="party">Reconquête</span><span class="mbar" aria-hidden="true"><i class="g-pour" style="flex:8"></i><i class="g-contre" style="flex:5"></i><i class="g-none" style="flex:22"></i></span><span class="meta">13/35 positions connues</span></span></a></li>
+    <li data-search="Olivier Becht Sans étiquette" style="--cc:#3D7EA6"><a href="becht/"><span class="av" style="background:#3D7EA6">OB</span><span class="who"><span class="nm">Olivier Becht</span><span class="party">Sans étiquette</span><span class="meta">Positions à venir</span></span></a></li>
   </ul>
   <p id="empty">Aucun candidat ne correspond à cette recherche.</p>
   <script>
-    var q = document.getElementById("q");
-    var items = Array.prototype.slice.call(document.querySelectorAll("#list li"));
-    q.addEventListener("input", function(){
-      var term = q.value.trim().toLowerCase();
-      var visible = 0;
-      items.forEach(function(li){
-        var match = !term || li.getAttribute("data-search").indexOf(term) !== -1;
-        li.classList.toggle("hidden", !match);
-        if(match) visible++;
+    (function(){
+      var q = document.getElementById("q");
+      var items = Array.prototype.slice.call(document.querySelectorAll("#list li"));
+      var norm = function(s){ return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); };
+      q.addEventListener("input", function(){
+        var term = norm(q.value.trim()), visible = 0;
+        items.forEach(function(li){ var ok = !term || norm(li.getAttribute("data-search")).indexOf(term) !== -1; li.hidden = !ok; if(ok) visible++; });
+        document.getElementById("empty").style.display = visible ? "none" : "block";
       });
-      document.getElementById("empty").style.display = visible ? "none" : "block";
-    });
+    })();
   </script>
 </main>
 </body>

@@ -421,10 +421,20 @@ ${HEADER}
 `;
 }
 
-function indexPageHtml(candidates) {
+function indexPageHtml(candidates, topics) {
   const canonical = `${SITE_URL}/candidats/`;
-  const items = candidates.map((c) => `
-    <li data-search="${escapeHtml((c.name + " " + c.party).toLowerCase())}"><a href="${c.id}/"><span class="av-sm" style="background:${escapeHtml(c.color || "#7C3AED")}">${escapeHtml(initialsOf(c.name))}</span><span class="who"><span>${escapeHtml(c.name)}${c.withdrawn ? ' <span class="withdrawn-tag">(retiré)</span>' : ""}</span><span class="party">${escapeHtml(c.party)}</span></span></a></li>`).join("\n");
+  const active = candidates.filter((c) => !c.withdrawn);
+  const items = candidates.map((c) => {
+    const known = topics.filter((t) => isKnown(c.positions && c.positions[t.id]));
+    const n = (st) => known.filter((t) => c.positions[t.id].stance === st).length;
+    const pour = n("pour"), contre = n("contre"), neutre = known.length - pour - contre;
+    const bar = known.length
+      ? `<span class="mbar" aria-hidden="true">${pour ? `<i class="g-pour" style="flex:${pour}"></i>` : ""}${contre ? `<i class="g-contre" style="flex:${contre}"></i>` : ""}${neutre ? `<i class="g-neutre" style="flex:${neutre}"></i>` : ""}${topics.length - known.length ? `<i class="g-none" style="flex:${topics.length - known.length}"></i>` : ""}</span><span class="meta">${known.length}/${topics.length} positions connues</span>`
+      : `<span class="meta">Positions à venir</span>`;
+    return `
+    <li data-search="${escapeHtml((c.name + " " + c.party))}"${c.withdrawn ? ' class="out"' : ""} style="--cc:${escapeHtml(c.color || "#7C3AED")}"><a href="${c.id}/"><span class="av" style="background:${escapeHtml(c.color || "#7C3AED")}">${escapeHtml(initialsOf(c.name))}</span><span class="who"><span class="nm">${escapeHtml(c.name)}</span><span class="party">${escapeHtml(c.party)}${c.withdrawn ? " · retiré de la course" : ""}</span>${bar}</span></a></li>`;
+  }).join("");
+  const crew = ["Économie & travail", "Écologie", "Sécurité & immigration"].map((cat, i) => charSrc(cat) ? `<img class="crew c${i + 1}" src="${charSrc(cat)}" width="339" height="577" alt="" />` : "").join("");
 
   return `<!DOCTYPE html>
 <html lang="fr">
@@ -436,51 +446,68 @@ function indexPageHtml(candidates) {
 <meta name="description" content="La liste complète des candidats déclarés à l'élection présidentielle française de 2027, avec le détail de leurs positions sujet par sujet sur Votona." />
 <link rel="canonical" href="${canonical}" />
 <meta name="robots" content="index, follow" />
+<meta property="og:image" content="${SITE_URL}/assets/ui/og-home.jpg" />
 ${HEAD_ICONS}
 <style>${SHARED_CSS}
-  main{ max-width:640px; margin:0 auto; padding:32px 20px 64px; }
-  h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:28px 0 8px; }
-  p.intro{ color:var(--ink-soft); line-height:1.6; }
-  .btn-pair{ display:flex; gap:8px; margin-top:6px; }
+  main{ max-width:880px; margin:0 auto; padding:32px 20px 64px; }
+  .hero{ position:relative; overflow:hidden; margin-top:6px; padding:28px 300px 28px 28px; border-radius:26px; background:linear-gradient(135deg, #ece3fd, #faf7ff 70%); border:1px solid #e0d3fb; }
+  .hero h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,36px); line-height:1.12; margin:0 0 10px; }
+  .hero p{ color:var(--ink-soft); line-height:1.6; margin:0; }
+  .stats{ display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0; }
+  .stats span{ padding:5px 12px; border-radius:99px; background:#fff; font-size:13px; font-weight:700; color:var(--ink-soft); }
+  .stats b{ color:var(--accent); }
+  .crew{ position:absolute; bottom:-30px; height:200px; width:auto; filter:drop-shadow(0 8px 14px rgba(0,0,0,.18)); }
+  .c1{ right:170px; height:170px; transform:rotate(-6deg); } .c2{ right:88px; height:205px; z-index:1; } .c3{ right:10px; height:175px; transform:rotate(6deg); }
+  @media (max-width:680px){ .hero{ padding:22px 20px 170px; } .c1{ right:auto; left:calc(50% - 150px); height:140px; } .c2{ right:auto; left:calc(50% - 60px); height:170px; } .c3{ right:auto; left:calc(50% + 40px); height:140px; } }
+  .btn-pair{ display:flex; gap:8px; margin-top:18px; }
   .btn-pair .btn{ flex:1; padding:12px 14px; font-size:14px; }
   @media (max-width:520px){ .btn-pair{ flex-direction:column; } }
-  input#q{ width:100%; padding:12px 16px; border-radius:14px; border:1px solid var(--line); font-size:14px; font-family:inherit; margin-top:18px; background:#fff; color:var(--ink); }
+  input#q{ width:100%; padding:13px 16px; border-radius:14px; border:1px solid var(--line); font-size:14.5px; font-family:inherit; margin-top:18px; background:#fff; color:var(--ink); }
   input#q:focus{ outline:2px solid var(--accent); outline-offset:1px; }
-  ul{ list-style:none; padding:0; margin:20px 0; }
-  li{ padding:14px 0; border-top:1px solid var(--line); }
-  li.hidden{ display:none; }
-  li a{ display:flex; align-items:center; gap:12px; color:var(--ink); text-decoration:none; font-weight:700; font-size:15.5px; }
-  li a:hover{ color:var(--accent); }
-  .cand-dot{ width:10px; height:10px; border-radius:50%; flex:none; }
-  .who{ display:flex; flex-direction:column; min-width:0; }
-  .party{ color:var(--ink-faint); font-weight:400; font-size:13px; }
-  .withdrawn-tag{ color:var(--ink-faint); font-weight:400; font-size:12.5px; }
+  #list{ list-style:none; padding:0; margin:18px 0; display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
+  #list li[hidden]{ display:none; }
+  #list a{ display:flex; align-items:center; gap:14px; height:100%; padding:14px 16px; border-radius:18px; text-decoration:none; color:var(--ink); background:linear-gradient(150deg, color-mix(in srgb, var(--cc) 14%, #fff), #fff 75%); border:1px solid color-mix(in srgb, var(--cc) 24%, var(--line)); transition:transform .15s, box-shadow .15s, border-color .15s; }
+  #list a:hover{ transform:translateY(-2px); border-color:var(--cc); box-shadow:0 8px 20px color-mix(in srgb, var(--cc) 22%, transparent); }
+  #list .out a{ filter:grayscale(.8); opacity:.7; }
+  .av{ flex:none; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:18px; box-shadow:0 4px 10px color-mix(in srgb, var(--cc) 35%, transparent); }
+  .who{ display:flex; flex-direction:column; gap:2px; min-width:0; flex:1; }
+  .nm{ font-weight:800; font-size:15.5px; line-height:1.25; }
+  .party{ color:var(--ink-faint); font-size:12.5px; }
+  .mbar{ display:flex; gap:2px; height:6px; border-radius:99px; overflow:hidden; margin-top:7px; }
+  .mbar i{ display:block; }
+  .g-pour{ background:#2c9354; } .g-contre{ background:#d1453a; } .g-neutre{ background:#b8b3a6; } .g-none{ background:#ebe7de; }
+  .meta{ font-size:11.5px; font-weight:700; color:var(--ink-faint); margin-top:3px; }
+  .legend{ font-size:12.5px; color:var(--ink-faint); margin:6px 0 0; }
+  .legend i{ display:inline-block; width:9px; height:9px; border-radius:3px; margin:0 4px 0 8px; vertical-align:-1px; }
   #empty{ display:none; color:var(--ink-faint); font-size:13.5px; padding:14px 0; }
 </style>
 </head>
 <body>
 ${HEADER_INDEX}
 <main>
-  <h1>Tous les candidats à la présidentielle 2027</h1>
-  <p class="intro">Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet, retraits de la course inclus.</p>
+  <section class="hero">
+    <h1>Tous les candidats à la présidentielle 2027</h1>
+    <p>Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet, retraits de la course inclus.</p>
+    <div class="stats"><span><b>${active.length}</b> candidats en course</span><span><b>${topics.length}</b> sujets suivis</span></div>
+    ${crew}
+  </section>
   <div class="btn-pair"><a class="btn btn-ghost" href="/comparer/">${ICON_VS}Comparer deux candidats</a><a class="btn btn-ghost" href="/sujets/">${ICON_GRID}Voir les candidats sujet par sujet</a></div>
-  <input id="q" type="text" placeholder="Rechercher un candidat ou un parti…" />
+  <input id="q" type="search" placeholder="Rechercher un candidat ou un parti…" aria-label="Rechercher un candidat ou un parti" />
+  <p class="legend">Positions :<i class="g-pour"></i>d'accord<i class="g-contre"></i>pas d'accord<i class="g-neutre"></i>neutre<i class="g-none"></i>non précisée</p>
   <ul id="list">${items}
   </ul>
   <p id="empty">Aucun candidat ne correspond à cette recherche.</p>
   <script>
-    var q = document.getElementById("q");
-    var items = Array.prototype.slice.call(document.querySelectorAll("#list li"));
-    q.addEventListener("input", function(){
-      var term = q.value.trim().toLowerCase();
-      var visible = 0;
-      items.forEach(function(li){
-        var match = !term || li.getAttribute("data-search").indexOf(term) !== -1;
-        li.classList.toggle("hidden", !match);
-        if(match) visible++;
+    (function(){
+      var q = document.getElementById("q");
+      var items = Array.prototype.slice.call(document.querySelectorAll("#list li"));
+      var norm = function(s){ return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); };
+      q.addEventListener("input", function(){
+        var term = norm(q.value.trim()), visible = 0;
+        items.forEach(function(li){ var ok = !term || norm(li.getAttribute("data-search")).indexOf(term) !== -1; li.hidden = !ok; if(ok) visible++; });
+        document.getElementById("empty").style.display = visible ? "none" : "block";
       });
-      document.getElementById("empty").style.display = visible ? "none" : "block";
-    });
+    })();
   </script>
 </main>
 </body>
@@ -976,7 +1003,7 @@ function main() {
     fs.writeFileSync(path.join(dir, "index.html"), "\uFEFF" + candidatePageHtml(cand, TOPICS, CATEGORY_META, CATEGORY_ICON_PATHS, slugs), "utf8");
   });
 
-  fs.writeFileSync(path.join(OUT_DIR, "index.html"), "\uFEFF" + indexPageHtml(CANDIDATES), "utf8");
+  fs.writeFileSync(path.join(OUT_DIR, "index.html"), "\uFEFF" + indexPageHtml(CANDIDATES, TOPICS), "utf8");
 
   // Pages sujets : on repart d'un dossier propre (un sujet renommé ne laisse pas d'ancienne page).
   fs.rmSync(TOPIC_DIR, { recursive: true, force: true });
