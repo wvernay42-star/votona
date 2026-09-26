@@ -676,7 +676,7 @@ function topicIndexHtml(topics, categories, categoryMeta, categoryIconPaths, slu
     if (!list.length) return "";
     const meta = categoryMeta[cat] || {};
     return `
-  <section class="cat" style="--th:${themeColor(cat)}">
+  <section class="cat" id="theme-${escapeHtml(meta.slug || slugify(cat))}" style="--th:${themeColor(cat)}">
     <h2 class="theme-h">${propImg(cat, 34)}${escapeHtml(cat)}</h2>
     ${meta.d ? `<p class="cat-d">${escapeHtml(meta.d)}</p>` : ""}
     <ul>${list.map((t) => `<li data-search="${escapeHtml((t.statement + " " + t.cat).toLowerCase())}"><a href="${slugs[t.id]}/">${escapeHtml(t.statement)}</a></li>`).join("")}</ul>

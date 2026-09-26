@@ -623,13 +623,37 @@
     max-width:640px; margin-left:auto; margin-right:auto;
   }
   .trust-chip{
-    font-family:var(--mono); font-size:11px; color:var(--ink-soft); background:var(--line-soft);
-    padding:5px 10px; border-radius:99px;
+    font-family:var(--sans); font-size:12px; font-weight:700; color:var(--accent);
+    background:color-mix(in srgb, var(--accent) 12%, var(--bg-raised)); border:1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+    padding:5px 11px; border-radius:99px;
   }
+  .trust-chip::before{ content:"✓ "; }
   .landing-section{ margin-top:48px; }
   .landing-section h2{ font-size:24px; margin-bottom:6px; text-align:center; }
   .landing-section .sub{ font-size:14px; color:var(--ink-faint); margin-bottom:20px; text-align:center; }
   .axis-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:16px; }
+  .theme-tile{ position:relative; background:linear-gradient(150deg, color-mix(in srgb, var(--th) 22%, var(--bg-raised)), color-mix(in srgb, var(--th) 5%, var(--bg-raised))) !important; border-color:color-mix(in srgb, var(--th) 32%, var(--line-soft)) !important; }
+  .theme-tile:hover{ border-color:var(--th) !important; box-shadow:0 8px 20px color-mix(in srgb, var(--th) 22%, transparent) !important; }
+  .tile-prop{ display:block; width:44px; height:44px; object-fit:contain; margin-bottom:10px; filter:drop-shadow(0 3px 6px rgba(0,0,0,.15)); transition:transform .3s cubic-bezier(.34,1.56,.64,1); }
+  .theme-tile:hover .tile-prop{ transform:rotate(-8deg) scale(1.08); }
+  .tile-n{ margin-top:10px; font-size:12px; font-weight:800; color:var(--ink-soft); }
+  .explore-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin-top:16px; }
+  .explore-card{ display:flex; flex-direction:column; gap:6px; padding:18px; border-radius:22px; text-decoration:none; color:inherit; background:linear-gradient(150deg, color-mix(in srgb, var(--th) 18%, var(--bg-raised)), var(--bg-raised) 80%); border:2px solid color-mix(in srgb, var(--th) 28%, var(--line-soft)); transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+  .explore-card:hover{ transform:translateY(-2px); border-color:var(--th); box-shadow:0 8px 20px color-mix(in srgb, var(--th) 22%, transparent); }
+  .explore-card .t{ font-size:15.5px; font-weight:800; }
+  .explore-card .d{ font-size:12.5px; color:var(--ink-faint); line-height:1.45; }
+  .ex-art{ display:flex; align-items:center; height:46px; margin-bottom:6px; }
+  .ex-av{ width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font:800 12.5px var(--sans); border:3px solid var(--bg-raised); margin-left:-10px; position:relative; }
+  .ex-av:first-child{ margin-left:0; }
+  .ex-props{ gap:4px; } .ex-props img{ width:34px; height:34px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,.15)); }
+  .ex-props img:nth-child(odd){ transform:rotate(-8deg); } .ex-props img:nth-child(even){ transform:rotate(8deg); }
+  .ex-duo .ex-av{ margin-left:0; }
+  .ex-vs{ font-family:var(--mono); font-size:12px; font-weight:700; color:var(--ink-faint); margin:0 8px; }
+  .hero-crew{ display:flex; justify-content:center; align-items:flex-end; gap:0; margin:18px auto -6px; height:150px; }
+  .hero-crew img{ height:130px; width:auto; filter:drop-shadow(0 8px 12px rgba(0,0,0,.14)); }
+  .hero-crew .hc1{ transform:rotate(-7deg) translateX(14px); } .hero-crew .hc2{ height:150px; position:relative; z-index:1; } .hero-crew .hc3{ transform:rotate(7deg) translateX(-14px); }
+  .step-art{ width:auto; height:64px; flex:none; margin-left:auto; order:3; filter:drop-shadow(0 4px 8px rgba(0,0,0,.12)); }
+  .final-mascot{ display:block; width:96px; height:auto; margin:0 auto 14px; filter:drop-shadow(0 6px 12px rgba(0,0,0,.15)); }
   .axis-card{
     background:var(--bg-raised); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line-soft));
     border-radius:22px; padding:20px 18px;
@@ -741,7 +765,8 @@
   .glossary-card .term{ font-size:13.5px; font-weight:700; font-family:var(--mono); color:var(--accent); }
   .glossary-card .def{ font-size:12.5px; color:var(--ink-faint); margin-top:4px; line-height:1.4; }
   .steps-list{ display:flex; flex-direction:column; gap:14px; margin-top:14px; }
-  .step-item{ display:flex; gap:12px; align-items:flex-start; }
+  .step-item{ display:flex; gap:12px; align-items:center; background:var(--bg-raised); border:1px solid var(--line-soft); border-radius:20px; padding:12px 14px; }
+  .step-item > div:not(.step-num){ flex:1; min-width:0; }
   .step-num{
     font-family:var(--mono); font-weight:700; font-size:15px; color:var(--accent);
     background:var(--accent-soft); width:36px; height:36px; border-radius:16px; flex:none;
@@ -3706,14 +3731,31 @@ function avatarColor(seed){
 function axisGridHtml(){
   return CATEGORIES.map(function(cat){
     var m = CATEGORY_META[cat] || {ic:"•", d:"", c:"--accent"};
-    return '<div class="axis-card"><div class="ic" style="background:color-mix(in srgb, var(' + m.c + ') 16%, transparent); color:var(' + m.c + ')">' + categoryIconSvg(cat) + '</div>' +
+    var n = getTopics().filter(function(t){ return t.cat === cat; }).length;
+    return '<a class="axis-card theme-tile" href="/sujets/#theme-' + escapeHtml(m.slug || "") + '" style="--th:' + (m.pop || "var(--accent)") + '">' +
+      (m.slug ? '<img class="tile-prop" src="assets/props/' + m.slug + '.webp" width="44" height="44" alt="" loading="lazy" />' : '') +
       '<div class="t">' + escapeHtml(cat) + '</div>' +
-      '<div class="d">' + escapeHtml(m.d) + '</div></div>';
+      '<div class="d">' + escapeHtml(m.d) + '</div>' +
+      '<div class="tile-n">' + n + ' sujet' + (n > 1 ? 's' : '') + ' ›</div></a>';
   }).join("");
 }
+// Raccourcis illustrés vers les pages candidats, sujets et comparateur.
+function exploreCardsHtml(){
+  var cands = getCandidates().filter(function(c){ return !c.withdrawn; });
+  var stack = cands.slice(0, 5).map(function(c, i){
+    return '<span class="ex-av" style="background:' + c.color + ';z-index:' + (5 - i) + '">' + escapeHtml(initials(c.name)) + '</span>';
+  }).join("");
+  var props = ["economie", "ecologie", "europe", "securite"].map(function(s){ return '<img src="assets/props/' + s + '.webp" width="34" height="34" alt="" loading="lazy" />'; }).join("");
+  var duo = cands.slice(0, 2);
+  return '<a class="explore-card" href="/candidats/" style="--th:#3A86FF"><div class="ex-art">' + stack + '</div><div class="t">Tous les candidats</div><div class="d">' + cands.length + ' fiches, avec leurs positions sourcées sujet par sujet.</div></a>' +
+    '<a class="explore-card" href="/sujets/" style="--th:#06D6A0"><div class="ex-art ex-props">' + props + '</div><div class="t">Les ' + getTopics().length + ' sujets</div><div class="d">Qui est pour, qui est contre, et les sujets qui divisent le plus.</div></a>' +
+    '<a class="explore-card" href="/comparer/" style="--th:#FF6B6B"><div class="ex-art ex-duo">' + duo.map(function(c){ return '<span class="ex-av" style="background:' + c.color + '">' + escapeHtml(initials(c.name)) + '</span>'; }).join('<span class="ex-vs">vs</span>') + '</div><div class="t">Comparer deux candidats</div><div class="d">Leurs points d\'accord et d\'opposition, côte à côte.</div></a>';
+}
 function howItWorksHtml(){
+  var arts = ["protection-sociale-n1", "economie-n2", "ecologie-n3"];
   return HOW_IT_WORKS.map(function(s, i){
     return '<div class="step-item"><div class="step-num">' + (i+1) + '</div>' +
+      (arts[i] ? '<img class="step-art" src="assets/characters/' + arts[i] + '.webp" width="54" height="92" alt="" loading="lazy" />' : '') +
       '<div><div class="t">' + escapeHtml(s.t) + '</div><div class="d">' + escapeHtml(s.d) + '</div></div></div>';
   }).join("");
 }
@@ -3795,6 +3837,11 @@ function renderProfiles(){
       '<h1>Vot<span class="hl">on</span><span class="hl spin-a-bob"><span class="spin-a"><span class="spin-a-face spin-a-front">a</span><span class="spin-a-face spin-a-back">a</span></span></span></h1>' +
       '<p class="hero-tagline">Donne le ton à ton vote.</p>' +
       '<p class="intro-copy">Réponds aux prises de position des candidats déclarés à la présidentielle 2027, à ton rythme. Chaque profil garde ses propres réponses et ses propres résultats, sur cet ordinateur.</p>' +
+      '<div class="hero-crew" aria-hidden="true">' +
+        '<img class="hc1" src="assets/characters/economie-n3.webp" width="339" height="577" alt="" />' +
+        '<img class="hc2" src="assets/characters/ecologie-n3.webp" width="339" height="577" alt="" />' +
+        '<img class="hc3" src="assets/characters/securite-n3.webp" width="339" height="577" alt="" />' +
+      '</div>' +
     '</div>' +
     '<div class="trust-row">' +
       '<span class="trust-chip">' + candidates.length + ' candidats suivis</span>' +
@@ -3803,7 +3850,7 @@ function renderProfiles(){
       '<span class="trust-chip">Données gardées sur cet appareil</span>' +
     '</div>' +
     '<div class="profile-grid">' + cardsHtml + '</div>' +
-    (ids.length ? '' : '<p class="empty-state">Aucun profil pour l\'instant — crée le premier ci-dessous.</p>') +
+    (ids.length ? '' : '<p class="empty-state" style="padding:22px 10px 4px;">Aucun profil pour l\'instant — crée le premier ci-dessous.</p>') +
     '<div style="margin-top:16px; max-width:420px; margin-left:auto; margin-right:auto;">' +
       '<button class="btn ' + (ids.length ? 'btn-ghost' : 'btn-accent') + ' btn-block" id="btn-new-profile">+ Créer un profil</button>' +
       '<div class="new-profile-form" id="new-profile-form">' +
@@ -3820,6 +3867,9 @@ function renderProfiles(){
     '<section class="landing-section"><h2>Sept familles de sujets</h2>' +
       '<div class="sub">Les questions couvrent l\'ensemble de ces thèmes, sans se limiter aux gros titres du moment.</div>' +
       '<div class="axis-grid">' + axisGridHtml() + '</div></section>' +
+    '<section class="landing-section"><h2>Explorer la campagne</h2>' +
+      '<div class="sub">Sans créer de profil : les fiches des candidats, les sujets, et un comparateur.</div>' +
+      '<div class="explore-grid">' + exploreCardsHtml() + '</div></section>' +
     '<section class="landing-section landing-narrow"><h2>Comment ça marche</h2>' +
       '<div class="steps-list">' + howItWorksHtml() + '</div></section>' +
     '<section class="landing-section landing-narrow"><h2>Se repérer dans la présidentielle 2027</h2>' +
@@ -3838,6 +3888,7 @@ function renderProfiles(){
       '<button class="btn btn-ghost btn-block" id="btn-open-faq">Consulter la FAQ complète</button></section>' +
     '<section class="landing-section landing-narrow final-cta"><h2>Prêt à te lancer ?</h2>' +
       '<div class="sub">Quelques minutes suffisent pour découvrir tes affinités avec les candidats déclarés.</div>' +
+      '<img class="final-mascot" src="assets/ui/logo-head.webp" width="96" height="81" alt="" loading="lazy" />' +
       '<button class="btn btn-accent btn-block" id="btn-final-cta">' + (ids.length ? "Choisir mon profil" : "Créer mon profil") + '</button></section>';
 
   document.getElementById("app").innerHTML = html;
