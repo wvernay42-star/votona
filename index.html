@@ -761,8 +761,8 @@
   }
   .blister-sub{ font-size:12px; color:var(--ink); opacity:.75; margin-top:6px; }
 
-  .share-canvas-wrap{ max-width:340px; margin:20px auto 0; text-align:center; }
-  .share-canvas-wrap canvas{ width:100%; max-width:340px; border-radius:28px; box-shadow:0 20px 50px -20px rgba(0,0,0,.35); }
+  .share-canvas-wrap{ max-width:300px; margin:20px auto 0; text-align:center; }
+  .share-canvas-wrap canvas{ width:100%; max-width:300px; border-radius:22px; box-shadow:0 20px 50px -20px rgba(0,0,0,.35); }
 
   .kit-modal-overlay{
     position:fixed; inset:0; background:rgba(20,18,31,.55); z-index:50;
@@ -3553,38 +3553,64 @@ async function generateShareCardImage(profile){
   '</svg>';
   var ringImg = await loadImageSafe("data:image/svg+xml;charset=utf-8," + encodeURIComponent(ringSvg));
 
-  var W = 640, H = 900, pad = 56, radius = 48;
+  // Format story Instagram : 1080×1920 (9:16). On dessine sur une grille
+  // logique de 720×1280 mise à l'échelle ×1,5. Fond plein, sans coins arrondis
+  // (des coins transparents deviendraient noirs dans Instagram), et contenu
+  // principal gardé hors des ~12 % du haut et du bas que recouvre l'interface.
+  var SCALE = 1.5, W = 720, H = 1280, pad = 64;
   var canvas = document.createElement("canvas");
-  canvas.width = W; canvas.height = H;
+  canvas.width = W * SCALE; canvas.height = H * SCALE;
   var ctx = canvas.getContext("2d");
-
-  drawRoundedRect(ctx, 0, 0, W, H, radius);
-  ctx.fillStyle = "#fbfaf7";
-  ctx.fill();
+  ctx.scale(SCALE, SCALE);
 
   var popRgb = hexToRgb(pop);
-  var bgGradient = ctx.createLinearGradient(0, 0, 0, H * 0.6);
-  bgGradient.addColorStop(0, "rgba(" + popRgb + ",.22)");
-  bgGradient.addColorStop(1, "rgba(" + popRgb + ",0)");
-  drawRoundedRect(ctx, 0, 0, W, H, radius);
+  ctx.fillStyle = "#fbfaf7";
+  ctx.fillRect(0, 0, W, H);
+  var bgGradient = ctx.createLinearGradient(0, 0, 0, H);
+  bgGradient.addColorStop(0, "rgba(" + popRgb + ",.30)");
+  bgGradient.addColorStop(0.55, "rgba(" + popRgb + ",.08)");
+  bgGradient.addColorStop(1, "rgba(" + popRgb + ",.22)");
   ctx.fillStyle = bgGradient;
-  ctx.fill();
+  ctx.fillRect(0, 0, W, H);
+
+  // Accessoires des thèmes en décor, légèrement transparents, dans les marges.
+  var decoSlugs = ["economie", "ecologie", "europe", "securite", "societe", "protection-sociale"];
+  var decoImgs = await Promise.all(decoSlugs.map(function(sl){ return loadImageSafe("assets/props/" + sl + ".webp"); }));
+  var decoPos = [[30, 300, 70, -12], [620, 340, 64, 14], [22, 700, 60, 10], [632, 760, 66, -10], [70, 1150, 58, 8], [600, 1165, 62, -8]];
+  ctx.save();
+  ctx.globalAlpha = 0.22;
+  decoImgs.forEach(function(img, i){
+    if(!img) return;
+    var d = decoPos[i];
+    ctx.save();
+    ctx.translate(d[0] + d[2] / 2, d[1] + d[2] / 2);
+    ctx.rotate(d[3] * Math.PI / 180);
+    drawImageContain(ctx, img, -d[2] / 2, -d[2] / 2, d[2], d[2]);
+    ctx.restore();
+  });
+  ctx.restore();
 
   ctx.textAlign = "center";
   ctx.fillStyle = "#14121F";
-  ctx.font = "800 32px 'Baloo 2', sans-serif";
-  ctx.fillText("Votona", W / 2, 54);
+  ctx.font = "800 46px 'Baloo 2', sans-serif";
+  ctx.fillText("Votona", W / 2, 186);
 
-  ctx.font = "700 14px 'IBM Plex Mono', monospace";
-  var tagText = "PRÉSIDENTIELLE 2027", tagW = ctx.measureText(tagText).width + 32, tagH = 28;
-  drawRoundedRect(ctx, (W - tagW) / 2, 68, tagW, tagH, tagH / 2);
+  ctx.font = "700 16px 'IBM Plex Mono', monospace";
+  var tagText = "PRÉSIDENTIELLE 2027", tagW = ctx.measureText(tagText).width + 36, tagH = 32;
+  drawRoundedRect(ctx, (W - tagW) / 2, 204, tagW, tagH, tagH / 2);
   ctx.fillStyle = pop;
   ctx.fill();
   ctx.fillStyle = "#ffffff";
-  ctx.fillText(tagText, W / 2, 68 + tagH / 2 + 5);
+  ctx.fillText(tagText, W / 2, 204 + tagH / 2 + 6);
 
-  var blisterW = 380, blisterH = blisterW * (1085 / 775);
-  var blisterX = (W - blisterW) / 2, blisterY = 108;
+  ctx.globalAlpha = 0.7;
+  ctx.fillStyle = "#14121F";
+  ctx.font = "700 17px 'Work Sans', sans-serif";
+  ctx.fillText("MON STARTER PACK POLITIQUE", W / 2, 282);
+  ctx.globalAlpha = 1;
+
+  var blisterW = 420, blisterH = blisterW * (1085 / 775);
+  var blisterX = (W - blisterW) / 2, blisterY = 294;
   if(templateImg) ctx.drawImage(templateImg, blisterX, blisterY, blisterW, blisterH);
 
   // Le kit "live" a une largeur de blister fixe (.blister-outer max-width:280px) ;
@@ -3612,28 +3638,27 @@ async function generateShareCardImage(profile){
   accessoryImgs.forEach(function(img, i){ drawInSlot(img, slotBoxes[i]); });
   drawInSlot(ringImg, slotBoxes[2]);
 
-  var y = blisterY + blisterH + 26;
-  ctx.font = "800 25px 'Baloo 2', sans-serif";
+  var y = blisterY + blisterH + 40;
+  ctx.font = "800 32px 'Baloo 2', sans-serif";
   ctx.fillStyle = "#14121F";
   wrapCanvasText(ctx, archetypeName.toUpperCase(), W - pad * 2).forEach(function(line){
     ctx.fillText(line, W / 2, y);
-    y += 29;
+    y += 36;
   });
 
-  y += 4;
+  y += 2;
   ctx.globalAlpha = 0.75;
-  ctx.font = "500 14px 'Work Sans', sans-serif";
+  ctx.font = "500 17px 'Work Sans', sans-serif";
   ctx.fillText("Niveau " + level.level + " · " + level.name + " · " + level.answered + "/" + level.total + " sujets", W / 2, y);
   ctx.globalAlpha = 1;
 
-  // Footer compact : CTA et QR code côte à côte (au lieu d'empilés)
-  // pour limiter la hauteur totale de l'image sur écran mobile.
-  y += 24;
-  var qrSize = 112;
-  var ctaH = 56;
-  var ctaW = W - pad * 2 - qrSize - 18;
+  // Pied : invitation + CTA et QR code côte à côte, au-dessus de la zone
+  // basse recouverte par Instagram.
+  y += 30;
+  var qrSize = 120;
+  var ctaH = 58;
+  var ctaW = W - pad * 2 - qrSize - 20;
   var ctaY = y + (qrSize - ctaH) / 2;
-  var ctaText = "votona.fr";
   ctx.save();
   ctx.shadowColor = "rgba(" + popRgb + ",.45)";
   ctx.shadowBlur = 16;
@@ -3643,12 +3668,19 @@ async function generateShareCardImage(profile){
   ctx.fill();
   ctx.restore();
   ctx.fillStyle = "#ffffff";
-  ctx.font = "700 18px 'IBM Plex Mono', monospace";
-  ctx.fillText(ctaText, pad + ctaW / 2, ctaY + ctaH / 2 + 6);
+  ctx.font = "700 21px 'IBM Plex Mono', monospace";
+  ctx.fillText("votona.fr", pad + ctaW / 2, ctaY + ctaH / 2 + 7);
+  ctx.globalAlpha = 0.7;
+  ctx.fillStyle = "#14121F";
+  ctx.font = "600 14px 'Work Sans', sans-serif";
+  ctx.fillText("Et toi, quel est ton profil ?", pad + ctaW / 2, ctaY - 12);
+  ctx.globalAlpha = 1;
 
   var qrBoxX = W - pad - qrSize;
-  var qrInner = qrSize - 20;
-  drawQrCode(ctx, buildReferralUrl(profile), qrBoxX + 10, y + 10, qrInner, "#14121F");
+  drawRoundedRect(ctx, qrBoxX, y, qrSize, qrSize, 18);
+  ctx.fillStyle = "#ffffff";
+  ctx.fill();
+  drawQrCode(ctx, buildReferralUrl(profile), qrBoxX + 10, y + 10, qrSize - 20, "#14121F");
 
   return canvas;
 }
