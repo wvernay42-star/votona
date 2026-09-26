@@ -134,6 +134,11 @@ const SHARED_CSS = `
   @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
   @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }`;
 
+// Nom court d'un thème, pour les pastilles du sommaire.
+function shortCat(cat) {
+  return cat === "Protection sociale" ? "Social" : cat.split(" ")[0];
+}
+
 function catIconSvg(cat, categoryIconPaths, size) {
   const iconPath = categoryIconPaths[cat];
   if (!iconPath) return "";
@@ -150,25 +155,76 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths, slugs)
   const unknown = topics.filter((t) => !isKnown(cand.positions && cand.positions[t.id]));
   const indexable = known.length > 0;
 
-  const rows = known.map((t) => {
+  const row = (t) => {
     const pos = cand.positions[t.id];
     const stance = pos.stance;
     const label = STANCE_LABEL[stance] || stance;
     const icon = STANCE_ICON[stance] || "";
     const detail = pos.detail || "";
     return `
-    <article class="topic-row">
-      <div class="topic-cat">${catIconSvg(t.cat, categoryIconPaths, 13)}${escapeHtml(t.cat)}</div>
-      <h3><a href="/sujets/${slugs[t.id]}/">${escapeHtml(t.statement)}</a></h3>
-      <p class="stance-label">${escapeHtml(icon)} ${escapeHtml(label)}</p>
+    <article class="topic-row" data-stance="${escapeHtml(stance)}">
+      <h4><a href="/sujets/${slugs[t.id]}/">${escapeHtml(t.statement)}</a></h4>
+      <p class="stance-label s-${escapeHtml(stance)}">${escapeHtml(icon)} ${escapeHtml(label)}</p>
       ${detail ? `<p class="detail">${escapeHtml(detail)}</p>` : ""}
     </article>`;
-  }).join("\n");
+  };
+  // Positions connues regroupées par thème (ordre des thèmes de l'app), avec
+  // une ancre par thème pour le sommaire collant.
+  const cats = Object.keys(categoryMeta).filter((cat) => known.some((t) => t.cat === cat));
+  const catId = (cat) => "theme-" + ((categoryMeta[cat] && categoryMeta[cat].slug) || slugify(cat));
+  const rows = cats.map((cat) => `
+  <section class="theme" id="${catId(cat)}">
+    <h3 class="theme-h">${catIconSvg(cat, categoryIconPaths, 16)}${escapeHtml(cat)}</h3>${known.filter((t) => t.cat === cat).map(row).join("")}
+  </section>`).join("");
+  const count = (st) => known.filter((t) => cand.positions[t.id].stance === st).length;
+  const filterChip = (st, label) => {
+    const n = st ? count(st) : known.length;
+    return n ? `<button type="button" class="chip${st ? "" : " on"}" data-filter="${st}">${label} · ${n}</button>` : "";
+  };
+  const toolbar = `
+  <div class="toolbar" id="toolbar">
+    ${cats.length > 1 ? `<nav class="theme-nav" aria-label="Aller à un thème">${cats.map((cat) => `<a href="#${catId(cat)}" data-target="${catId(cat)}">${catIconSvg(cat, categoryIconPaths, 14)}${escapeHtml(shortCat(cat))}</a>`).join("")}</nav>` : ""}
+    <div class="filters" role="group" aria-label="Filtrer ses positions">${filterChip("", "Tout")}${filterChip("pour", "✓ D'accord")}${filterChip("contre", "✕ Pas d'accord")}${filterChip("neutre", "– Neutre")}</div>
+  </div>
+  <p class="no-match" id="no-match">Aucune position de ce type.</p>`;
+  const toolbarJs = `
+  <script>
+    (function(){
+      var chips = document.querySelectorAll(".filters .chip");
+      var rows = document.querySelectorAll(".topic-row");
+      var themes = document.querySelectorAll("section.theme");
+      chips.forEach(function(chip){
+        chip.addEventListener("click", function(){
+          var f = chip.getAttribute("data-filter");
+          chips.forEach(function(c){ c.classList.toggle("on", c === chip); });
+          var shown = 0;
+          rows.forEach(function(r){ var ok = !f || r.getAttribute("data-stance") === f; r.hidden = !ok; if(ok) shown++; });
+          themes.forEach(function(s){ s.hidden = !s.querySelector(".topic-row:not([hidden])"); });
+          document.querySelectorAll(".theme-nav a").forEach(function(a){ var sec = document.getElementById(a.getAttribute("data-target")); a.hidden = !sec || sec.hidden; });
+          document.getElementById("no-match").style.display = shown ? "none" : "block";
+        });
+      });
+      var links = document.querySelectorAll(".theme-nav a");
+      if(links.length && "IntersectionObserver" in window){
+        var obs = new IntersectionObserver(function(entries){
+          entries.forEach(function(e){
+            if(!e.isIntersecting) return;
+            links.forEach(function(a){
+              var on = a.getAttribute("data-target") === e.target.id;
+              a.classList.toggle("on", on);
+              var nav = a.parentNode; if(on && nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: a.offsetLeft - nav.offsetLeft - 16, behavior: "smooth" });
+            });
+          });
+        }, { rootMargin: "-40% 0px -55% 0px" });
+        themes.forEach(function(s){ obs.observe(s); });
+      }
+    })();
+  </script>`;
 
   const unknownLinks = unknown.map((t) => `<li><a href="/sujets/${slugs[t.id]}/">${escapeHtml(t.statement)}</a></li>`).join("");
   const positionsHtml = indexable
-    ? `<h2 class="subhead">Ses positions connues <span class="count">${known.length}</span></h2>
-  ${rows}${unknown.length ? `
+    ? `<h2 class="subhead">Ses positions connues <span class="count">${known.length}</span></h2>${toolbar}
+  ${rows}${toolbarJs}${unknown.length ? `
   <details class="unknown">
     <summary>Pas encore de position connue sur ${unknown.length} sujet${unknown.length > 1 ? "s" : ""}</summary>
     <ul>${unknownLinks}</ul>
@@ -224,10 +280,26 @@ ${HEAD_ICONS}
   .cta{ margin:28px 0; }
   h2.subhead{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:36px 0 16px; }
   .topic-row{ padding:16px 0; border-top:1px solid var(--line); }
+  .theme{ scroll-margin-top:100px; }
+  .theme-h{ display:flex; align-items:center; gap:2px; font-family:'Baloo 2',sans-serif; font-size:18px; margin:26px 0 4px; color:var(--ink); }
+  .toolbar{ position:sticky; top:0; z-index:5; margin:0 -20px; padding:10px 20px; background:color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+  .theme-nav{ display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; padding-bottom:8px; }
+  .theme-nav::-webkit-scrollbar{ display:none; }
+  .theme-nav a{ flex:none; display:inline-flex; align-items:center; padding:6px 12px; border-radius:99px; border:1px solid var(--line); background:#fff; color:var(--ink-soft); font-size:13px; font-weight:600; text-decoration:none; white-space:nowrap; }
+  .theme-nav a svg{ margin-right:5px !important; }
+  .theme-nav a:hover, .theme-nav a.on{ border-color:var(--accent); color:var(--accent); }
+  .filters{ display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; }
+  .filters::-webkit-scrollbar{ display:none; }
+  .chip{ flex:none; white-space:nowrap; appearance:none; cursor:pointer; padding:6px 12px; border-radius:99px; border:1px solid var(--line); background:transparent; color:var(--ink-soft); font:600 13px 'Work Sans',Arial,sans-serif; }
+  .chip:hover{ border-color:var(--accent); color:var(--accent); }
+  .chip.on{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .no-match{ display:none; color:var(--ink-faint); font-size:14px; padding:16px 0; }
+  .stance-label.s-pour{ color:#2c9354; } .stance-label.s-contre{ color:#d1453a; }
+  @media (min-width:700px){ .theme-nav, .filters{ flex-wrap:wrap; overflow:visible; gap:5px; } .theme-nav a{ padding:6px 10px; } }
   .topic-cat{ display:flex; align-items:center; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin-bottom:6px; }
-  .topic-row h3{ font-size:16px; margin:0 0 6px; }
-  .topic-row h3 a{ color:inherit; text-decoration:none; }
-  .topic-row h3 a:hover{ color:var(--accent); text-decoration:underline; }
+  .topic-row h4{ font-size:16px; margin:0 0 6px; }
+  .topic-row h4 a{ color:inherit; text-decoration:none; }
+  .topic-row h4 a:hover{ color:var(--accent); text-decoration:underline; }
   .stance-label{ font-weight:700; font-size:13.5px; margin:0 0 4px; color:var(--ink); }
   .detail{ font-size:13.5px; line-height:1.55; color:var(--ink-soft); margin:0; }
   .count{ display:inline-block; min-width:22px; padding:1px 8px; margin-left:4px; border-radius:99px; background:var(--line); color:var(--ink-soft); font-size:12px; font-family:inherit; font-weight:700; text-align:center; vertical-align:middle; }
@@ -461,17 +533,31 @@ ${HEADER}
 `;
 }
 
-function topicIndexHtml(topics, categories, categoryMeta, categoryIconPaths, slugs) {
+function topicIndexHtml(topics, categories, categoryMeta, categoryIconPaths, slugs, candidates) {
   const canonical = `${SITE_URL}/sujets/`;
+  // Sujets qui divisent le plus les candidats : le plus d'avis tranchés des
+  // deux côtés à la fois (min pour/contre), départagés par le total.
+  const active = candidates.filter((c) => !c.withdrawn);
+  const split = topics.map((t) => {
+    let pour = 0, contre = 0;
+    active.forEach((c) => { const pos = c.positions && c.positions[t.id]; if (isKnown(pos)) { if (pos.stance === "pour") pour++; else if (pos.stance === "contre") contre++; } });
+    return { t, pour, contre, score: Math.min(pour, contre) };
+  }).filter((x) => x.score >= 3).sort((a, b) => b.score - a.score || (b.pour + b.contre) - (a.pour + a.contre)).slice(0, 3);
+  const divisive = split.length ? `
+  <section class="divisive" id="divisive">
+    <h2>Les sujets qui divisent le plus les candidats</h2>
+    <ul>${split.map(({ t, pour, contre }) => `<li><a href="${slugs[t.id]}/"><span class="d-title">${escapeHtml(t.statement)}</span><span class="d-bar" aria-hidden="true"><span style="flex:${pour}"></span><span style="flex:${contre}"></span></span><span class="d-meta"><span class="s-pour">${pour} pour</span> · <span class="s-contre">${contre} contre</span></span></a></li>`).join("")}
+    </ul>
+  </section>` : "";
   const blocks = categories.map((cat) => {
     const list = topics.filter((t) => t.cat === cat);
     if (!list.length) return "";
     const meta = categoryMeta[cat] || {};
     return `
-  <section>
+  <section class="cat">
     <h2>${catIconSvg(cat, categoryIconPaths, 18)}${escapeHtml(cat)}</h2>
     ${meta.d ? `<p class="cat-d">${escapeHtml(meta.d)}</p>` : ""}
-    <ul>${list.map((t) => `<li><a href="${slugs[t.id]}/">${escapeHtml(t.statement)}</a></li>`).join("")}</ul>
+    <ul>${list.map((t) => `<li data-search="${escapeHtml((t.statement + " " + t.cat).toLowerCase())}"><a href="${slugs[t.id]}/">${escapeHtml(t.statement)}</a></li>`).join("")}</ul>
   </section>`;
   }).join("");
   return `<!DOCTYPE html>
@@ -497,7 +583,20 @@ ${HEAD_ICONS}
   section li{ padding:11px 0; border-top:1px solid var(--line); }
   section li a{ color:var(--ink); text-decoration:none; font-weight:600; font-size:15px; line-height:1.4; }
   section li a:hover{ color:var(--accent); }
+  section li[hidden], section[hidden]{ display:none; }
   .cta{ margin:24px 0 8px; }
+  input#q{ width:100%; padding:12px 16px; border-radius:14px; border:1px solid var(--line); font-size:14px; font-family:inherit; margin-top:22px; background:#fff; color:var(--ink); }
+  input#q:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  #empty{ display:none; color:var(--ink-faint); font-size:13.5px; padding:14px 0; }
+  .divisive ul{ display:grid; gap:10px; }
+  .divisive li{ padding:0; border:0; }
+  .divisive li a{ display:flex; flex-direction:column; gap:8px; padding:14px 16px; background:#fff; border:1px solid var(--line); border-radius:16px; }
+  .divisive li a:hover{ border-color:var(--accent); }
+  .d-title{ font-weight:600; font-size:15px; line-height:1.4; color:var(--ink); }
+  .d-bar{ display:flex; gap:3px; height:8px; border-radius:99px; overflow:hidden; }
+  .d-bar span:first-child{ background:#2c9354; } .d-bar span:last-child{ background:#d1453a; }
+  .d-meta{ font-size:12.5px; font-weight:700; }
+  .s-pour{ color:#2c9354; } .s-contre{ color:#d1453a; }
 </style>
 </head>
 <body>
@@ -506,7 +605,23 @@ ${HEADER_INDEX}
   <nav class="crumbs"><a class="crumb" href="/candidats/">Tous les candidats ›</a></nav>
   <h1>Les ${topics.length} sujets de la présidentielle 2027</h1>
   <p class="intro">Pour chaque grand sujet de la campagne, découvre qui est pour, qui est contre et qui ne s'est pas encore prononcé parmi les candidats déclarés.</p>
-  <a class="btn btn-accent cta" href="/">Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>${blocks}
+  <a class="btn btn-accent cta" href="/">Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>
+  <input id="q" type="search" placeholder="Rechercher un sujet (retraite, nucléaire, SMIC…)" aria-label="Rechercher un sujet" />${divisive}${blocks}
+  <p id="empty">Aucun sujet ne correspond à cette recherche.</p>
+  <script>
+    (function(){
+      var q = document.getElementById("q");
+      var items = Array.prototype.slice.call(document.querySelectorAll("section.cat li"));
+      var norm = function(s){ return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); };
+      q.addEventListener("input", function(){
+        var term = norm(q.value.trim()), visible = 0;
+        items.forEach(function(li){ var ok = !term || norm(li.getAttribute("data-search")).indexOf(term) !== -1; li.hidden = !ok; if(ok) visible++; });
+        document.querySelectorAll("section.cat").forEach(function(s){ s.hidden = !s.querySelector("li:not([hidden])"); });
+        var d = document.getElementById("divisive"); if(d) d.hidden = !!term;
+        document.getElementById("empty").style.display = visible ? "none" : "block";
+      });
+    })();
+  </script>
 </main>
 </body>
 </html>
@@ -549,7 +664,7 @@ function main() {
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, "index.html"), "\uFEFF" + topicPageHtml(t, CANDIDATES, TOPICS, CATEGORY_ICON_PATHS, slugs), "utf8");
   });
-  fs.writeFileSync(path.join(TOPIC_DIR, "index.html"), "\uFEFF" + topicIndexHtml(TOPICS, CATEGORIES, CATEGORY_META, CATEGORY_ICON_PATHS, slugs), "utf8");
+  fs.writeFileSync(path.join(TOPIC_DIR, "index.html"), "\uFEFF" + topicIndexHtml(TOPICS, CATEGORIES, CATEGORY_META, CATEGORY_ICON_PATHS, slugs, CANDIDATES), "utf8");
 
   fs.writeFileSync(path.join(ROOT, "sitemap.xml"), sitemapXml(CANDIDATES, TOPICS, slugs), "utf8");
 
