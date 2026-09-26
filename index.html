@@ -664,7 +664,23 @@
   .ex-vs{ font-family:var(--mono); font-size:12px; font-weight:700; color:var(--ink-faint); margin:0 8px; }
   .hero-crew{ display:flex; justify-content:center; align-items:flex-end; gap:0; margin:18px auto -6px; height:150px; }
   .hero-crew img{ height:130px; width:auto; filter:drop-shadow(0 8px 12px rgba(0,0,0,.14)); }
-  .hero-crew .hc1{ transform:rotate(-7deg) translateX(14px); } .hero-crew .hc2{ height:150px; position:relative; z-index:1; } .hero-crew .hc3{ transform:rotate(7deg) translateX(-14px); }
+  .hero-crew .hc1{ --r:-7deg; --x:14px; } .hero-crew .hc2{ --r:0deg; --x:0px; height:150px; position:relative; z-index:1; } .hero-crew .hc3{ --r:7deg; --x:-14px; }
+  /* Petite animation : les trois oursons sautillent à tour de rôle, et se penchent au survol. */
+  .hero-crew img{ transform-origin:50% 100%; transform:translateX(var(--x)) rotate(var(--r)); animation:crewHop 3.6s ease-in-out infinite; transition:filter .2s; }
+  .hero-crew .hc2{ animation-delay:.35s; } .hero-crew .hc3{ animation-delay:.7s; }
+  .hero-crew img:hover{ animation:crewWiggle .6s ease-in-out; }
+  @keyframes crewHop{
+    0%, 22%, 100%{ transform:translateX(var(--x)) rotate(var(--r)) translateY(0) scaleY(1); }
+    6%{ transform:translateX(var(--x)) rotate(var(--r)) translateY(0) scaleY(.94); }
+    12%{ transform:translateX(var(--x)) rotate(var(--r)) translateY(-14px) scaleY(1.03); }
+    18%{ transform:translateX(var(--x)) rotate(var(--r)) translateY(0) scaleY(.97); }
+  }
+  @keyframes crewWiggle{
+    0%, 100%{ transform:translateX(var(--x)) rotate(var(--r)); }
+    30%{ transform:translateX(var(--x)) rotate(calc(var(--r) - 10deg)); }
+    65%{ transform:translateX(var(--x)) rotate(calc(var(--r) + 8deg)); }
+  }
+  @media (prefers-reduced-motion: reduce){ .hero-crew img{ animation:none !important; } }
   .step-art{ width:auto; height:64px; flex:none; margin-left:auto; order:3; filter:drop-shadow(0 4px 8px rgba(0,0,0,.12)); }
   .final-mascot{ display:block; width:96px; height:auto; margin:0 auto 14px; filter:drop-shadow(0 6px 12px rgba(0,0,0,.15)); }
   .axis-card{
@@ -842,11 +858,6 @@
     60%{ transform:scale(1.06) rotate(3deg); opacity:1; }
     100%{ transform:scale(1) rotate(0deg); opacity:1; }
   }
-  @keyframes markSettleFaint{
-    0%{ transform:scale(.6) rotate(-8deg); opacity:0; }
-    60%{ transform:scale(1.06) rotate(3deg); opacity:.08; }
-    100%{ transform:scale(1) rotate(0deg); opacity:.08; }
-  }
   @keyframes fadeInUp{
     from{ opacity:0; transform:translateY(10px); }
     to{ opacity:1; transform:translateY(0); }
@@ -864,11 +875,6 @@
   .profile-card:hover, .axis-card:hover{ transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--line); }
   .result-row:hover{ transform:translateY(-1px); border-color:var(--ink-faint); }
   .candidate-row:hover{ border-color:var(--ink-faint); }
-  .hero-watermark{
-    position:absolute; top:8px; right:6px; width:180px; height:180px;
-    pointer-events:none; z-index:-1; animation: markSettleFaint 1.3s cubic-bezier(.22,1,.36,1) both;
-    opacity:.14; object-fit:contain; object-position:top;
-  }
   .hero-wrap{ position:relative; overflow:hidden; isolation:isolate; max-width:640px; margin-left:auto; margin-right:auto; }
   h1 .hl{ color:var(--accent); display:inline-grid; line-height:1.61; vertical-align:baseline; }
   h1 .spin-a-bob{ animation:spinABob 7s ease-in-out infinite; }
@@ -3845,7 +3851,6 @@ function renderProfiles(){
 
   var html = referralBannerHtml +
     '<div class="hero-wrap">' +
-      '<img class="hero-watermark" src="assets/ui/logo-head.webp" alt="" aria-hidden="true" />' +
       '<span class="eyebrow">Qui vote aujourd\'hui ?</span>' +
       '<h1>Vot<span class="hl">on</span><span class="hl spin-a-bob"><span class="spin-a"><span class="spin-a-face spin-a-front">a</span><span class="spin-a-face spin-a-back">a</span></span></span></h1>' +
       '<p class="hero-tagline">Donne le ton à ton vote.</p>' +
