@@ -762,7 +762,11 @@
   .blister-sub{ font-size:12px; color:var(--ink); opacity:.75; margin-top:6px; }
 
   .share-canvas-wrap{ max-width:300px; margin:20px auto 0; text-align:center; }
-  .share-canvas-wrap canvas{ width:100%; max-width:300px; border-radius:22px; box-shadow:0 20px 50px -20px rgba(0,0,0,.35); }
+  .share-canvas-wrap canvas{ width:100%; max-width:300px; }
+  .share-modal-overlay{ -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); background:rgba(20,18,31,.45); }
+  .share-modal-card{ max-height:94vh; padding:22px 20px 22px; }
+  .share-modal-card .share-canvas-wrap{ margin-top:10px; }
+  .share-modal-card .share-canvas-wrap canvas{ width:auto; height:min(56vh, 520px); max-width:100%; }
 
   .kit-modal-overlay{
     position:fixed; inset:0; background:rgba(20,18,31,.55); z-index:50;
@@ -777,6 +781,9 @@
     border:none; background:var(--line-soft); color:var(--ink); font-size:15px; cursor:pointer;
     display:flex; align-items:center; justify-content:center;
   }
+  .acct-profile-row{ cursor:pointer; }
+  .acct-profile-row.is-active{ border-color:var(--accent); }
+  .acct-hint{ font-size:12px; font-weight:700; color:var(--accent); margin-top:3px; }
   .kit-modal-header{ display:flex; align-items:center; gap:12px; margin-bottom:4px; padding-right:40px; }
   .kit-modal-icon{ width:48px; height:48px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:22px; flex:none; }
   .kit-modal-title{ font-family:var(--display); font-weight:700; font-size:20px; line-height:1.2; }
@@ -3554,9 +3561,9 @@ async function generateShareCardImage(profile){
   var ringImg = await loadImageSafe("data:image/svg+xml;charset=utf-8," + encodeURIComponent(ringSvg));
 
   // Format story Instagram : 1080×1920 (9:16). On dessine sur une grille
-  // logique de 720×1280 mise à l'échelle ×1,5. Fond plein, sans coins arrondis
-  // (des coins transparents deviendraient noirs dans Instagram), et contenu
-  // principal gardé hors des ~12 % du haut et du bas que recouvre l'interface.
+  // logique de 720×1280 mise à l'échelle ×1,5. Le fond de l'image est
+  // transparent : seule une carte arrondie est dessinée, et le contenu
+  // principal reste hors des ~12 % du haut et du bas que recouvre l'interface.
   var SCALE = 1.5, W = 720, H = 1280, pad = 64;
   var canvas = document.createElement("canvas");
   canvas.width = W * SCALE; canvas.height = H * SCALE;
@@ -3564,31 +3571,22 @@ async function generateShareCardImage(profile){
   ctx.scale(SCALE, SCALE);
 
   var popRgb = hexToRgb(pop);
+  var cardX = 28, cardY = 118, cardW = W - 56, cardH = 1060, cardR = 46;
+  ctx.save();
+  ctx.shadowColor = "rgba(20,18,31,.25)";
+  ctx.shadowBlur = 30;
+  ctx.shadowOffsetY = 10;
+  drawRoundedRect(ctx, cardX, cardY, cardW, cardH, cardR);
   ctx.fillStyle = "#fbfaf7";
-  ctx.fillRect(0, 0, W, H);
-  var bgGradient = ctx.createLinearGradient(0, 0, 0, H);
+  ctx.fill();
+  ctx.restore();
+  var bgGradient = ctx.createLinearGradient(0, cardY, 0, cardY + cardH);
   bgGradient.addColorStop(0, "rgba(" + popRgb + ",.30)");
   bgGradient.addColorStop(0.55, "rgba(" + popRgb + ",.08)");
   bgGradient.addColorStop(1, "rgba(" + popRgb + ",.22)");
+  drawRoundedRect(ctx, cardX, cardY, cardW, cardH, cardR);
   ctx.fillStyle = bgGradient;
-  ctx.fillRect(0, 0, W, H);
-
-  // Accessoires des thèmes en décor, légèrement transparents, dans les marges.
-  var decoSlugs = ["economie", "ecologie", "europe", "securite", "societe", "protection-sociale"];
-  var decoImgs = await Promise.all(decoSlugs.map(function(sl){ return loadImageSafe("assets/props/" + sl + ".webp"); }));
-  var decoPos = [[30, 300, 70, -12], [620, 340, 64, 14], [22, 700, 60, 10], [632, 760, 66, -10], [70, 1150, 58, 8], [600, 1165, 62, -8]];
-  ctx.save();
-  ctx.globalAlpha = 0.22;
-  decoImgs.forEach(function(img, i){
-    if(!img) return;
-    var d = decoPos[i];
-    ctx.save();
-    ctx.translate(d[0] + d[2] / 2, d[1] + d[2] / 2);
-    ctx.rotate(d[3] * Math.PI / 180);
-    drawImageContain(ctx, img, -d[2] / 2, -d[2] / 2, d[2], d[2]);
-    ctx.restore();
-  });
-  ctx.restore();
+  ctx.fill();
 
   ctx.textAlign = "center";
   ctx.fillStyle = "#14121F";
@@ -4716,8 +4714,7 @@ function renderKit(){
   var shareBtn = document.getElementById("kit-share-btn");
   if(shareBtn) shareBtn.onclick = function(){
     state.kitModalCat = null;
-    state.screen = "kitShare";
-    render();
+    openKitShareModal(profile);
   };
   Array.prototype.forEach.call(document.querySelectorAll(".blister-item"), function(btn){
     btn.onclick = function(){
@@ -4746,6 +4743,33 @@ function renderKit(){
    SCREEN — KIT SHARE (carte de profil façon "starter pack" à
    capturer et partager sur les réseaux sociaux)
    ============================================================ */
+/* Pop-up de partage du kit : aperçu de l'image + Partager / Télécharger,
+   par-dessus la page kit (sans changer d'écran). */
+function openKitShareModal(profile){
+  var existing = document.getElementById("share-modal-overlay");
+  if(existing) existing.remove();
+  var overlay = document.createElement("div");
+  overlay.className = "kit-modal-overlay share-modal-overlay";
+  overlay.id = "share-modal-overlay";
+  overlay.innerHTML =
+    '<div class="kit-modal-card share-modal-card" role="dialog" aria-modal="true" aria-label="Partager mon profil">' +
+      '<button class="kit-modal-close" id="share-modal-close" aria-label="Fermer">✕</button>' +
+      '<div class="kit-modal-title" style="text-align:center;padding:0 36px;">Partager mon Starter Pack</div>' +
+      '<div class="share-canvas-wrap" id="share-canvas-wrap"><p class="intro-copy">Génération de ton image…</p></div>' +
+      '<div id="share-actions" style="display:none;">' +
+        '<button class="btn btn-accent btn-block" id="kit-share-native" style="margin-top:14px;">' + ICON_SHARE + 'Partager</button>' +
+        '<button class="btn btn-ghost btn-block" id="kit-share-download" style="margin-top:10px;">' + ICON_DOWNLOAD + 'Télécharger l\'image</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(overlay);
+  function close(){ overlay.remove(); document.removeEventListener("keydown", onKey); }
+  function onKey(e){ if(e.key === "Escape") close(); }
+  document.addEventListener("keydown", onKey);
+  overlay.addEventListener("click", function(e){ if(e.target === overlay) close(); });
+  document.getElementById("share-modal-close").onclick = close;
+  wireKitShareImage(profile, false);
+}
+
 function renderKitShare(){
   var profile = activeProfile();
   if(!profile){ state.screen = "profiles"; render(); return; }
@@ -4757,16 +4781,24 @@ function renderKitShare(){
     '</div>';
 
   document.getElementById("app").innerHTML = html;
+  wireKitShareImage(profile, true);
+}
 
+// Génère l'image du kit dans #share-canvas-wrap et branche les boutons
+// #kit-share-native / #kit-share-download (écran dédié ou pop-up).
+function wireKitShareImage(profile, clickToHome){
   generateShareCardImage(profile).then(function(canvas){
     var wrap = document.getElementById("share-canvas-wrap");
+    if(!wrap) return;
     wrap.innerHTML = "";
-    canvas.style.cursor = "pointer";
-    canvas.title = "Aller sur Votona";
-    canvas.onclick = function(){
-      state.screen = "profiles";
-      render();
-    };
+    if(clickToHome){
+      canvas.style.cursor = "pointer";
+      canvas.title = "Aller sur Votona";
+      canvas.onclick = function(){
+        state.screen = "profiles";
+        render();
+      };
+    }
     wrap.appendChild(canvas);
     document.getElementById("share-actions").style.display = "block";
 
@@ -4798,7 +4830,8 @@ function renderKitShare(){
       };
     }, "image/png");
   }).catch(function(){
-    document.getElementById("share-canvas-wrap").innerHTML = '<p class="intro-copy">Impossible de générer l\'image pour le moment.</p>';
+    var wrap = document.getElementById("share-canvas-wrap");
+    if(wrap) wrap.innerHTML = '<p class="intro-copy">Impossible de générer l\'image pour le moment.</p>';
   });
 }
 
@@ -4910,12 +4943,12 @@ function renderAccount(){
       var p = profiles[id];
       var isActive = id === state.activeProfileId;
       var answered = Object.keys(p.answers || {}).length;
-      return '<div class="profile-card acct-profile-row" data-pid="' + id + '">' +
+      return '<div class="profile-card acct-profile-row' + (isActive ? ' is-active' : '') + '" data-pid="' + id + '" role="button" tabindex="0" title="' + (isActive ? "Ouvrir son tableau de bord" : "Choisir ce profil") + '">' +
         '<div class="profile-avatar" style="background:' + avatarColor(p.name) + '">' + escapeHtml(initials(p.name)) + '</div>' +
         '<div class="profile-meta"><div class="pname">' + escapeHtml(p.name) + (isActive ? ' <span class="badge-new">Actif</span>' : '') + '</div>' +
-        '<div class="psub">' + answered + ' / ' + topics.length + ' sujets répondus</div></div>' +
+        '<div class="psub">' + answered + ' / ' + topics.length + ' sujets répondus</div>' +
+        '<div class="acct-hint">' + (isActive ? 'Ouvrir son tableau de bord ›' : 'Choisir ce profil ›') + '</div></div>' +
         '<div class="acct-row-actions">' +
-          (isActive ? '' : '<button class="btn btn-ghost btn-sm" data-switch="' + id + '">Choisir</button>') +
           '<button class="btn btn-ghost btn-sm" data-rename="' + id + '">Renommer</button>' +
           '<button class="danger-link" data-delprofile="' + id + '">Supprimer</button>' +
         '</div>' +
@@ -4955,13 +4988,22 @@ function renderAccount(){
     updateActiveProfile(function(p){ p.newsOptIn = optinToggle.checked; });
   };
 
-  document.querySelectorAll("[data-switch]").forEach(function(btn){
-    btn.onclick = function(){
-      var switchId = btn.getAttribute("data-switch");
-      setActiveProfileId(switchId);
-      updateProfileById(switchId, function(){}, true);
+  // Premier clic sur un profil : il devient le profil actif. Clic sur le
+  // profil déjà actif : ouverture de son tableau de bord.
+  document.querySelectorAll(".acct-profile-row").forEach(function(row){
+    function open(){
+      var pid = row.getAttribute("data-pid");
+      if(pid === state.activeProfileId){
+        state.screen = "dashboard";
+        render();
+        return;
+      }
+      setActiveProfileId(pid);
+      updateProfileById(pid, function(){}, true);
       render();
-    };
+    }
+    row.addEventListener("click", function(e){ if(e.target.closest("button")) return; open(); });
+    row.addEventListener("keydown", function(e){ if((e.key === "Enter" || e.key === " ") && e.target === row){ e.preventDefault(); open(); } });
   });
 
   document.querySelectorAll("[data-rename]").forEach(function(btn){
