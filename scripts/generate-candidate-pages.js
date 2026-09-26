@@ -424,7 +424,11 @@ ${HEADER}
 function indexPageHtml(candidates, topics) {
   const canonical = `${SITE_URL}/candidats/`;
   const active = candidates.filter((c) => !c.withdrawn);
-  const items = candidates.map((c) => {
+  // Ordre alphabétique du nom de famille (tout ce qui suit le prénom : « Le Pen »,
+  // « Dupont-Aignan »), sans tenir compte des accents ni des majuscules.
+  const surname = (n) => String(n || "").split(" ").slice(1).join(" ");
+  const sorted = candidates.slice().sort((a, b) => surname(a.name).localeCompare(surname(b.name), "fr", { sensitivity: "base" }) || a.name.localeCompare(b.name, "fr"));
+  const items = sorted.map((c) => {
     const known = topics.filter((t) => isKnown(c.positions && c.positions[t.id]));
     const n = (st) => known.filter((t) => c.positions[t.id].stance === st).length;
     const pour = n("pour"), contre = n("contre"), neutre = known.length - pour - contre;
