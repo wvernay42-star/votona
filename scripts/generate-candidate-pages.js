@@ -150,6 +150,12 @@ function propImg(cat, size, cls = "prop") {
   return t && t.slug ? `<img class="${cls}" src="/assets/props/${t.slug}.webp" width="${size}" height="${size}" alt="" loading="lazy" />` : "";
 }
 function charSrc(cat) { const t = THEMES[cat]; return t && t.slug ? `/assets/characters/${t.slug}-n3.webp` : ""; }
+// Ordre alphabétique du nom de famille (tout ce qui suit le prénom : « Le Pen »,
+// « Dupont-Aignan »), sans tenir compte des accents ni des majuscules.
+function byLastName(candidates) {
+  const surname = (n) => String(n || "").split(" ").slice(1).join(" ");
+  return candidates.slice().sort((a, b) => surname(a.name).localeCompare(surname(b.name), "fr", { sensitivity: "base" }) || a.name.localeCompare(b.name, "fr"));
+}
 function initialsOf(name) { return String(name || "").split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase(); }
 
 // Icônes des boutons : l'ourson Votona sur les appels à faire le test,
@@ -424,11 +430,7 @@ ${HEADER}
 function indexPageHtml(candidates, topics) {
   const canonical = `${SITE_URL}/candidats/`;
   const active = candidates.filter((c) => !c.withdrawn);
-  // Ordre alphabétique du nom de famille (tout ce qui suit le prénom : « Le Pen »,
-  // « Dupont-Aignan »), sans tenir compte des accents ni des majuscules.
-  const surname = (n) => String(n || "").split(" ").slice(1).join(" ");
-  const sorted = candidates.slice().sort((a, b) => surname(a.name).localeCompare(surname(b.name), "fr", { sensitivity: "base" }) || a.name.localeCompare(b.name, "fr"));
-  const items = sorted.map((c) => {
+  const items = byLastName(candidates).map((c) => {
     const known = topics.filter((t) => isKnown(c.positions && c.positions[t.id]));
     const n = (st) => known.filter((t) => c.positions[t.id].stance === st).length;
     const pour = n("pour"), contre = n("contre"), neutre = known.length - pour - contre;
@@ -758,7 +760,7 @@ function compareHtml(candidates, topics, categoryMeta, categoryIconPaths, slugs)
   const canonical = `${SITE_URL}/comparer/`;
   const initials = (name) => String(name || "").split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   const data = {
-    c: candidates.map((c) => ({ id: c.id, n: c.name, p: c.party, col: c.color || "#7C3AED", i: initials(c.name), w: c.withdrawn ? 1 : 0 })),
+    c: byLastName(candidates).map((c) => ({ id: c.id, n: c.name, p: c.party, col: c.color || "#7C3AED", i: initials(c.name), w: c.withdrawn ? 1 : 0 })),
     t: topics.map((t) => ({ id: t.id, s: t.statement, cat: t.cat, u: slugs[t.id] })),
     cats: Object.keys(categoryMeta).map((cat) => ({ n: cat, ic: propImg(cat, 30), col: themeColor(cat) })),
     pos: Object.fromEntries(candidates.map((c) => [c.id, Object.fromEntries(topics.filter((t) => isKnown(c.positions && c.positions[t.id])).map((t) => [t.id, [c.positions[t.id].stance, c.positions[t.id].detail || ""]]))]))
