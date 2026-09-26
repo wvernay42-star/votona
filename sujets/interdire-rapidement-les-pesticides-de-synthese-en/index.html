@@ -23,7 +23,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Votona","item":"https://votona.fr/"},{"@type":"ListItem","position":2,"name":"Sujets","item":"https://votona.fr/sujets/"},{"@type":"ListItem","position":3,"name":"Interdire rapidement les pesticides de synthèse en agriculture","item":"https://votona.fr/sujets/interdire-rapidement-les-pesticides-de-synthese-en/"}]}</script>
 <style>
-  :root{ --bg:#fbfaf7; --ink:#191d2b; --ink-soft:#4d5468; --ink-faint:#8790a3; --line:#e4dfd0; --accent:#7C3AED; --masthead-bg:#F6F2FE; --masthead-ink:#191d2b; --masthead-line:rgba(25,29,43,.14); }
+  :root{ --gutter:clamp(20px,4vw,40px); --bg:#fbfaf7; --ink:#191d2b; --ink-soft:#4d5468; --ink-faint:#8790a3; --line:#e4dfd0; --accent:#7C3AED; --masthead-bg:#F6F2FE; --masthead-ink:#191d2b; --masthead-line:rgba(25,29,43,.14); }
   *{box-sizing:border-box;}
   body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Work Sans',Arial,sans-serif; }
   header.topbar{ display:flex; align-items:center; justify-content:space-between; max-width:1180px; margin:0 auto; padding:16px clamp(20px,4vw,40px); border-bottom:3px solid var(--accent); background:var(--masthead-bg); }
@@ -58,7 +58,7 @@
   .btn:hover .btn-mascot{ transform:rotate(-10deg) scale(1.1); }
   @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
   @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }
-  main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
+  main{ max-width:880px; margin:0 auto; padding:32px var(--gutter) 64px; }
   .crumbs{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .hero{ position:relative; margin:22px 0 0; padding:22px 170px 24px 22px; border-radius:24px; overflow:hidden; background:linear-gradient(135deg, color-mix(in srgb, var(--th) 26%, #fff), color-mix(in srgb, var(--th) 8%, #fff)); border:1px solid color-mix(in srgb, var(--th) 35%, #fff); }
   .hero-char{ position:absolute; right:18px; bottom:-22px; height:190px; width:auto; filter:drop-shadow(0 8px 14px rgba(0,0,0,.18)); }

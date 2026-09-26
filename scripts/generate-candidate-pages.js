@@ -104,7 +104,7 @@ const HEADER = '<header class="topbar"><a class="brand" href="/" title="Accueil 
 const HEADER_INDEX = HEADER;
 
 const SHARED_CSS = `
-  :root{ --bg:#fbfaf7; --ink:#191d2b; --ink-soft:#4d5468; --ink-faint:#8790a3; --line:#e4dfd0; --accent:#7C3AED; --masthead-bg:#F6F2FE; --masthead-ink:#191d2b; --masthead-line:rgba(25,29,43,.14); }
+  :root{ --gutter:clamp(20px,4vw,40px); --bg:#fbfaf7; --ink:#191d2b; --ink-soft:#4d5468; --ink-faint:#8790a3; --line:#e4dfd0; --accent:#7C3AED; --masthead-bg:#F6F2FE; --masthead-ink:#191d2b; --masthead-line:rgba(25,29,43,.14); }
   *{box-sizing:border-box;}
   body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Work Sans',Arial,sans-serif; }
   header.topbar{ display:flex; align-items:center; justify-content:space-between; max-width:1180px; margin:0 auto; padding:16px clamp(20px,4vw,40px); border-bottom:3px solid var(--accent); background:var(--masthead-bg); }
@@ -328,7 +328,7 @@ ${HEAD_ICONS}
 <script type="application/ld+json">${personLd}</script>
 <script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Candidats", url: SITE_URL + "/candidats/" }, { name: cand.name, url: canonical }])}</script>
 <style>${SHARED_CSS}
-  main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
+  main{ max-width:880px; margin:0 auto; padding:32px var(--gutter) 64px; }
   .cand-header{ display:flex; align-items:center; gap:16px; margin:24px 0 6px; padding:20px; border-radius:22px; background:linear-gradient(135deg, color-mix(in srgb, var(--cc) 20%, #fff), color-mix(in srgb, var(--cc) 6%, #fff)); border:1px solid color-mix(in srgb, var(--cc) 28%, #fff); }
   .cand-avatar{ box-shadow:0 4px 14px color-mix(in srgb, var(--cc) 40%, transparent); }
   .cand-avatar{ width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Baloo 2',sans-serif; font-weight:700; font-size:20px; flex:none; }
@@ -340,7 +340,7 @@ ${HEAD_ICONS}
   h2.subhead{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:36px 0 16px; }
   .topic-row{ padding:16px 0; border-top:1px solid var(--line); }
   .theme{ scroll-margin-top:100px; }
-  .toolbar{ position:sticky; top:0; z-index:5; margin:0 -20px; padding:10px 20px; background:color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+  .toolbar{ position:sticky; top:0; z-index:5; margin:0 calc(-1 * var(--gutter)); padding:10px var(--gutter); background:color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
   .theme-nav{ display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; padding-bottom:8px; }
   .theme-nav::-webkit-scrollbar{ display:none; }
   .theme-nav a{ flex:none; display:inline-flex; align-items:center; padding:6px 12px; border-radius:99px; border:1px solid var(--line); background:#fff; color:var(--ink-soft); font-size:13px; font-weight:600; text-decoration:none; white-space:nowrap; }
@@ -455,7 +455,7 @@ function indexPageHtml(candidates, topics) {
 <meta property="og:image" content="${SITE_URL}/assets/ui/og-home.jpg" />
 ${HEAD_ICONS}
 <style>${SHARED_CSS}
-  main{ max-width:880px; margin:0 auto; padding:32px 20px 64px; }
+  main{ max-width:880px; margin:0 auto; padding:32px var(--gutter) 64px; }
   .hero{ position:relative; overflow:hidden; margin-top:6px; padding:28px 300px 28px 28px; border-radius:26px; background:linear-gradient(135deg, #ece3fd, #faf7ff 70%); border:1px solid #e0d3fb; }
   .hero h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,36px); line-height:1.12; margin:0 0 10px; }
   .hero p{ color:var(--ink-soft); line-height:1.6; margin:0; }
@@ -588,7 +588,7 @@ function topicPageHtml(topic, candidates, topics, categoryIconPaths, slugs) {
 ${HEAD_ICONS}
 <script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Sujets", url: SITE_URL + "/sujets/" }, { name: topic.statement, url: canonical }])}</script>
 <style>${SHARED_CSS}
-  main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
+  main{ max-width:880px; margin:0 auto; padding:32px var(--gutter) 64px; }
   .crumbs{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .hero{ position:relative; margin:22px 0 0; padding:22px 170px 24px 22px; border-radius:24px; overflow:hidden; background:linear-gradient(135deg, color-mix(in srgb, var(--th) 26%, #fff), color-mix(in srgb, var(--th) 8%, #fff)); border:1px solid color-mix(in srgb, var(--th) 35%, #fff); }
   .hero-char{ position:absolute; right:18px; bottom:-22px; height:190px; width:auto; filter:drop-shadow(0 8px 14px rgba(0,0,0,.18)); }
@@ -695,7 +695,7 @@ function topicIndexHtml(topics, categories, categoryMeta, categoryIconPaths, slu
 ${HEAD_ICONS}
 <script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Sujets", url: canonical }])}</script>
 <style>${SHARED_CSS}
-  main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
+  main{ max-width:880px; margin:0 auto; padding:32px var(--gutter) 64px; }
   .hero{ position:relative; overflow:hidden; margin-top:18px; padding:26px 270px 26px 26px; border-radius:26px; background:linear-gradient(135deg, #dcf8ee, #f6fffb 70%); border:1px solid #bdeedb; }
   .hero h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); line-height:1.12; margin:0 0 10px; }
   .hero p{ color:var(--ink-soft); line-height:1.6; margin:0; }
@@ -800,7 +800,7 @@ function compareHtml(candidates, topics, categoryMeta, categoryIconPaths, slugs)
 ${HEAD_ICONS}
 <script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Candidats", url: SITE_URL + "/candidats/" }, { name: "Comparer deux candidats", url: canonical }])}</script>
 <style>${SHARED_CSS}
-  main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
+  main{ max-width:880px; margin:0 auto; padding:32px var(--gutter) 64px; }
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:28px 0 8px; line-height:1.15; }
   p.intro{ color:var(--ink-soft); line-height:1.6; margin:0; }
   .duel{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; margin:26px 0 12px; }
