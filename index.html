@@ -3674,10 +3674,9 @@ async function generateShareCardImage(profile){
   ctx.fillText("Et toi, quel est ton profil ?", pad + ctaW / 2, ctaY - 12);
   ctx.globalAlpha = 1;
 
+  // QR code sans cadre blanc : ses modules sombres sont posés directement sur
+  // le fond clair de la carte (assez contrasté pour rester lisible).
   var qrBoxX = W - pad - qrSize;
-  drawRoundedRect(ctx, qrBoxX, y, qrSize, qrSize, 18);
-  ctx.fillStyle = "#ffffff";
-  ctx.fill();
   drawQrCode(ctx, buildReferralUrl(profile), qrBoxX + 10, y + 10, qrSize - 20, "#14121F");
 
   return canvas;
