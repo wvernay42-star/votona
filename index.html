@@ -354,6 +354,19 @@
   /* Sondages : « Qui est en tête ? » (tableau de bord) */
   .poll-card{ max-width:640px; margin:22px auto 20px; padding:18px 18px 16px; border-radius:24px; background:var(--bg-raised);
     border:2px solid color-mix(in srgb, var(--accent) 22%, var(--line-soft)); }
+  .topics-card .tp-list{ display:flex; flex-direction:column; gap:10px; margin-top:14px; }
+  .tp-row{ display:flex; align-items:center; gap:12px; padding:12px 12px; border-radius:18px; text-decoration:none; color:inherit;
+    background:linear-gradient(150deg, color-mix(in srgb, var(--th) 16%, var(--bg-raised)), var(--bg-raised) 80%); border:1px solid color-mix(in srgb, var(--th) 28%, var(--line-soft)); transition:border-color .15s, transform .15s; }
+  .tp-row:hover{ border-color:var(--th); transform:translateY(-1px); }
+  .tp-row img{ width:34px; height:34px; object-fit:contain; flex:none; filter:drop-shadow(0 2px 4px rgba(0,0,0,.15)); }
+  .tp-body{ flex:1; min-width:0; display:flex; flex-direction:column; gap:6px; }
+  .tp-title{ font-weight:700; font-size:14px; line-height:1.35; }
+  .tp-bar{ display:flex; gap:2px; height:6px; border-radius:99px; overflow:hidden; }
+  .tp-bar i{ display:block; }
+  .tp-meta{ font-size:12px; color:var(--ink-faint); }
+  .tp-arrow{ font-size:20px; color:var(--ink-faint); flex:none; }
+  .topic-page-link{ display:inline-block; margin-top:10px; font-size:13px; font-weight:700; color:var(--accent); text-decoration:none; }
+  .topic-page-link:hover{ text-decoration:underline; }
   .poll-eyebrow{ display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10.5px; letter-spacing:.08em;
     text-transform:uppercase; color:var(--ink-soft); font-weight:600; }
   .poll-eyebrow .ic{ width:24px; height:24px; border-radius:8px; background:var(--accent-soft); display:flex; align-items:center; justify-content:center; flex:none; }
@@ -4078,6 +4091,7 @@ function renderDashboard(){
     '</div>' +
     '<button class="btn btn-accent btn-block" id="btn-vote">' + (answered === 0 ? "Commencer le questionnaire" : answered < topics.length ? "Continuer (" + (topics.length-answered) + " restant" + (topics.length-answered > 1 ? "s" : "") + ")" : "Revoir mes réponses") + '</button>' +
     '</div>' +
+    divisiveTopicsHtml(profile) +
     pollHtml;
 
   document.getElementById("app").innerHTML = html;
@@ -4165,6 +4179,60 @@ var STANCE_LABEL = {pour:"D'accord", contre:"Pas d'accord", neutre:"Neutre"};
 var STANCE_ICON = {pour:"✓", contre:"✕", neutre:"–"};
 var STANCE_COLORVAR = {pour:"--good", contre:"--bad", neutre:"--neutral"};
 var IMPORTANCE_LABEL = {1:"Peu important", 2:"Important", 3:"Très important"};
+
+/* Adresse de la page statique d'un sujet (/sujets/<slug>/), calculée comme
+   dans scripts/generate-candidate-pages.js (slugify + topicSlugs) : garder les
+   deux identiques. Seuls les sujets de TOPICS ont une page. */
+var _topicSlugMap = null;
+function topicPageHref(topicId){
+  if(!_topicSlugMap){
+    _topicSlugMap = {};
+    var used = {};
+    TOPICS.forEach(function(t){
+      var slug = String(t.statement).normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase().replace(/['’"]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      if(slug.length > 60) slug = slug.slice(0, 60).replace(/-[^-]*$/, "");
+      if(used[slug]) slug += "-" + t.id;
+      used[slug] = true;
+      _topicSlugMap[t.id] = slug;
+    });
+  }
+  return _topicSlugMap[topicId] ? "/sujets/" + _topicSlugMap[topicId] + "/" : null;
+}
+var UNKNOWN_DETAIL = "Position non encore précisée publiquement sur ce sujet.";
+/* Carte du tableau de bord : les sujets où les candidats sont le plus partagés
+   (le plus d'avis tranchés des deux côtés), avec lien vers leur page. */
+function divisiveTopicsHtml(profile){
+  var cands = getCandidates().filter(function(c){ return !c.withdrawn; });
+  var rows = TOPICS.map(function(t){
+    var pour = 0, contre = 0;
+    cands.forEach(function(c){
+      var p = c.positions && c.positions[t.id];
+      if(!p || (p.stance === "neutre" && (!p.detail || p.detail === UNKNOWN_DETAIL))) return;
+      if(p.stance === "pour") pour++; else if(p.stance === "contre") contre++;
+    });
+    return { t: t, pour: pour, contre: contre, score: Math.min(pour, contre) };
+  }).filter(function(r){ return r.score >= 3 && topicPageHref(r.t.id); })
+    .sort(function(a, b){ return b.score - a.score || (b.pour + b.contre) - (a.pour + a.contre); }).slice(0, 3);
+  if(!rows.length) return "";
+  return '<section class="poll-card topics-card" aria-labelledby="topics-title">' +
+    '<div class="poll-eyebrow"><span class="scope-pill you">Candidats</span>Sujets de la campagne</div>' +
+    '<h2 id="topics-title">Les sujets qui divisent</h2>' +
+    '<div class="poll-note">Là où les candidats sont le plus partagés. Touche un sujet pour voir qui est pour, qui est contre.</div>' +
+    '<div class="tp-list">' + rows.map(function(r){
+      var meta = CATEGORY_META[r.t.cat] || {};
+      var mine = profile && profile.answers && profile.answers[r.t.id];
+      return '<a class="tp-row" href="' + topicPageHref(r.t.id) + '" style="--th:' + (meta.pop || "var(--accent)") + '">' +
+        (meta.slug ? '<img src="assets/props/' + meta.slug + '.webp" width="34" height="34" alt="" loading="lazy" />' : '') +
+        '<span class="tp-body"><span class="tp-title">' + escapeHtml(r.t.statement) + '</span>' +
+        '<span class="tp-bar"><i style="flex:' + r.pour + ';background:var(--good)"></i><i style="flex:' + r.contre + ';background:var(--bad)"></i></span>' +
+        '<span class="tp-meta"><b style="color:var(--good)">' + r.pour + ' pour</b> · <b style="color:var(--bad)">' + r.contre + ' contre</b>' +
+        (mine ? ' · toi : <b style="color:var(' + STANCE_COLORVAR[mine.stance] + ')">' + STANCE_LABEL[mine.stance] + '</b>' : '') + '</span></span>' +
+        '<span class="tp-arrow">›</span></a>';
+    }).join("") + '</div>' +
+    '<a class="btn btn-ghost btn-block btn-sm" href="/sujets/" style="margin-top:12px;">Voir les ' + TOPICS.length + ' sujets et les positions des candidats</a>' +
+  '</section>';
+}
 
 function topicHeaderHtml(topic){
   var meta = CATEGORY_META[topic.cat] || {};
@@ -4256,6 +4324,7 @@ function renderVote(){
       '<div class="vote-card">' +
         topicHeaderHtml(topic) +
         '<div style="margin-top:14px; font-size:13px; color:var(--ink-soft);">Ton avis : <strong style="color:var(' + STANCE_COLORVAR[stance] + ')">' + STANCE_LABEL[stance] + '</strong></div>' +
+        (topicPageHref(topic.id) ? '<a class="topic-page-link" href="' + topicPageHref(topic.id) + '">Le détail des positions des candidats sur ce sujet ›</a>' : '') +
       '</div>' +
       '<button class="btn btn-accent btn-block" id="next-topic" style="margin-top:20px;">Sujet suivant</button>' +
       '<div style="margin-top:20px; font-size:12px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.05em; font-family:var(--mono);">Position des candidats</div>' +

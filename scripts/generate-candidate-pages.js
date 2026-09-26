@@ -696,8 +696,15 @@ ${HEAD_ICONS}
 <script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Sujets", url: canonical }])}</script>
 <style>${SHARED_CSS}
   main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
-  h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:28px 0 8px; }
-  p.intro{ color:var(--ink-soft); line-height:1.6; }
+  .hero{ position:relative; overflow:hidden; margin-top:18px; padding:26px 270px 26px 26px; border-radius:26px; background:linear-gradient(135deg, #dcf8ee, #f6fffb 70%); border:1px solid #bdeedb; }
+  .hero h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); line-height:1.12; margin:0 0 10px; }
+  .hero p{ color:var(--ink-soft); line-height:1.6; margin:0; }
+  .stats{ display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0; }
+  .stats span{ padding:5px 12px; border-radius:99px; background:#fff; font-size:13px; font-weight:700; color:var(--ink-soft); }
+  .stats b{ color:#0a8a63; }
+  .crew{ position:absolute; bottom:-30px; width:auto; filter:drop-shadow(0 8px 14px rgba(0,0,0,.18)); }
+  .c1{ right:160px; height:165px; transform:rotate(-6deg); } .c2{ right:82px; height:200px; z-index:1; } .c3{ right:8px; height:170px; transform:rotate(6deg); }
+  @media (max-width:680px){ .hero{ padding:22px 20px 170px; } .c1{ right:auto; left:calc(50% - 150px); height:140px; } .c2{ right:auto; left:calc(50% - 60px); height:170px; } .c3{ right:auto; left:calc(50% + 40px); height:140px; } }
   section{ margin-top:30px; }
   section h2{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:0 0 2px; display:flex; align-items:center; }
   section.cat li a{ display:flex; gap:10px; align-items:baseline; }
@@ -727,8 +734,12 @@ ${HEAD_ICONS}
 ${HEADER_INDEX}
 <main>
   <nav class="crumbs"><a class="crumb" href="/candidats/">Tous les candidats ›</a></nav>
-  <h1>Les ${topics.length} sujets de la présidentielle 2027</h1>
-  <p class="intro">Pour chaque grand sujet de la campagne, découvre qui est pour, qui est contre et qui ne s'est pas encore prononcé parmi les candidats déclarés.</p>
+  <section class="hero">
+    <h1>Les ${topics.length} sujets de la présidentielle 2027</h1>
+    <p>Pour chaque grand sujet de la campagne, découvre qui est pour, qui est contre et qui ne s'est pas encore prononcé parmi les candidats déclarés.</p>
+    <div class="stats"><span><b>${topics.length}</b> sujets suivis</span><span><b>${categories.length}</b> thèmes</span><span><b>${candidates.filter((c) => !c.withdrawn).length}</b> candidats comparés</span></div>
+    ${["Société", "Europe & institutions", "Protection sociale"].map((cat, i) => charSrc(cat) ? `<img class="crew c${i + 1}" src="${charSrc(cat)}" width="339" height="577" alt="" />` : "").join("")}
+  </section>
   <a class="btn btn-accent cta" href="/">${BTN_MASCOT}Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>
   <input id="q" type="search" placeholder="Rechercher un sujet (retraite, nucléaire, SMIC…)" aria-label="Rechercher un sujet" />${divisive}${blocks}
   <p id="empty">Aucun sujet ne correspond à cette recherche.</p>
