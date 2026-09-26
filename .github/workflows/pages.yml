@@ -47,7 +47,7 @@ jobs:
       - name: Commiter et pousser si quelque chose a changé
         id: commit
         run: |
-          git add -A candidats sujets sitemap.xml assets/og
+          git add -A candidats sujets comparer sitemap.xml assets/og
           if git diff --cached --quiet; then
             echo "Pages déjà à jour, rien à commiter."
             echo "pousse=non" >> "$GITHUB_OUTPUT"

@@ -6,7 +6,7 @@ name: IndexNow
 on:
   push:
     branches: [main]
-    paths: ["index.html", "candidats/**", "sujets/**", "sitemap.xml"]
+    paths: ["index.html", "candidats/**", "sujets/**", "comparer/**", "sitemap.xml"]
   workflow_dispatch:
 
 jobs:

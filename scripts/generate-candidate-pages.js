@@ -277,7 +277,8 @@ ${HEAD_ICONS}
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:0; }
   .party{ color:var(--ink-soft); font-size:15px; margin:2px 0 0; }
   .withdrawn-badge{ display:inline-block; margin-top:14px; padding:6px 14px; border-radius:99px; background:#fbe0dd; color:#a63a2e; font-size:13px; font-weight:700; }
-  .cta{ margin:28px 0; }
+  .cta{ margin:28px 0 10px; }
+  .cmp{ margin:0 0 28px; }
   h2.subhead{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:36px 0 16px; }
   .topic-row{ padding:16px 0; border-top:1px solid var(--line); }
   .theme{ scroll-margin-top:100px; }
@@ -332,6 +333,7 @@ ${HEADER}
   ${withdrawnBadge}
   <p style="color:var(--ink-soft); line-height:1.6; margin-top:18px;">${indexable ? `Positions de ${escapeHtml(cand.name)} sur ${known.length === topics.length ? "" : `${known.length} des `}${topics.length} sujets de la présidentielle 2027 suivis par Votona, établies à partir de déclarations, votes ou programmes publics.` : `Votona suit ${topics.length} sujets de la présidentielle 2027 et y relève, pour chaque candidat, les positions tirées de déclarations, votes ou programmes publics.`}</p>
   <a class="btn btn-accent cta" href="../../?screen=results">Compare tes propres positions à celles de ${escapeHtml(cand.name)}</a>
+  ${indexable ? `<a class="btn btn-ghost cmp" href="/comparer/?a=${encodeURIComponent(cand.id)}">Comparer avec un autre candidat</a>` : ""}
   ${positionsHtml}
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques — ni exhaustives ni officielles.<br />
@@ -363,7 +365,9 @@ ${HEAD_ICONS}
   main{ max-width:640px; margin:0 auto; padding:32px 20px 64px; }
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:28px 0 8px; }
   p.intro{ color:var(--ink-soft); line-height:1.6; }
-  .btn-sujets{ margin-top:6px; }
+  .btn-pair{ display:flex; gap:8px; margin-top:6px; }
+  .btn-pair .btn{ flex:1; padding:12px 14px; font-size:14px; }
+  @media (max-width:520px){ .btn-pair{ flex-direction:column; } }
   input#q{ width:100%; padding:12px 16px; border-radius:14px; border:1px solid var(--line); font-size:14px; font-family:inherit; margin-top:18px; background:#fff; color:var(--ink); }
   input#q:focus{ outline:2px solid var(--accent); outline-offset:1px; }
   ul{ list-style:none; padding:0; margin:20px 0; }
@@ -382,7 +386,7 @@ ${HEADER_INDEX}
 <main>
   <h1>Tous les candidats à la présidentielle 2027</h1>
   <p class="intro">Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet, retraits de la course inclus.</p>
-  <a class="btn btn-ghost btn-sujets" href="/sujets/">Comparer les candidats sujet par sujet</a>
+  <div class="btn-pair"><a class="btn btn-ghost" href="/comparer/">Comparer deux candidats</a><a class="btn btn-ghost" href="/sujets/">Voir les candidats sujet par sujet</a></div>
   <input id="q" type="text" placeholder="Rechercher un candidat ou un parti…" />
   <ul id="list">${items}
   </ul>
@@ -628,6 +632,231 @@ ${HEADER_INDEX}
 `;
 }
 
+// Page /comparer/ : deux candidats côte à côte, sujet par sujet. Les données
+// (positions connues seulement) sont embarquées en JSON ; le choix des deux
+// candidats et l'affichage se font dans le navigateur, et l'adresse garde la
+// paire choisie (/comparer/?a=<id>&b=<id>) pour pouvoir la partager.
+function compareHtml(candidates, topics, categoryMeta, categoryIconPaths, slugs) {
+  const canonical = `${SITE_URL}/comparer/`;
+  const initials = (name) => String(name || "").split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  const data = {
+    c: candidates.map((c) => ({ id: c.id, n: c.name, p: c.party, col: c.color || "#7C3AED", i: initials(c.name), w: c.withdrawn ? 1 : 0 })),
+    t: topics.map((t) => ({ id: t.id, s: t.statement, cat: t.cat, u: slugs[t.id] })),
+    cats: Object.keys(categoryMeta).map((cat) => ({ n: cat, ic: catIconSvg(cat, categoryIconPaths, 16) })),
+    pos: Object.fromEntries(candidates.map((c) => [c.id, Object.fromEntries(topics.filter((t) => isKnown(c.positions && c.positions[t.id])).map((t) => [t.id, [c.positions[t.id].stance, c.positions[t.id].detail || ""]]))]))
+  };
+  // "</" échappé pour ne jamais fermer la balise <script> par accident.
+  const json = JSON.stringify(data).replace(/</g, "\\u003c");
+  const noscript = candidates.filter((c) => !c.withdrawn).map((c) => `<a href="/candidats/${c.id}/">${escapeHtml(c.name)}</a>`).join(" · ");
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Comparer deux candidats à la présidentielle 2027, sujet par sujet | Votona</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Choisis deux candidats à la présidentielle 2027 et compare leurs positions sur ${topics.length} sujets : où ils sont d'accord, où ils s'opposent. Positions sourcées." />
+<link rel="canonical" href="${canonical}" />
+<meta name="robots" content="index, follow" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Votona" />
+<meta property="og:url" content="${canonical}" />
+<meta property="og:title" content="Comparer deux candidats à la présidentielle 2027 | Votona" />
+<meta property="og:description" content="Où sont-ils d'accord, où s'opposent-ils ? Compare deux candidats sujet par sujet." />
+<meta property="og:image" content="${SITE_URL}/assets/ui/og-home.jpg" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="${SITE_URL}/assets/ui/og-home.jpg" />
+${HEAD_ICONS}
+<script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Candidats", url: SITE_URL + "/candidats/" }, { name: "Comparer deux candidats", url: canonical }])}</script>
+<style>${SHARED_CSS}
+  main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
+  h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:28px 0 8px; line-height:1.15; }
+  p.intro{ color:var(--ink-soft); line-height:1.6; margin:0; }
+  .duel{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; margin:26px 0 12px; }
+  .slot{ appearance:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:8px; padding:16px 10px; border-radius:18px; border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); background:#fff; font-family:inherit; color:var(--ink); min-width:0; }
+  .slot:hover, .slot.open{ border-color:var(--accent); }
+  .slot .av{ width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:22px; }
+  .slot .av.empty{ background:transparent; border:2px dashed var(--ink-faint); color:var(--ink-faint); font-size:28px; font-family:'Work Sans',sans-serif; }
+  .slot .nm{ font-weight:800; font-size:15px; line-height:1.25; text-align:center; overflow-wrap:anywhere; }
+  .slot .pt{ font-size:12.5px; color:var(--ink-faint); text-align:center; }
+  .slot .chg{ font-size:12px; font-weight:700; color:var(--accent); }
+  .vs{ font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--ink-faint); font-size:14px; }
+  .picker{ display:none; margin:0 0 18px; padding:14px; border:1px solid var(--line); border-radius:18px; background:#fff; }
+  .picker.show{ display:block; }
+  .picker input{ width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--line); font:14px 'Work Sans',Arial,sans-serif; color:var(--ink); background:var(--bg); }
+  .picker input:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .picker ul{ list-style:none; padding:0; margin:8px 0 0; max-height:320px; overflow-y:auto; }
+  .picker li button{ width:100%; display:flex; align-items:center; gap:10px; padding:10px 8px; border:0; border-radius:10px; background:transparent; cursor:pointer; font:600 14.5px 'Work Sans',Arial,sans-serif; color:var(--ink); text-align:left; }
+  .picker li button:hover, .picker li button:focus-visible{ background:var(--masthead-bg); outline:none; }
+  .picker li button[disabled]{ opacity:.35; cursor:default; }
+  .picker .dot{ width:10px; height:10px; border-radius:50%; flex:none; }
+  .picker .pt{ color:var(--ink-faint); font-weight:400; font-size:13px; }
+  .hint{ text-align:center; color:var(--ink-faint); font-size:14px; padding:28px 10px; border:1px dashed var(--line); border-radius:18px; }
+  .score{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:6px 0 14px; }
+  .score div{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 8px; text-align:center; }
+  .score b{ display:block; font-family:'Baloo 2',sans-serif; font-size:26px; line-height:1.1; }
+  .score span{ font-size:12px; color:var(--ink-soft); font-weight:600; }
+  .score .ok b{ color:#2c9354; } .score .ko b{ color:#d1453a; } .score .nd b{ color:var(--ink-faint); }
+  .filters{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px; }
+  .chip{ flex:none; appearance:none; cursor:pointer; padding:6px 12px; border-radius:99px; border:1px solid var(--line); background:transparent; color:var(--ink-soft); font:600 13px 'Work Sans',Arial,sans-serif; white-space:nowrap; }
+  .chip:hover{ border-color:var(--accent); color:var(--accent); }
+  .chip.on{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .theme-h{ display:flex; align-items:center; font-family:'Baloo 2',sans-serif; font-size:18px; margin:24px 0 2px; }
+  .theme-h svg{ margin-right:6px !important; }
+  .cols{ display:grid; grid-template-columns:1fr 52px 52px; gap:6px; font-size:11px; font-family:'IBM Plex Mono',monospace; color:var(--ink-faint); text-transform:uppercase; padding:4px 0; }
+  .cols span{ text-align:center; }
+  .mini{ display:inline-flex; width:26px; height:26px; border-radius:50%; align-items:center; justify-content:center; color:#fff; font:800 10.5px 'Work Sans',Arial,sans-serif; font-style:normal; }
+  details.row{ border-top:1px solid var(--line); }
+  details.row summary{ list-style:none; cursor:pointer; display:grid; grid-template-columns:1fr 52px 52px; gap:6px; align-items:center; padding:12px 0; }
+  details.row summary::-webkit-details-marker{ display:none; }
+  details.row .q{ font-weight:600; font-size:14.5px; line-height:1.4; }
+  details.row .q::after{ content:" ▾"; color:var(--ink-faint); font-size:11px; }
+  details.row[open] .q::after{ content:" ▴"; }
+  .st{ text-align:center; font-weight:800; font-size:17px; }
+  .st.pour{ color:#2c9354; } .st.contre{ color:#d1453a; } .st.neutre{ color:var(--ink-soft); } .st.none{ color:var(--ink-faint); font-weight:600; }
+  details.row.ko summary{ background:linear-gradient(90deg, rgba(209,69,58,.06), transparent 70%); }
+  .why{ padding:0 0 14px; display:grid; gap:8px; }
+  .why p{ margin:0; font-size:13.5px; line-height:1.55; color:var(--ink-soft); }
+  .why b{ color:var(--ink); }
+  .why a{ color:var(--accent); font-weight:600; font-size:13px; }
+  #none{ display:none; color:var(--ink-faint); font-size:14px; padding:16px 0; }
+  .legend{ font-size:12.5px; color:var(--ink-faint); margin:18px 0 0; line-height:1.6; }
+  footer{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; }
+  footer a{ color:inherit; }
+</style>
+</head>
+<body>
+${HEADER}
+<main>
+  <nav class="crumbs"><a class="crumb" href="/candidats/">‹ Tous les candidats</a><a class="crumb" href="/sujets/">Tous les sujets ›</a></nav>
+  <h1>Comparer deux candidats</h1>
+  <p class="intro">Choisis deux candidats à la présidentielle 2027 : Votona met leurs positions côte à côte sur les ${topics.length} sujets suivis, pour voir où ils sont d'accord et où ils s'opposent.</p>
+  <div class="duel">
+    <button type="button" class="slot" id="slot-a" data-slot="a"></button>
+    <span class="vs">vs</span>
+    <button type="button" class="slot" id="slot-b" data-slot="b"></button>
+  </div>
+  <div class="picker" id="picker">
+    <input id="pick-q" type="search" placeholder="Rechercher un candidat ou un parti…" aria-label="Rechercher un candidat à comparer" autocomplete="off" />
+    <ul id="pick-list"></ul>
+  </div>
+  <div id="result"></div>
+  <noscript><p class="hint">Active JavaScript pour comparer deux candidats, ou consulte leurs fiches : ${noscript}</p></noscript>
+  <a class="btn btn-accent cta" style="margin-top:30px;" href="/">Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>
+  <footer>
+    Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
+    <a href="/">votona.fr</a>
+  </footer>
+</main>
+<script>
+(function(){
+  var D = ${json};
+  var byId = {}; D.c.forEach(function(c){ byId[c.id] = c; });
+  var LABEL = { pour: "D'accord", contre: "Pas d'accord", neutre: "Neutre" };
+  var ICON = { pour: "✓", contre: "✕", neutre: "–" };
+  var sel = { a: null, b: null }, picking = null, filter = "";
+  var params = new URLSearchParams(location.search);
+  if (byId[params.get("a")]) sel.a = params.get("a");
+  if (byId[params.get("b")] && params.get("b") !== sel.a) sel.b = params.get("b");
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(ch){ return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[ch]; }); }
+  function norm(s){ return String(s).toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g, ""); }
+  function mini(c){ return '<span title="' + esc(c.n) + '"><i class="mini" style="background:' + esc(c.col) + '">' + esc(c.i) + '</i></span>'; }
+  function slotHtml(id){
+    var c = byId[id];
+    if (!c) return '<span class="av empty">+</span><span class="nm">Choisir</span><span class="pt">un candidat</span>';
+    return '<span class="av" style="background:' + esc(c.col) + '">' + esc(c.i) + '</span><span class="nm">' + esc(c.n) + '</span><span class="pt">' + esc(c.p) + (c.w ? " · retiré" : "") + '</span><span class="chg">Changer</span>';
+  }
+  function syncUrl(){
+    var q = [];
+    if (sel.a) q.push("a=" + encodeURIComponent(sel.a));
+    if (sel.b) q.push("b=" + encodeURIComponent(sel.b));
+    history.replaceState(null, "", location.pathname + (q.length ? "?" + q.join("&") : ""));
+    var a = byId[sel.a], b = byId[sel.b];
+    document.title = (a && b ? a.n + " vs " + b.n + " : " : "") + "Comparer deux candidats à la présidentielle 2027 | Votona";
+  }
+  function renderPicker(){
+    var p = document.getElementById("picker");
+    p.classList.toggle("show", !!picking);
+    document.getElementById("slot-a").classList.toggle("open", picking === "a");
+    document.getElementById("slot-b").classList.toggle("open", picking === "b");
+    if (!picking) return;
+    var other = sel[picking === "a" ? "b" : "a"];
+    var term = norm(document.getElementById("pick-q").value.trim());
+    var list = D.c.filter(function(c){ return !term || norm(c.n + " " + c.p).indexOf(term) !== -1; });
+    document.getElementById("pick-list").innerHTML = list.length ? list.map(function(c){
+      return '<li><button type="button" data-id="' + esc(c.id) + '"' + (c.id === other ? " disabled" : "") + '><span class="dot" style="background:' + esc(c.col) + '"></span><span>' + esc(c.n) + ' <span class="pt">' + esc(c.p) + (c.w ? " · retiré" : "") + '</span></span></button></li>';
+    }).join("") : '<li class="pt" style="padding:10px 8px">Aucun candidat ne correspond.</li>';
+  }
+  function cell(p){ return p ? '<span class="st ' + p[0] + '" title="' + LABEL[p[0]] + '">' + ICON[p[0]] + '</span>' : '<span class="st none" title="Position non précisée">?</span>'; }
+  function renderResult(){
+    var out = document.getElementById("result");
+    var a = byId[sel.a], b = byId[sel.b];
+    if (!a || !b) { out.innerHTML = '<p class="hint">' + (a || b ? "Choisis un second candidat pour voir leurs positions côte à côte." : "Choisis deux candidats pour comparer leurs positions.") + '</p>'; return; }
+    var pa = D.pos[a.id] || {}, pb = D.pos[b.id] || {};
+    var ok = 0, ko = 0, nd = 0;
+    var rows = D.t.map(function(t){
+      var x = pa[t.id], y = pb[t.id], k;
+      if (!x || !y) { k = "nd"; nd++; }
+      else if (x[0] === y[0]) { k = "ok"; ok++; }
+      else if ((x[0] === "pour" && y[0] === "contre") || (x[0] === "contre" && y[0] === "pour")) { k = "ko"; ko++; }
+      else { k = "nu"; nd++; }
+      return { t: t, x: x, y: y, k: k };
+    });
+    var shown = rows.filter(function(r){ return !filter || r.k === filter; });
+    var html = '<div class="score"><div class="ok"><b>' + ok + '</b><span>même position</span></div><div class="ko"><b>' + ko + '</b><span>positions opposées</span></div><div class="nd"><b>' + nd + '</b><span>nuancé ou non précisé</span></div></div>' +
+      '<div class="filters">' + [["", "Tous les sujets · " + rows.length], ["ok", "Même position · " + ok], ["ko", "Opposés · " + ko]].map(function(f){ return '<button type="button" class="chip' + (filter === f[0] ? " on" : "") + '" data-filter="' + f[0] + '">' + f[1] + '</button>'; }).join("") + '</div>';
+    D.cats.forEach(function(cat){
+      var list = shown.filter(function(r){ return r.t.cat === cat.n; });
+      if (!list.length) return;
+      html += '<h2 class="theme-h">' + cat.ic + esc(cat.n) + '</h2><div class="cols"><span style="text-align:left">Sujet</span>' + mini(a) + mini(b) + '</div>';
+      list.forEach(function(r){
+        var why = function(c, p){ return '<p><b>' + esc(c.n) + ' : ' + (p ? LABEL[p[0]] : "position non précisée") + '.</b>' + (p && p[1] ? " " + esc(p[1]) : "") + '</p>'; };
+        html += '<details class="row ' + r.k + '"><summary><span class="q">' + esc(r.t.s) + '</span>' + cell(r.x) + cell(r.y) + '</summary><div class="why">' + why(a, r.x) + why(b, r.y) + '<a href="/sujets/' + esc(r.t.u) + '/">Voir tous les candidats sur ce sujet ›</a></div></details>';
+      });
+    });
+    if (!shown.length) html += '<p class="hint">Aucun sujet dans cette catégorie pour ces deux candidats.</p>';
+    html += '<p class="legend">✓ d\\'accord · ✕ pas d\\'accord · – neutre ou nuancé · ? position non encore précisée. Touche un sujet pour lire le détail des deux positions.</p>';
+    out.innerHTML = html;
+  }
+  function render(){
+    document.getElementById("slot-a").innerHTML = slotHtml(sel.a);
+    document.getElementById("slot-b").innerHTML = slotHtml(sel.b);
+    renderPicker(); renderResult(); syncUrl();
+  }
+  document.querySelectorAll(".slot").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var s = btn.getAttribute("data-slot");
+      picking = picking === s ? null : s;
+      document.getElementById("pick-q").value = "";
+      renderPicker();
+      if (picking) document.getElementById("pick-q").focus();
+    });
+  });
+  document.getElementById("pick-q").addEventListener("input", renderPicker);
+  document.getElementById("pick-list").addEventListener("click", function(e){
+    var b = e.target.closest("button[data-id]");
+    if (!b || b.disabled) return;
+    sel[picking] = b.getAttribute("data-id");
+    picking = !sel.a ? "a" : !sel.b ? "b" : null;
+    document.getElementById("pick-q").value = "";
+    render();
+    if (picking) document.getElementById("pick-q").focus();
+  });
+  document.getElementById("result").addEventListener("click", function(e){
+    var c = e.target.closest(".chip[data-filter]");
+    if (!c) return;
+    filter = c.getAttribute("data-filter");
+    renderResult();
+  });
+  if (!sel.a) picking = "a"; else if (!sel.b) picking = "b";
+  render();
+})();
+</script>
+</body>
+</html>
+`;
+}
+
 function sitemapXml(candidates, topics, slugs) {
   const url = (loc, freq, prio) => `  <url>\n    <loc>${loc}</loc>\n    <changefreq>${freq}</changefreq>\n    <priority>${prio}</priority>\n  </url>`;
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -636,6 +865,7 @@ ${[
     url(`${SITE_URL}/`, "daily", "1.0"),
     url(`${SITE_URL}/candidats/`, "weekly", "0.8"),
     ...candidates.filter((c) => hasKnownPositions(c, topics)).map((c) => url(`${SITE_URL}/candidats/${c.id}/`, "weekly", "0.7")),
+    url(`${SITE_URL}/comparer/`, "weekly", "0.8"),
     url(`${SITE_URL}/sujets/`, "weekly", "0.8"),
     ...topics.map((t) => url(`${SITE_URL}/sujets/${slugs[t.id]}/`, "weekly", "0.7"))
   ].join("\n")}
@@ -666,9 +896,12 @@ function main() {
   });
   fs.writeFileSync(path.join(TOPIC_DIR, "index.html"), "\uFEFF" + topicIndexHtml(TOPICS, CATEGORIES, CATEGORY_META, CATEGORY_ICON_PATHS, slugs, CANDIDATES), "utf8");
 
+  fs.mkdirSync(path.join(ROOT, "comparer"), { recursive: true });
+  fs.writeFileSync(path.join(ROOT, "comparer", "index.html"), "\uFEFF" + compareHtml(CANDIDATES, TOPICS, CATEGORY_META, CATEGORY_ICON_PATHS, slugs), "utf8");
+
   fs.writeFileSync(path.join(ROOT, "sitemap.xml"), sitemapXml(CANDIDATES, TOPICS, slugs), "utf8");
 
-  console.log(`Généré : ${CANDIDATES.length} pages candidats + ${TOPICS.length} pages sujets + 2 index + sitemap.xml`);
+  console.log(`Généré : ${CANDIDATES.length} pages candidats + ${TOPICS.length} pages sujets + 2 index + comparateur + sitemap.xml`);
 }
 
 if (require.main === module) main();

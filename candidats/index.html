@@ -46,7 +46,9 @@
   main{ max-width:640px; margin:0 auto; padding:32px 20px 64px; }
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:28px 0 8px; }
   p.intro{ color:var(--ink-soft); line-height:1.6; }
-  .btn-sujets{ margin-top:6px; }
+  .btn-pair{ display:flex; gap:8px; margin-top:6px; }
+  .btn-pair .btn{ flex:1; padding:12px 14px; font-size:14px; }
+  @media (max-width:520px){ .btn-pair{ flex-direction:column; } }
   input#q{ width:100%; padding:12px 16px; border-radius:14px; border:1px solid var(--line); font-size:14px; font-family:inherit; margin-top:18px; background:#fff; color:var(--ink); }
   input#q:focus{ outline:2px solid var(--accent); outline-offset:1px; }
   ul{ list-style:none; padding:0; margin:20px 0; }
@@ -65,7 +67,7 @@
 <main>
   <h1>Tous les candidats à la présidentielle 2027</h1>
   <p class="intro">Chaque candidature officiellement déclarée, avec ses positions sourcées sujet par sujet, retraits de la course inclus.</p>
-  <a class="btn btn-ghost btn-sujets" href="/sujets/">Comparer les candidats sujet par sujet</a>
+  <div class="btn-pair"><a class="btn btn-ghost" href="/comparer/">Comparer deux candidats</a><a class="btn btn-ghost" href="/sujets/">Voir les candidats sujet par sujet</a></div>
   <input id="q" type="text" placeholder="Rechercher un candidat ou un parti…" />
   <ul id="list">
     <li data-search="jordan bardella rassemblement national"><a href="bardella/"><span class="cand-dot" style="background:#2457A6"></span>Jordan Bardella <span class="party">— Rassemblement National</span></a></li>
