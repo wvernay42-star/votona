@@ -305,6 +305,8 @@
   label.field-label{ font-size:12px; color:var(--ink-soft); font-weight:600; margin-bottom:5px; display:block; }
 
   .intro-copy{ color:var(--ink-soft); font-size:14.5px; line-height:1.55; margin-top:8px; }
+  /* Texte d'introduction placé juste sous un titre (centré) : centré lui aussi. */
+  h1 + .intro-copy, .hero-tagline + .intro-copy{ text-align:center; margin-left:auto; margin-right:auto; }
 
   /* ---------- Dashboard ---------- */
   .banner{
@@ -4701,7 +4703,7 @@ function renderKit(){
 
   var html = '<span class="eyebrow">Bienvenue ' + escapeHtml(profile.name) + '</span>' +
     '<h1>Ton kit pour la présidentielle</h1>' +
-    '<p class="intro-copy" style="text-align:center; margin-left:auto; margin-right:auto;">Un résumé de ton profil politique, et tout ce qu\'il faut savoir pour voter le moment venu.</p>' +
+    '<p class="intro-copy">Un résumé de ton profil politique, et tout ce qu\'il faut savoir pour voter le moment venu.</p>' +
     blisterCardHtml +
     signupCtaHtml() +
     modalHtml;
