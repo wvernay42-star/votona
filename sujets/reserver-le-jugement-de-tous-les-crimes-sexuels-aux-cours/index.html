@@ -41,6 +41,9 @@
   .topbar-actions{ display:flex; align-items:center; gap:6px; }
   .icon-btn{ width:34px; height:34px; border-radius:50%; border:1px solid var(--masthead-line); background:transparent; color:var(--masthead-ink); display:flex; align-items:center; justify-content:center; text-decoration:none; }
   .icon-btn:hover{ color:var(--accent); border-color:var(--accent); }
+  .prop{ object-fit:contain; flex:none; }
+  .theme-h{ display:flex; align-items:center; gap:10px; font-family:'Baloo 2',sans-serif; font-size:19px; margin:30px 0 4px; padding-bottom:6px; color:var(--ink); border-bottom:3px solid var(--th, var(--accent)); }
+  .av-sm{ display:inline-flex; align-items:center; justify-content:center; flex:none; width:34px; height:34px; border-radius:50%; color:#fff; font:800 12.5px 'Work Sans',Arial,sans-serif; }
   /* Boutons : mêmes valeurs que .btn / .btn-accent / .btn-ghost d'index.html. */
   .btn{ display:flex; align-items:center; justify-content:center; gap:8px; box-sizing:border-box; width:100%; border-radius:18px; padding:14px 22px; font-family:'Work Sans',Arial,sans-serif; font-size:15px; font-weight:800; line-height:1.25; text-align:center; text-decoration:none; cursor:pointer; transition:transform .1s ease, background .15s ease, color .15s ease, border-color .15s ease; }
   .btn:active{ transform:translateY(2px); }
@@ -54,7 +57,10 @@
   @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }
   main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
   .crumbs{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-  .topic-cat{ display:flex; align-items:center; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin:28px 0 8px; }
+  .hero{ position:relative; margin:22px 0 0; padding:22px 170px 24px 22px; border-radius:24px; overflow:hidden; background:linear-gradient(135deg, color-mix(in srgb, var(--th) 26%, #fff), color-mix(in srgb, var(--th) 8%, #fff)); border:1px solid color-mix(in srgb, var(--th) 35%, #fff); }
+  .hero-char{ position:absolute; right:18px; bottom:-22px; height:190px; width:auto; filter:drop-shadow(0 8px 14px rgba(0,0,0,.18)); }
+  .topic-pill{ display:inline-flex; align-items:center; gap:7px; padding:5px 12px 5px 6px; margin-bottom:12px; border-radius:99px; background:#fff; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ink); }
+  @media (max-width:560px){ .hero{ padding:18px 18px 130px; } .hero-char{ height:150px; right:50%; transform:translateX(50%); bottom:-26px; } }
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(24px,3.6vw,32px); line-height:1.2; margin:0; }
   .context{ color:var(--ink-soft); line-height:1.6; margin:14px 0 0; }
   .cta{ margin:24px 0 8px; }
@@ -64,11 +70,11 @@
   .count{ font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500; color:var(--ink-faint); background:var(--masthead-bg); padding:2px 8px; border-radius:99px; }
   .group ul{ list-style:none; padding:0; margin:0; }
   .cand{ padding:12px 0; border-top:1px solid var(--line); }
-  .cand-name{ display:inline-flex; align-items:center; gap:8px; font-weight:700; color:var(--ink); text-decoration:none; }
+  .cand-name{ display:inline-flex; align-items:center; gap:10px; font-weight:700; color:var(--ink); text-decoration:none; }
   .cand-name:hover{ color:var(--accent); }
   .cand-dot{ width:10px; height:10px; border-radius:50%; flex:none; }
   .cand-party{ color:var(--ink-faint); font-size:13px; margin-left:8px; }
-  .detail{ font-size:13.5px; line-height:1.55; color:var(--ink-soft); margin:6px 0 0; }
+  .detail{ font-size:13.5px; line-height:1.55; color:var(--ink-soft); margin:6px 0 0 40px; }
   .names{ display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 0; }
   .names a{ display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:99px; background:#fff; border:1px solid var(--line); color:var(--ink-soft); font-size:13px; font-weight:600; text-decoration:none; }
   .names a:hover{ border-color:var(--accent); color:var(--accent); }
@@ -76,7 +82,9 @@
   h2.subhead{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:44px 0 12px; }
   ul.related{ list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; }
   ul.related a{ position:relative; display:flex; flex-direction:column; gap:8px; height:100%; box-sizing:border-box; padding:16px 38px 16px 18px; background:#fff; border:1px solid var(--line); border-radius:16px; color:var(--ink); text-decoration:none; transition:border-color .15s, transform .15s, box-shadow .15s; }
-  ul.related a:hover{ border-color:var(--accent); transform:translateY(-2px); box-shadow:0 6px 18px rgba(124,58,237,.10); }
+  ul.related{ --th:#FF6B6B; }
+  ul.related a{ border-top:4px solid var(--th); }
+  ul.related a:hover{ border-color:var(--th); transform:translateY(-2px); box-shadow:0 6px 18px rgba(124,58,237,.10); }
   .r-title{ font-weight:600; font-size:14.5px; line-height:1.4; }
   .r-meta{ font-size:12px; color:var(--ink-faint); }
   .r-meta .s-pour{ color:#2c9354; font-weight:600; } .r-meta .s-contre{ color:#d1453a; font-weight:600; }
@@ -91,16 +99,19 @@
 <header class="topbar"><a class="brand" href="/" title="Accueil Votona"><span class="mark"><img src="/assets/ui/logo-head.webp" alt="" width="40" height="32" /></span><span class="name">Votona</span><span class="year">PRÉSIDENTIELLE 2027</span></a><div class="topbar-actions"><a class="icon-btn" href="/?screen=account" title="Mon compte"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></a><a class="icon-btn" href="/?screen=faq" title="Questions fréquentes"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 1 1 3.9 2.4c-1 .5-1.7 1.1-1.7 2.4"/><line x1="12" y1="17.2" x2="12" y2="17.21"/></svg></a></div></header>
 <main>
   <nav class="crumbs"><a class="crumb" href="/sujets/">‹ Tous les sujets</a><a class="crumb" href="/candidats/">Tous les candidats ›</a></nav>
-  <div class="topic-cat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px;"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>Sécurité &amp; immigration</div>
-  <h1>Réserver le jugement de tous les crimes sexuels aux cours d&#39;assises avec jury populaire, en les excluant des cours criminelles départementales : que proposent les candidats ?</h1>
+  <div class="hero" style="--th:#FF6B6B">
+    <div class="topic-pill"><img class="prop" src="/assets/props/securite.webp" width="22" height="22" alt="" loading="lazy" />Sécurité &amp; immigration</div>
+    <h1>Réserver le jugement de tous les crimes sexuels aux cours d&#39;assises avec jury populaire, en les excluant des cours criminelles départementales : que proposent les candidats ?</h1>
+    <img class="hero-char" src="/assets/characters/securite-n3.webp" width="339" height="577" alt="" />
+  </div>
   <p class="context">Les cours criminelles départementales, composées uniquement de magistrats professionnels sans jury populaire, ont été généralisées en 2023 pour désengorger les cours d&#39;assises. Le 21 septembre 2026, un amendement porté par la députée insoumise Gabrielle Cathala et adopté en commission spéciale a exclu les crimes sexuels de leur compétence pour les réserver aux cours d&#39;assises, dans le cadre de la proposition de loi &quot;intégrale&quot; contre les violences sexistes et sexuelles adoptée en commission le 23 septembre 2026 avant son examen en séance publique à partir du 1er octobre.</p>
   <a class="btn btn-accent cta" href="/">Et toi, tu en penses quoi ? Découvre quel candidat te correspond</a>
   
   <section class="group g-pour">
     <h2>✓ Pour <span class="count">2</span></h2>
     <ul>
-      <li class="cand"><a class="cand-name" href="/candidats/melenchon/"><span class="cand-dot" style="background:#C2472E"></span>Jean-Luc Mélenchon</a><span class="cand-party">La France Insoumise</span><p class="detail">Le groupe LFI, qu&#39;il a fondé, est à l&#39;origine de l&#39;amendement adopté en commission spéciale le 21 septembre 2026 excluant les crimes sexuels de la compétence des cours criminelles départementales.</p></li>
-      <li class="cand"><a class="cand-name" href="/candidats/tondelier/"><span class="cand-dot" style="background:#4C9A45"></span>Marine Tondelier</a><span class="cand-party">Les Écologistes</span><p class="detail">La rapporteure du texte, l&#39;écologiste Marie-Charlotte Garin, a porté cette mesure en commission en défendant le rôle du jury populaire pour juger les viols.</p></li>
+      <li class="cand"><a class="cand-name" href="/candidats/melenchon/"><span class="av-sm" style="background:#C2472E;width:30px;height:30px;font-size:11px;">JM</span>Jean-Luc Mélenchon</a><span class="cand-party">La France Insoumise</span><p class="detail">Le groupe LFI, qu&#39;il a fondé, est à l&#39;origine de l&#39;amendement adopté en commission spéciale le 21 septembre 2026 excluant les crimes sexuels de la compétence des cours criminelles départementales.</p></li>
+      <li class="cand"><a class="cand-name" href="/candidats/tondelier/"><span class="av-sm" style="background:#4C9A45;width:30px;height:30px;font-size:11px;">MT</span>Marine Tondelier</a><span class="cand-party">Les Écologistes</span><p class="detail">La rapporteure du texte, l&#39;écologiste Marie-Charlotte Garin, a porté cette mesure en commission en défendant le rôle du jury populaire pour juger les viols.</p></li>
     </ul>
   </section>
   
@@ -108,8 +119,8 @@
   <section class="group g-nuance">
     <h2>≈ Neutre ou nuancé <span class="count">2</span></h2>
     <ul>
-      <li class="cand"><a class="cand-name" href="/candidats/bardella/"><span class="cand-dot" style="background:#2457A6"></span>Jordan Bardella</a><span class="cand-party">Rassemblement National</span><p class="detail">Le RN s&#39;est montré discret sur ce texte, s&#39;abstenant en commission lors de précédents votes sur la lutte contre les violences sexuelles, sans position tranchée sur l&#39;exclusion des cours criminelles départementales.</p></li>
-      <li class="cand"><a class="cand-name" href="/candidats/lepen/"><span class="cand-dot" style="background:#1D3557"></span>Marine Le Pen</a><span class="cand-party">Rassemblement National</span><p class="detail">Le RN, dont elle reste présidente d&#39;honneur, s&#39;est montré discret sur ce texte, s&#39;abstenant en commission lors de précédents votes sur la lutte contre les violences sexuelles.</p></li>
+      <li class="cand"><a class="cand-name" href="/candidats/bardella/"><span class="av-sm" style="background:#2457A6;width:30px;height:30px;font-size:11px;">JB</span>Jordan Bardella</a><span class="cand-party">Rassemblement National</span><p class="detail">Le RN s&#39;est montré discret sur ce texte, s&#39;abstenant en commission lors de précédents votes sur la lutte contre les violences sexuelles, sans position tranchée sur l&#39;exclusion des cours criminelles départementales.</p></li>
+      <li class="cand"><a class="cand-name" href="/candidats/lepen/"><span class="av-sm" style="background:#1D3557;width:30px;height:30px;font-size:11px;">ML</span>Marine Le Pen</a><span class="cand-party">Rassemblement National</span><p class="detail">Le RN, dont elle reste présidente d&#39;honneur, s&#39;est montré discret sur ce texte, s&#39;abstenant en commission lors de précédents votes sur la lutte contre les violences sexuelles.</p></li>
     </ul>
   </section>
   
@@ -118,7 +129,7 @@
     <p class="names"><a href="/candidats/philippe/"><span class="cand-dot" style="background:#2FA39A"></span>Édouard Philippe</a><a href="/candidats/attal/"><span class="cand-dot" style="background:#E3A73B"></span>Gabriel Attal</a><a href="/candidats/retailleau/"><span class="cand-dot" style="background:#7A3B57"></span>Bruno Retailleau</a><a href="/candidats/glucksmann/"><span class="cand-dot" style="background:#5C7CD6"></span>Raphaël Glucksmann</a><a href="/candidats/bertrand/"><span class="cand-dot" style="background:#8A6E4B"></span>Xavier Bertrand</a><a href="/candidats/lisnard/"><span class="cand-dot" style="background:#D97B29"></span>David Lisnard</a><a href="/candidats/dupont-aignan/"><span class="cand-dot" style="background:#6B4E9C"></span>Nicolas Dupont-Aignan</a><a href="/candidats/guedj/"><span class="cand-dot" style="background:#2E8B7A"></span>Jérôme Guedj</a><a href="/candidats/faure/"><span class="cand-dot" style="background:#D6478C"></span>Olivier Faure</a><a href="/candidats/arthaud/"><span class="cand-dot" style="background:#A32020"></span>Nathalie Arthaud</a><a href="/candidats/philippot/"><span class="cand-dot" style="background:#34495E"></span>Florian Philippot</a><a href="/candidats/asselineau/"><span class="cand-dot" style="background:#556B2F"></span>François Asselineau</a><a href="/candidats/egger/"><span class="cand-dot" style="background:#9FA8DA"></span>Clara Egger</a><a href="/candidats/kazib/"><span class="cand-dot" style="background:#B22222"></span>Anasse Kazib</a><a href="/candidats/branco/"><span class="cand-dot" style="background:#7C4DFF"></span>Juan Branco</a><a href="/candidats/labib/"><span class="cand-dot" style="background:#C0392B"></span>Selma Labib</a><a href="/candidats/ruffin/"><span class="cand-dot" style="background:#1ABC9C"></span>François Ruffin</a><a href="/candidats/mikolajczak/"><span class="cand-dot" style="background:#00A99D"></span>Antoine Mikolajczak</a><a href="/candidats/brun/"><span class="cand-dot" style="background:#FF5722"></span>Philippe Brun</a><a href="/candidats/royal/"><span class="cand-dot" style="background:#8E44AD"></span>Ségolène Royal</a><a href="/candidats/massard/"><span class="cand-dot" style="background:#D4A017"></span>Lydie Massard</a><a href="/candidats/lalanne/"><span class="cand-dot" style="background:#C71585"></span>Francis Lalanne</a><a href="/candidats/mathieu/"><span class="cand-dot" style="background:#4682B4"></span>Benoît Mathieu</a><a href="/candidats/cazeneuve/"><span class="cand-dot" style="background:#546E7A"></span>Bernard Cazeneuve</a><a href="/candidats/batho/"><span class="cand-dot" style="background:#2E7D32"></span>Delphine Batho</a><a href="/candidats/bouamrane/"><span class="cand-dot" style="background:#FF8F00"></span>Karim Bouamrane</a><a href="/candidats/verdier/"><span class="cand-dot" style="background:#6B8F71"></span>Fabien Verdier</a><a href="/candidats/maurel/"><span class="cand-dot" style="background:#E07A5F"></span>Emmanuel Maurel</a><a href="/candidats/roussel/"><span class="cand-dot" style="background:#9B1C31"></span>Fabien Roussel</a><a href="/candidats/zemmour/"><span class="cand-dot" style="background:#1A1A2E"></span>Éric Zemmour</a><a href="/candidats/becht/"><span class="cand-dot" style="background:#3D7EA6"></span>Olivier Becht</a></p>
   </section>
   
-  <h2 class="subhead">Autres sujets : Sécurité &amp; immigration</h2>
+  <h2 class="subhead" style="display:flex;align-items:center;gap:10px;"><img class="prop" src="/assets/props/securite.webp" width="30" height="30" alt="" loading="lazy" />Autres sujets : Sécurité &amp; immigration</h2>
   <ul class="related">
     <li><a href="/sujets/reduire-drastiquement-limmigration-par-des-quotas-stricts/"><span class="r-title">Réduire drastiquement l&#39;immigration par des quotas stricts</span><span class="r-meta"><span class="s-pour">9 pour</span> · <span class="s-contre">9 contre</span> · <span>4 nuancés</span></span><span class="r-arrow" aria-hidden="true">›</span></a></li>
     <li><a href="/sujets/renforcer-les-moyens-de-la-police-et-allonger-les-peines-de/"><span class="r-title">Renforcer les moyens de la police et allonger les peines de prison</span><span class="r-meta"><span class="s-pour">7 pour</span> · <span class="s-contre">1 contre</span> · <span>2 nuancés</span></span><span class="r-arrow" aria-hidden="true">›</span></a></li>

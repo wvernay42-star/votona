@@ -122,6 +122,9 @@ const SHARED_CSS = `
   .topbar-actions{ display:flex; align-items:center; gap:6px; }
   .icon-btn{ width:34px; height:34px; border-radius:50%; border:1px solid var(--masthead-line); background:transparent; color:var(--masthead-ink); display:flex; align-items:center; justify-content:center; text-decoration:none; }
   .icon-btn:hover{ color:var(--accent); border-color:var(--accent); }
+  .prop{ object-fit:contain; flex:none; }
+  .theme-h{ display:flex; align-items:center; gap:10px; font-family:'Baloo 2',sans-serif; font-size:19px; margin:30px 0 4px; padding-bottom:6px; color:var(--ink); border-bottom:3px solid var(--th, var(--accent)); }
+  .av-sm{ display:inline-flex; align-items:center; justify-content:center; flex:none; width:34px; height:34px; border-radius:50%; color:#fff; font:800 12.5px 'Work Sans',Arial,sans-serif; }
   /* Boutons : mêmes valeurs que .btn / .btn-accent / .btn-ghost d'index.html. */
   .btn{ display:flex; align-items:center; justify-content:center; gap:8px; box-sizing:border-box; width:100%; border-radius:18px; padding:14px 22px; font-family:'Work Sans',Arial,sans-serif; font-size:15px; font-weight:800; line-height:1.25; text-align:center; text-decoration:none; cursor:pointer; transition:transform .1s ease, background .15s ease, color .15s ease, border-color .15s ease; }
   .btn:active{ transform:translateY(2px); }
@@ -133,6 +136,18 @@ const SHARED_CSS = `
   .btn-row{ max-width:420px; margin-left:auto; margin-right:auto; }
   @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
   @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }`;
+
+// Couleur et illustrations de chaque thème (mêmes que l'app : CATEGORY_META
+// .pop / .slug, accessoires assets/props, oursons assets/characters),
+// renseignées par main() avant la génération.
+const THEMES = {};
+function themeColor(cat) { return (THEMES[cat] && THEMES[cat].pop) || "#7C3AED"; }
+function propImg(cat, size, cls = "prop") {
+  const t = THEMES[cat];
+  return t && t.slug ? `<img class="${cls}" src="/assets/props/${t.slug}.webp" width="${size}" height="${size}" alt="" loading="lazy" />` : "";
+}
+function charSrc(cat) { const t = THEMES[cat]; return t && t.slug ? `/assets/characters/${t.slug}-n3.webp` : ""; }
+function initialsOf(name) { return String(name || "").split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase(); }
 
 // Nom court d'un thème, pour les pastilles du sommaire.
 function shortCat(cat) {
@@ -173,8 +188,8 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths, slugs)
   const cats = Object.keys(categoryMeta).filter((cat) => known.some((t) => t.cat === cat));
   const catId = (cat) => "theme-" + ((categoryMeta[cat] && categoryMeta[cat].slug) || slugify(cat));
   const rows = cats.map((cat) => `
-  <section class="theme" id="${catId(cat)}">
-    <h3 class="theme-h">${catIconSvg(cat, categoryIconPaths, 16)}${escapeHtml(cat)}</h3>${known.filter((t) => t.cat === cat).map(row).join("")}
+  <section class="theme" id="${catId(cat)}" style="--th:${themeColor(cat)}">
+    <h3 class="theme-h">${propImg(cat, 30)}${escapeHtml(cat)}</h3>${known.filter((t) => t.cat === cat).map(row).join("")}
   </section>`).join("");
   const count = (st) => known.filter((t) => cand.positions[t.id].stance === st).length;
   const filterChip = (st, label) => {
@@ -183,7 +198,7 @@ function candidatePageHtml(cand, topics, categoryMeta, categoryIconPaths, slugs)
   };
   const toolbar = `
   <div class="toolbar" id="toolbar">
-    ${cats.length > 1 ? `<nav class="theme-nav" aria-label="Aller à un thème">${cats.map((cat) => `<a href="#${catId(cat)}" data-target="${catId(cat)}">${catIconSvg(cat, categoryIconPaths, 14)}${escapeHtml(shortCat(cat))}</a>`).join("")}</nav>` : ""}
+    ${cats.length > 1 ? `<nav class="theme-nav" aria-label="Aller à un thème">${cats.map((cat) => `<a href="#${catId(cat)}" data-target="${catId(cat)}" style="--th:${themeColor(cat)}">${propImg(cat, 18)}${escapeHtml(shortCat(cat))}</a>`).join("")}</nav>` : ""}
     <div class="filters" role="group" aria-label="Filtrer ses positions">${filterChip("", "Tout")}${filterChip("pour", "✓ D'accord")}${filterChip("contre", "✕ Pas d'accord")}${filterChip("neutre", "– Neutre")}</div>
   </div>
   <p class="no-match" id="no-match">Aucune position de ce type.</p>`;
@@ -272,7 +287,8 @@ ${HEAD_ICONS}
 <script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Candidats", url: SITE_URL + "/candidats/" }, { name: cand.name, url: canonical }])}</script>
 <style>${SHARED_CSS}
   main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
-  .cand-header{ display:flex; align-items:center; gap:16px; margin:28px 0 6px; }
+  .cand-header{ display:flex; align-items:center; gap:16px; margin:24px 0 6px; padding:20px; border-radius:22px; background:linear-gradient(135deg, color-mix(in srgb, var(--cc) 20%, #fff), color-mix(in srgb, var(--cc) 6%, #fff)); border:1px solid color-mix(in srgb, var(--cc) 28%, #fff); }
+  .cand-avatar{ box-shadow:0 4px 14px color-mix(in srgb, var(--cc) 40%, transparent); }
   .cand-avatar{ width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Baloo 2',sans-serif; font-weight:700; font-size:20px; flex:none; }
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,34px); margin:0; }
   .party{ color:var(--ink-soft); font-size:15px; margin:2px 0 0; }
@@ -282,13 +298,12 @@ ${HEAD_ICONS}
   h2.subhead{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:36px 0 16px; }
   .topic-row{ padding:16px 0; border-top:1px solid var(--line); }
   .theme{ scroll-margin-top:100px; }
-  .theme-h{ display:flex; align-items:center; gap:2px; font-family:'Baloo 2',sans-serif; font-size:18px; margin:26px 0 4px; color:var(--ink); }
   .toolbar{ position:sticky; top:0; z-index:5; margin:0 -20px; padding:10px 20px; background:color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
   .theme-nav{ display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; padding-bottom:8px; }
   .theme-nav::-webkit-scrollbar{ display:none; }
   .theme-nav a{ flex:none; display:inline-flex; align-items:center; padding:6px 12px; border-radius:99px; border:1px solid var(--line); background:#fff; color:var(--ink-soft); font-size:13px; font-weight:600; text-decoration:none; white-space:nowrap; }
-  .theme-nav a svg{ margin-right:5px !important; }
-  .theme-nav a:hover, .theme-nav a.on{ border-color:var(--accent); color:var(--accent); }
+  .theme-nav a{ gap:6px; }
+  .theme-nav a:hover, .theme-nav a.on{ border-color:var(--th); color:var(--ink); background:color-mix(in srgb, var(--th) 16%, #fff); }
   .filters{ display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; }
   .filters::-webkit-scrollbar{ display:none; }
   .chip{ flex:none; white-space:nowrap; appearance:none; cursor:pointer; padding:6px 12px; border-radius:99px; border:1px solid var(--line); background:transparent; color:var(--ink-soft); font:600 13px 'Work Sans',Arial,sans-serif; }
@@ -323,7 +338,7 @@ ${HEAD_ICONS}
 ${HEADER}
 <main>
   <nav class="crumbs"><a class="crumb" href="/candidats/">‹ Tous les candidats</a><a class="crumb" href="/sujets/">Tous les sujets ›</a></nav>
-  <div class="cand-header">
+  <div class="cand-header" style="--cc:${escapeHtml(cand.color || "#7C3AED")}">
     <div class="cand-avatar" style="background:${escapeHtml(cand.color || "#7C3AED")};">${escapeHtml(initials)}</div>
     <div>
       <h1>${escapeHtml(cand.name)}</h1>
@@ -348,7 +363,7 @@ ${HEADER}
 function indexPageHtml(candidates) {
   const canonical = `${SITE_URL}/candidats/`;
   const items = candidates.map((c) => `
-    <li data-search="${escapeHtml((c.name + " " + c.party).toLowerCase())}"><a href="${c.id}/"><span class="cand-dot" style="background:${escapeHtml(c.color || "#7C3AED")}"></span>${escapeHtml(c.name)} <span class="party">— ${escapeHtml(c.party)}</span>${c.withdrawn ? ' <span class="withdrawn-tag">(retiré)</span>' : ""}</a></li>`).join("\n");
+    <li data-search="${escapeHtml((c.name + " " + c.party).toLowerCase())}"><a href="${c.id}/"><span class="av-sm" style="background:${escapeHtml(c.color || "#7C3AED")}">${escapeHtml(initialsOf(c.name))}</span><span class="who"><span>${escapeHtml(c.name)}${c.withdrawn ? ' <span class="withdrawn-tag">(retiré)</span>' : ""}</span><span class="party">${escapeHtml(c.party)}</span></span></a></li>`).join("\n");
 
   return `<!DOCTYPE html>
 <html lang="fr">
@@ -373,10 +388,11 @@ ${HEAD_ICONS}
   ul{ list-style:none; padding:0; margin:20px 0; }
   li{ padding:14px 0; border-top:1px solid var(--line); }
   li.hidden{ display:none; }
-  li a{ display:flex; align-items:center; gap:9px; color:var(--ink); text-decoration:none; font-weight:700; font-size:15.5px; }
+  li a{ display:flex; align-items:center; gap:12px; color:var(--ink); text-decoration:none; font-weight:700; font-size:15.5px; }
   li a:hover{ color:var(--accent); }
   .cand-dot{ width:10px; height:10px; border-radius:50%; flex:none; }
-  .party{ color:var(--ink-faint); font-weight:400; font-size:13.5px; }
+  .who{ display:flex; flex-direction:column; min-width:0; }
+  .party{ color:var(--ink-faint); font-weight:400; font-size:13px; }
   .withdrawn-tag{ color:var(--ink-faint); font-weight:400; font-size:12.5px; }
   #empty{ display:none; color:var(--ink-faint); font-size:13.5px; padding:14px 0; }
 </style>
@@ -426,7 +442,7 @@ function topicPageHtml(topic, candidates, topics, categoryIconPaths, slugs) {
   const title = `${topic.statement} : que proposent les candidats ? | Votona`;
   const description = `Pour, contre ou sans position : ce que disent les ${active.length} candidats à la présidentielle 2027 sur « ${topic.statement} ». Positions sourcées, candidat par candidat.`;
   const card = ({ c, pos }) => `
-      <li class="cand"><a class="cand-name" href="/candidats/${c.id}/"><span class="cand-dot" style="background:${escapeHtml(c.color || "#7C3AED")}"></span>${escapeHtml(c.name)}</a><span class="cand-party">${escapeHtml(c.party)}</span>${pos && pos.detail ? `<p class="detail">${escapeHtml(pos.detail)}</p>` : ""}</li>`;
+      <li class="cand"><a class="cand-name" href="/candidats/${c.id}/"><span class="av-sm" style="background:${escapeHtml(c.color || "#7C3AED")};width:30px;height:30px;font-size:11px;">${escapeHtml(initialsOf(c.name))}</span>${escapeHtml(c.name)}</a><span class="cand-party">${escapeHtml(c.party)}</span>${pos && pos.detail ? `<p class="detail">${escapeHtml(pos.detail)}</p>` : ""}</li>`;
   const section = (key, label, icon) => groups[key].length ? `
   <section class="group g-${key}">
     <h2>${icon} ${label} <span class="count">${groups[key].length}</span></h2>
@@ -452,7 +468,7 @@ function topicPageHtml(topic, candidates, topics, categoryIconPaths, slugs) {
     return parts.length ? parts.join(" · ") : "<span>Positions à venir</span>";
   };
   const siblingsHtml = siblings.length ? `
-  <h2 class="subhead">Autres sujets : ${escapeHtml(topic.cat)}</h2>
+  <h2 class="subhead" style="display:flex;align-items:center;gap:10px;">${propImg(topic.cat, 30)}Autres sujets : ${escapeHtml(topic.cat)}</h2>
   <ul class="related">${siblings.map((t) => `
     <li><a href="/sujets/${slugs[t.id]}/"><span class="r-title">${escapeHtml(t.statement)}</span><span class="r-meta">${stanceSummary(t)}</span><span class="r-arrow" aria-hidden="true">›</span></a></li>`).join("")}
   </ul>` : "";
@@ -480,7 +496,10 @@ ${HEAD_ICONS}
 <style>${SHARED_CSS}
   main{ max-width:720px; margin:0 auto; padding:32px 20px 64px; }
   .crumbs{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-  .topic-cat{ display:flex; align-items:center; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin:28px 0 8px; }
+  .hero{ position:relative; margin:22px 0 0; padding:22px 170px 24px 22px; border-radius:24px; overflow:hidden; background:linear-gradient(135deg, color-mix(in srgb, var(--th) 26%, #fff), color-mix(in srgb, var(--th) 8%, #fff)); border:1px solid color-mix(in srgb, var(--th) 35%, #fff); }
+  .hero-char{ position:absolute; right:18px; bottom:-22px; height:190px; width:auto; filter:drop-shadow(0 8px 14px rgba(0,0,0,.18)); }
+  .topic-pill{ display:inline-flex; align-items:center; gap:7px; padding:5px 12px 5px 6px; margin-bottom:12px; border-radius:99px; background:#fff; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ink); }
+  @media (max-width:560px){ .hero{ padding:18px 18px 130px; } .hero-char{ height:150px; right:50%; transform:translateX(50%); bottom:-26px; } }
   h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(24px,3.6vw,32px); line-height:1.2; margin:0; }
   .context{ color:var(--ink-soft); line-height:1.6; margin:14px 0 0; }
   .cta{ margin:24px 0 8px; }
@@ -490,11 +509,11 @@ ${HEAD_ICONS}
   .count{ font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500; color:var(--ink-faint); background:var(--masthead-bg); padding:2px 8px; border-radius:99px; }
   .group ul{ list-style:none; padding:0; margin:0; }
   .cand{ padding:12px 0; border-top:1px solid var(--line); }
-  .cand-name{ display:inline-flex; align-items:center; gap:8px; font-weight:700; color:var(--ink); text-decoration:none; }
+  .cand-name{ display:inline-flex; align-items:center; gap:10px; font-weight:700; color:var(--ink); text-decoration:none; }
   .cand-name:hover{ color:var(--accent); }
   .cand-dot{ width:10px; height:10px; border-radius:50%; flex:none; }
   .cand-party{ color:var(--ink-faint); font-size:13px; margin-left:8px; }
-  .detail{ font-size:13.5px; line-height:1.55; color:var(--ink-soft); margin:6px 0 0; }
+  .detail{ font-size:13.5px; line-height:1.55; color:var(--ink-soft); margin:6px 0 0 40px; }
   .names{ display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 0; }
   .names a{ display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:99px; background:#fff; border:1px solid var(--line); color:var(--ink-soft); font-size:13px; font-weight:600; text-decoration:none; }
   .names a:hover{ border-color:var(--accent); color:var(--accent); }
@@ -502,7 +521,9 @@ ${HEAD_ICONS}
   h2.subhead{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:44px 0 12px; }
   ul.related{ list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; }
   ul.related a{ position:relative; display:flex; flex-direction:column; gap:8px; height:100%; box-sizing:border-box; padding:16px 38px 16px 18px; background:#fff; border:1px solid var(--line); border-radius:16px; color:var(--ink); text-decoration:none; transition:border-color .15s, transform .15s, box-shadow .15s; }
-  ul.related a:hover{ border-color:var(--accent); transform:translateY(-2px); box-shadow:0 6px 18px rgba(124,58,237,.10); }
+  ul.related{ --th:${themeColor(topic.cat)}; }
+  ul.related a{ border-top:4px solid var(--th); }
+  ul.related a:hover{ border-color:var(--th); transform:translateY(-2px); box-shadow:0 6px 18px rgba(124,58,237,.10); }
   .r-title{ font-weight:600; font-size:14.5px; line-height:1.4; }
   .r-meta{ font-size:12px; color:var(--ink-faint); }
   .r-meta .s-pour{ color:#2c9354; font-weight:600; } .r-meta .s-contre{ color:#d1453a; font-weight:600; }
@@ -517,8 +538,11 @@ ${HEAD_ICONS}
 ${HEADER}
 <main>
   <nav class="crumbs"><a class="crumb" href="/sujets/">‹ Tous les sujets</a><a class="crumb" href="/candidats/">Tous les candidats ›</a></nav>
-  <div class="topic-cat">${catIconSvg(topic.cat, categoryIconPaths, 13)}${escapeHtml(topic.cat)}</div>
-  <h1>${escapeHtml(topic.statement)} : que proposent les candidats ?</h1>
+  <div class="hero" style="--th:${themeColor(topic.cat)}">
+    <div class="topic-pill">${propImg(topic.cat, 22)}${escapeHtml(topic.cat)}</div>
+    <h1>${escapeHtml(topic.statement)} : que proposent les candidats ?</h1>
+    ${charSrc(topic.cat) ? `<img class="hero-char" src="${charSrc(topic.cat)}" width="339" height="577" alt="" />` : ""}
+  </div>
   ${topic.context ? `<p class="context">${escapeHtml(topic.context)}</p>` : ""}
   <a class="btn btn-accent cta" href="/">Et toi, tu en penses quoi ? Découvre quel candidat te correspond</a>
   ${section("pour", "Pour", "✓")}
@@ -550,7 +574,7 @@ function topicIndexHtml(topics, categories, categoryMeta, categoryIconPaths, slu
   const divisive = split.length ? `
   <section class="divisive" id="divisive">
     <h2>Les sujets qui divisent le plus les candidats</h2>
-    <ul>${split.map(({ t, pour, contre }) => `<li><a href="${slugs[t.id]}/"><span class="d-title">${escapeHtml(t.statement)}</span><span class="d-bar" aria-hidden="true"><span style="flex:${pour}"></span><span style="flex:${contre}"></span></span><span class="d-meta"><span class="s-pour">${pour} pour</span> · <span class="s-contre">${contre} contre</span></span></a></li>`).join("")}
+    <ul>${split.map(({ t, pour, contre }) => `<li><a href="${slugs[t.id]}/"><span class="d-title" style="display:flex;gap:10px;align-items:center;">${propImg(t.cat, 26)}${escapeHtml(t.statement)}</span><span class="d-bar" aria-hidden="true"><span style="flex:${pour}"></span><span style="flex:${contre}"></span></span><span class="d-meta"><span class="s-pour">${pour} pour</span> · <span class="s-contre">${contre} contre</span></span></a></li>`).join("")}
     </ul>
   </section>` : "";
   const blocks = categories.map((cat) => {
@@ -558,8 +582,8 @@ function topicIndexHtml(topics, categories, categoryMeta, categoryIconPaths, slu
     if (!list.length) return "";
     const meta = categoryMeta[cat] || {};
     return `
-  <section class="cat">
-    <h2>${catIconSvg(cat, categoryIconPaths, 18)}${escapeHtml(cat)}</h2>
+  <section class="cat" style="--th:${themeColor(cat)}">
+    <h2 class="theme-h">${propImg(cat, 34)}${escapeHtml(cat)}</h2>
     ${meta.d ? `<p class="cat-d">${escapeHtml(meta.d)}</p>` : ""}
     <ul>${list.map((t) => `<li data-search="${escapeHtml((t.statement + " " + t.cat).toLowerCase())}"><a href="${slugs[t.id]}/">${escapeHtml(t.statement)}</a></li>`).join("")}</ul>
   </section>`;
@@ -582,6 +606,8 @@ ${HEAD_ICONS}
   p.intro{ color:var(--ink-soft); line-height:1.6; }
   section{ margin-top:30px; }
   section h2{ font-family:'Baloo 2',sans-serif; font-size:20px; margin:0 0 2px; display:flex; align-items:center; }
+  section.cat li a{ display:flex; gap:10px; align-items:baseline; }
+  section.cat li a::before{ content:""; flex:none; width:8px; height:8px; border-radius:50%; background:var(--th); transform:translateY(-1px); }
   .cat-d{ color:var(--ink-faint); font-size:13px; margin:0 0 8px; }
   section ul{ list-style:none; padding:0; margin:0; }
   section li{ padding:11px 0; border-top:1px solid var(--line); }
@@ -642,7 +668,7 @@ function compareHtml(candidates, topics, categoryMeta, categoryIconPaths, slugs)
   const data = {
     c: candidates.map((c) => ({ id: c.id, n: c.name, p: c.party, col: c.color || "#7C3AED", i: initials(c.name), w: c.withdrawn ? 1 : 0 })),
     t: topics.map((t) => ({ id: t.id, s: t.statement, cat: t.cat, u: slugs[t.id] })),
-    cats: Object.keys(categoryMeta).map((cat) => ({ n: cat, ic: catIconSvg(cat, categoryIconPaths, 16) })),
+    cats: Object.keys(categoryMeta).map((cat) => ({ n: cat, ic: propImg(cat, 30), col: themeColor(cat) })),
     pos: Object.fromEntries(candidates.map((c) => [c.id, Object.fromEntries(topics.filter((t) => isKnown(c.positions && c.positions[t.id])).map((t) => [t.id, [c.positions[t.id].stance, c.positions[t.id].detail || ""]]))]))
   };
   // "</" échappé pour ne jamais fermer la balise <script> par accident.
@@ -675,6 +701,8 @@ ${HEAD_ICONS}
   .duel{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; margin:26px 0 12px; }
   .slot{ appearance:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:8px; padding:16px 10px; border-radius:18px; border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); background:#fff; font-family:inherit; color:var(--ink); min-width:0; }
   .slot:hover, .slot.open{ border-color:var(--accent); }
+  .slot.picked{ background:linear-gradient(160deg, color-mix(in srgb, var(--cc) 20%, #fff), color-mix(in srgb, var(--cc) 5%, #fff)); border-color:color-mix(in srgb, var(--cc) 40%, #fff); }
+  .slot.picked:hover, .slot.picked.open{ border-color:var(--cc); }
   .slot .av{ width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:22px; }
   .slot .av.empty{ background:transparent; border:2px dashed var(--ink-faint); color:var(--ink-faint); font-size:28px; font-family:'Work Sans',sans-serif; }
   .slot .nm{ font-weight:800; font-size:15px; line-height:1.25; text-align:center; overflow-wrap:anywhere; }
@@ -701,8 +729,6 @@ ${HEAD_ICONS}
   .chip{ flex:none; appearance:none; cursor:pointer; padding:6px 12px; border-radius:99px; border:1px solid var(--line); background:transparent; color:var(--ink-soft); font:600 13px 'Work Sans',Arial,sans-serif; white-space:nowrap; }
   .chip:hover{ border-color:var(--accent); color:var(--accent); }
   .chip.on{ background:var(--accent); border-color:var(--accent); color:#fff; }
-  .theme-h{ display:flex; align-items:center; font-family:'Baloo 2',sans-serif; font-size:18px; margin:24px 0 2px; }
-  .theme-h svg{ margin-right:6px !important; }
   .cols{ display:grid; grid-template-columns:1fr 52px 52px; gap:6px; font-size:11px; font-family:'IBM Plex Mono',monospace; color:var(--ink-faint); text-transform:uppercase; padding:4px 0; }
   .cols span{ text-align:center; }
   .mini{ display:inline-flex; width:26px; height:26px; border-radius:50%; align-items:center; justify-content:center; color:#fff; font:800 10.5px 'Work Sans',Arial,sans-serif; font-style:normal; }
@@ -808,7 +834,7 @@ ${HEADER}
     D.cats.forEach(function(cat){
       var list = shown.filter(function(r){ return r.t.cat === cat.n; });
       if (!list.length) return;
-      html += '<h2 class="theme-h">' + cat.ic + esc(cat.n) + '</h2><div class="cols"><span style="text-align:left">Sujet</span>' + mini(a) + mini(b) + '</div>';
+      html += '<h2 class="theme-h" style="--th:' + esc(cat.col) + '">' + cat.ic + esc(cat.n) + '</h2><div class="cols"><span style="text-align:left">Sujet</span>' + mini(a) + mini(b) + '</div>';
       list.forEach(function(r){
         var why = function(c, p){ return '<p><b>' + esc(c.n) + ' : ' + (p ? LABEL[p[0]] : "position non précisée") + '.</b>' + (p && p[1] ? " " + esc(p[1]) : "") + '</p>'; };
         html += '<details class="row ' + r.k + '"><summary><span class="q">' + esc(r.t.s) + '</span>' + cell(r.x) + cell(r.y) + '</summary><div class="why">' + why(a, r.x) + why(b, r.y) + '<a href="/sujets/' + esc(r.t.u) + '/">Voir tous les candidats sur ce sujet ›</a></div></details>';
@@ -819,8 +845,12 @@ ${HEADER}
     out.innerHTML = html;
   }
   function render(){
-    document.getElementById("slot-a").innerHTML = slotHtml(sel.a);
-    document.getElementById("slot-b").innerHTML = slotHtml(sel.b);
+    ["a", "b"].forEach(function(k){
+      var el = document.getElementById("slot-" + k), c = byId[sel[k]];
+      el.innerHTML = slotHtml(sel[k]);
+      el.style.setProperty("--cc", c ? c.col : "");
+      el.classList.toggle("picked", !!c);
+    });
     renderPicker(); renderResult(); syncUrl();
   }
   document.querySelectorAll(".slot").forEach(function(btn){
@@ -876,6 +906,7 @@ ${[
 function main() {
   const { CATEGORIES, TOPICS, CANDIDATES, CATEGORY_META, CATEGORY_ICON_PATHS } = loadData();
   const slugs = topicSlugs(TOPICS);
+  Object.keys(CATEGORY_META).forEach((cat) => { THEMES[cat] = { slug: CATEGORY_META[cat].slug, pop: CATEGORY_META[cat].pop }; });
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
   CANDIDATES.forEach((cand) => {
