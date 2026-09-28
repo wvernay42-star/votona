@@ -303,6 +303,20 @@
   }
   input[type="text"]:focus, input[type="email"]:focus, select:focus, textarea:focus{ border-color:var(--blue); }
   label.field-label{ font-size:12px; color:var(--ink-soft); font-weight:600; margin-bottom:5px; display:block; }
+  .contact-form{ display:flex; flex-direction:column; gap:14px; margin-top:22px; padding:20px; border-radius:22px; background:var(--bg-raised); border:2px solid color-mix(in srgb, var(--accent) 18%, var(--line-soft)); }
+  .contact-form textarea{ resize:vertical; min-height:130px; line-height:1.5; }
+  .cf-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:560px){ .cf-row{ grid-template-columns:1fr; } }
+  .cf-opt{ font-weight:400; color:var(--ink-faint); }
+  .cf-hp{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+  .cf-note{ margin:0; font-size:12px; color:var(--ink-faint); }
+  .cf-status{ margin:0; font-size:13px; font-weight:600; color:var(--ink-soft); min-height:0; }
+  .cf-status:empty{ display:none; }
+  .cf-status.err{ color:var(--bad); }
+  .cf-done{ text-align:center; padding:18px 6px; }
+  .cf-done-ic{ display:flex; justify-content:center; margin-bottom:10px; }
+  .cf-done-t{ font-family:var(--display); font-size:19px; font-weight:700; }
+  .cf-done-s{ font-size:13.5px; color:var(--ink-soft); margin-top:4px; }
 
   .intro-copy{ color:var(--ink-soft); font-size:14.5px; line-height:1.55; margin-top:8px; }
   /* Texte d'introduction placé juste sous un titre (centré) : centré lui aussi. */
@@ -3235,7 +3249,7 @@ var state = {
 var requestedScreen = new URLSearchParams(location.search).get("screen");
 if((requestedScreen === "dashboard" || requestedScreen === "results") && state.activeProfileId && loadProfiles()[state.activeProfileId]){
   state.screen = requestedScreen;
-} else if(requestedScreen === "faq" || requestedScreen === "account" || requestedScreen === "legal" || requestedScreen === "privacy"){
+} else if(requestedScreen === "faq" || requestedScreen === "account" || requestedScreen === "legal" || requestedScreen === "privacy" || requestedScreen === "contact"){
   state.screen = requestedScreen;
 }
 
@@ -4213,6 +4227,7 @@ function startVoteFlow(){
 }
 
 var ICON_SHARE = '<svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+var ICON_SEND = '<svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
 var ICON_DOWNLOAD = '<svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>';
 var STANCE_LABEL = {pour:"D'accord", contre:"Pas d'accord", neutre:"Neutre"};
 var STANCE_ICON = {pour:"✓", contre:"✕", neutre:"–"};
@@ -4879,6 +4894,9 @@ function renderPrivacy(){
       '<h3>Qui y a accès</h3>' +
       '<p>Personne d\'autre que toi. Aucune donnée n\'est vendue ni partagée à des fins commerciales. Elle transite uniquement par nos sous-traitants techniques, chacun lié par ses propres engagements de confidentialité : <strong>Vercel</strong> (hébergement du site, États-Unis), <strong>Supabase</strong> (base de données et authentification), <strong>Brevo</strong> (envoi de l\'email de connexion). Lorsqu\'un transfert a lieu hors de l\'Union européenne, il s\'appuie sur les clauses contractuelles types de la Commission européenne ou un mécanisme équivalent prévu par ces prestataires. Le site affiche aussi des publicités via <strong>Google AdSense</strong>, qui peut déposer ses propres cookies publicitaires : un bandeau dédié te permet de les accepter ou de les refuser.</p>' +
 
+      '<h3>Formulaire de contact</h3>' +
+      '<p>Si tu nous écris via le formulaire de la page Contact, ton prénom (facultatif), ton email et ton message sont transmis par email à l\'éditeur via <strong>Brevo</strong>, uniquement pour te répondre. Ils ne sont pas enregistrés dans l\'app ni utilisés à d\'autres fins.</p>' +
+
       '<h3>Combien de temps</h3>' +
       '<p>Tant que ton profil existe. Le supprimer (« Mon compte » ou directement sur un profil) efface immédiatement tes réponses de nos serveurs ; sans compte, effacer les données de navigation de ce site suffit.</p>' +
 
@@ -4892,14 +4910,68 @@ function renderPrivacy(){
    SCREEN — CONTACT
    ============================================================ */
 function renderContact(){
-  var subject = encodeURIComponent("Votona — retour ou bug");
-  var body = encodeURIComponent("Décris ici ta suggestion ou le bug rencontré (et si possible, sur quel appareil/navigateur) :\n\n");
+  var prefillEmail = (isLoggedIn() && authSession && authSession.user && authSession.user.email) ? authSession.user.email : "";
+  var topics = ["Suggestion", "Bug rencontré", "Erreur sur une position de candidat", "Presse ou partenariat", "Autre"];
   var html = '<span class="eyebrow">Une question, une idée ?</span>' +
     '<h1>Contact</h1>' +
     '<p class="intro-copy">Une suggestion, un bug rencontré, une erreur sur une position de candidat ? Écris-moi directement, je lis tout.</p>' +
-    '<a href="mailto:contact@votona.fr?subject=' + subject + '&body=' + body + '" class="btn btn-accent btn-block" style="margin-top:16px; text-decoration:none; display:block; text-align:center;">✉️ Envoyer un email</a>' +
-    '<p class="intro-copy" style="margin-top:14px; font-size:12.5px;">Ou directement à <a href="mailto:contact@votona.fr">contact@votona.fr</a></p>';
+    '<form class="contact-form" id="contact-form" novalidate>' +
+      '<div class="cf-row">' +
+        '<div><label class="field-label" for="cf-name">Prénom <span class="cf-opt">(facultatif)</span></label>' +
+        '<input type="text" id="cf-name" maxlength="80" autocomplete="given-name" /></div>' +
+        '<div><label class="field-label" for="cf-email">Ton email</label>' +
+        '<input type="email" id="cf-email" maxlength="160" autocomplete="email" required placeholder="toi@exemple.fr" value="' + escapeHtml(prefillEmail) + '" /></div>' +
+      '</div>' +
+      '<div><label class="field-label" for="cf-topic">Sujet</label>' +
+        '<select id="cf-topic">' + topics.map(function(t){ return '<option>' + escapeHtml(t) + '</option>'; }).join("") + '</select></div>' +
+      '<div><label class="field-label" for="cf-message">Ton message</label>' +
+        '<textarea id="cf-message" rows="6" maxlength="5000" required placeholder="Décris ta suggestion ou le problème rencontré (appareil, navigateur, page concernée…)"></textarea></div>' +
+      // Champ piège anti-robots : invisible et ignoré par les humains.
+      '<div class="cf-hp" aria-hidden="true"><label for="cf-website">Site web</label><input type="text" id="cf-website" tabindex="-1" autocomplete="off" /></div>' +
+      '<p class="cf-note">Ton email sert uniquement à te répondre ; ton message n\'est pas conservé sur le site.</p>' +
+      '<p class="cf-status" id="cf-status" role="status"></p>' +
+      '<button type="submit" class="btn btn-accent btn-block" id="cf-send">' + ICON_SEND + 'Envoyer le message</button>' +
+    '</form>' +
+    '<p class="intro-copy" style="margin-top:16px; font-size:12.5px; text-align:center;">Tu préfères ta messagerie ? Écris à <a href="mailto:contact@votona.fr">contact@votona.fr</a></p>';
   document.getElementById("app").innerHTML = html;
+
+  var shownAt = Date.now();
+  var form = document.getElementById("contact-form");
+  var status = document.getElementById("cf-status");
+  var sendBtn = document.getElementById("cf-send");
+  function setStatus(msg, kind){ status.textContent = msg; status.className = "cf-status" + (kind ? " " + kind : ""); }
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var email = document.getElementById("cf-email").value.trim();
+    var message = document.getElementById("cf-message").value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){ setStatus("Indique une adresse email valide pour qu'on puisse te répondre.", "err"); document.getElementById("cf-email").focus(); return; }
+    if(message.length < 10){ setStatus("Ton message est un peu court.", "err"); document.getElementById("cf-message").focus(); return; }
+    sendBtn.disabled = true;
+    setStatus("Envoi en cours…");
+    fetch("/api/contact", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        name: document.getElementById("cf-name").value.trim(),
+        email: email,
+        topic: document.getElementById("cf-topic").value,
+        message: message,
+        website: document.getElementById("cf-website").value,
+        elapsed: Date.now() - shownAt
+      })
+    }).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(d){ return {ok: r.ok, d: d}; }); })
+      .then(function(res){
+        if(res.ok){
+          form.innerHTML = '<div class="cf-done"><div class="cf-done-ic"><img src="assets/ui/logo-head.webp" width="84" height="71" alt="Mascotte Votona" /></div>' +
+            '<div class="cf-done-t">Merci, ton message est bien parti !</div>' +
+            '<div class="cf-done-s">On te répond à ' + escapeHtml(email) + ', en général sous 24h.</div></div>';
+        } else {
+          sendBtn.disabled = false;
+          setStatus((res.d && res.d.error) || "L'envoi a échoué, réessaie dans un instant.", "err");
+        }
+      })
+      .catch(function(){ sendBtn.disabled = false; setStatus("Pas de connexion ? L'envoi a échoué, réessaie dans un instant.", "err"); });
+  });
 }
 
 /* ============================================================
