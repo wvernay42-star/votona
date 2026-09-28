@@ -60,10 +60,10 @@ function breadcrumbLd(items) {
   });
 }
 // Balises communes du <head> (favicons, polices).
-const HEAD_ICONS = `<link rel="icon" type="image/png" sizes="48x48" href="/assets/ui/favicon-48.png" />
-<link rel="icon" type="image/png" sizes="192x192" href="/assets/ui/favicon-192.png" />
-<link rel="icon" href="/favicon.ico" sizes="32x32 48x48" />
-<link rel="apple-touch-icon" sizes="180x180" href="/assets/ui/apple-touch-icon.png" />
+const HEAD_ICONS = `<link rel="icon" type="image/png" sizes="48x48" href="/assets/ui/favicon-48.png?v=2" />
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/ui/favicon-192.png?v=2" />
+<link rel="icon" href="/favicon.ico?v=2" sizes="32x32 48x48" />
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/ui/apple-touch-icon.png?v=2" />
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">`;
 const SITE_URL = "https://votona.fr";
 
