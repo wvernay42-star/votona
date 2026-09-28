@@ -59,7 +59,6 @@ module.exports = async (req, res) => {
   res.status(200).json({
     sent: result.sent,
     failed: result.failed,
-    eligible1: result.eligible1,
-    eligible2: result.eligible2
+    eligible: result.eligible
   });
 };

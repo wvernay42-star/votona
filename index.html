@@ -2965,9 +2965,8 @@ async function loadRelanceQueue(){
 
 /* ============================================================
    TEMPLATE EMAIL DE RELANCE — même trame que la routine cloud
-   d'envoi (curl + Brevo). Un seul email, envoyé à la fois aux
-   inactifs 7 jours (premier rappel) et 30 jours (dernier rappel) ;
-   utilisé ici uniquement pour l'aperçu admin, ne modifie rien
+   d'envoi (curl + Brevo). Un seul email, envoyé à tous les comptes
+   ayant accepté de recevoir les emails ; utilisé ici uniquement pour l'aperçu admin, ne modifie rien
    côté envoi réel.
    ============================================================ */
 var RELANCE_DASHBOARD_URL = "https://votona.fr/?screen=dashboard";
@@ -5044,7 +5043,7 @@ function renderAccount(){
       (active ? '<label class="notif-toggle-row" style="margin-top:16px;">' +
         '<div class="notif-toggle-text">' +
           '<div class="notif-toggle-title">Actus de la présidentielle</div>' +
-          '<div class="notif-toggle-sub">Nouveau sujet ou candidat pour « ' + escapeHtml(active.name) + ' », et une relance occasionnelle si tu es inactif. Jamais plus de quelques emails par mois.</div>' +
+          '<div class="notif-toggle-sub">Nouveau sujet ou candidat pour « ' + escapeHtml(active.name) + ' » et les actus marquantes de la campagne. Jamais plus de quelques emails par mois.</div>' +
         '</div>' +
         '<input type="checkbox" class="toggle-switch" id="account-optin"' + (active.newsOptIn ? " checked" : "") + ' />' +
       '</label>' : '') +
@@ -5184,7 +5183,7 @@ function renderAdmin(){
     ? '<div class="disclaimer">Seule la veille automatique quotidienne ajoute de nouveaux candidats. Tu peux corriger une position ici si elle te semble erronée ; publiée, la correction s\'applique à tous les visiteurs du site.' + loginHint + '</div>'
     : state.adminTab === "topics"
     ? '<div class="disclaimer">Seule la veille automatique quotidienne ajoute de nouveaux sujets, lorsqu\'un thème de campagne majeur émerge.</div>'
-    : '<div class="disclaimer">Empile ici les actus à inclure dans le prochain email de relance. Le même email est envoyé aux utilisateurs inactifs depuis 1 semaine (premier rappel) et depuis 1 mois (dernier rappel, avec désinscription automatique ensuite). Rien n\'est envoyé tant que cette liste est vide.' + loginHint + '</div>';
+    : '<div class="disclaimer">Empile ici les actus à inclure dans le prochain email de relance. Quand tu cliques sur « Envoyer », le même email part à tous les utilisateurs qui ont accepté de recevoir les emails (un seul par compte). Rien n\'est envoyé automatiquement, ni tant que cette liste est vide.' + loginHint + '</div>';
 
   var body = "";
   if(state.adminTab === "relances"){
@@ -5219,7 +5218,7 @@ function renderAdmin(){
         '<iframe class="relance-preview" id="relance-preview" style="display:none; width:100%; height:640px; border:1px solid var(--line); border-radius:14px; margin-top:12px; background:#f3efe6;"></iframe>' +
         (items.length ? (
           '<div class="form-actions" style="margin-top:12px;">' +
-            '<button class="btn btn-accent btn-sm" id="btn-queue-send">Envoyer aux utilisateurs inactifs</button>' +
+            '<button class="btn btn-accent btn-sm" id="btn-queue-send">Envoyer à tous les inscrits</button>' +
           '</div>' +
           '<div class="meta" id="relance-send-result" style="margin-top:6px;"></div>'
         ) : '') +
@@ -5325,7 +5324,7 @@ function renderAdmin(){
     var sendBtn = document.getElementById("btn-queue-send");
     if(sendBtn) sendBtn.onclick = async function(){
       if(!isLoggedIn()){ alert("Connecte-toi (Mon compte) avec ton email admin pour envoyer une relance."); return; }
-      if(!confirm("Envoyer cette relance aux utilisateurs inactifs depuis 1 semaine (premier rappel) et depuis 1 mois (dernier rappel) ? Une copie te sera aussi envoyée. Cette action est irréversible.")) return;
+      if(!confirm("Envoyer ces actus à tous les utilisateurs qui ont accepté de recevoir les emails ? Une copie te sera aussi envoyée. Cette action est irréversible.")) return;
       var resultEl = document.getElementById("relance-send-result");
       sendBtn.disabled = true;
       resultEl.textContent = "Envoi en cours…";
@@ -5338,7 +5337,7 @@ function renderAdmin(){
         });
         var out = await res.json();
         if(!res.ok){ resultEl.textContent = "Échec : " + (out.error || res.status); sendBtn.disabled = false; return; }
-        resultEl.textContent = out.sent + " email(s) envoyé(s) (" + out.eligible1 + " en premier rappel, " + out.eligible2 + " en dernier rappel) + 1 copie à ton adresse admin.";
+        resultEl.textContent = out.sent + " email(s) envoyé(s) sur " + out.eligible + " inscrit(s)" + (out.failed ? " (" + out.failed + " échec(s))" : "") + " + 1 copie à ton adresse admin.";
         await loadRelanceQueue();
         render();
       }catch(e){

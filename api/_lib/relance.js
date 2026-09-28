@@ -1,5 +1,6 @@
-// Logique de la relance email des inactifs, utilisée par
-// api/send-relance.js (bouton Admin → "Relances email", envoi 100 % manuel).
+// Logique de l'email d'actus (« relance »), utilisée par api/send-relance.js
+// (bouton Admin → "Relances email", envoi 100 % manuel, à tous les comptes
+// opt-in).
 // runReferralNotifications : envoi automatique, via api/notify-referrals.js.
 // Aucune clé ici : elles sont passées en paramètre par l'appelant.
 
@@ -39,17 +40,13 @@ async function getUserEmail(sbHeaders, userId) {
   }
 }
 
-// Envoie le digest d'actus de la file aux comptes inactifs opt-in
-// (1er rappel : inactif depuis 7 j ; dernier rappel : depuis 30 j, puis
-// désinscription automatique). Options :
-// - dryRun : n'envoie rien et n'écrit rien, renvoie seulement le bilan ;
-// - skipWhenNoRecipients : si personne n'est éligible, ne consomme pas la
-//   file et n'envoie pas la copie admin (les actus attendent le prochain
-//   passage). Utile pour une exécution quotidienne automatique.
-async function runRelance({ serviceKey, brevoKey, dryRun = false, skipWhenNoRecipients = false }) {
+// Envoie le digest d'actus de la file à TOUS les comptes ayant accepté de
+// recevoir les emails (news_opt_in), quelle que soit leur dernière visite.
+// Un seul email par compte. Déclenché uniquement à la main (bouton Admin).
+// Option dryRun : n'envoie rien et n'écrit rien, renvoie seulement le bilan.
+async function runRelance({ serviceKey, brevoKey, dryRun = false }) {
   const sbHeaders = sbHeadersFor(serviceKey);
 
-  // File unique d'actus, partagée entre les deux paliers.
   const queueRes = await fetch(
     SUPABASE_URL + "/rest/v1/relance_news_queue?consumed_at=is.null&order=created_at.asc&select=id,category,headline,body,cta_url,created_at",
     { headers: sbHeaders }
@@ -57,78 +54,39 @@ async function runRelance({ serviceKey, brevoKey, dryRun = false, skipWhenNoReci
   if (!queueRes.ok) throw new Error("Lecture de la file impossible (" + queueRes.status + ")");
   const queue = await queueRes.json();
   if (!Array.isArray(queue) || queue.length === 0) {
-    return { queueEmpty: true, queued: 0, sent: 0, failed: 0, eligible1: 0, eligible2: 0 };
+    return { queueEmpty: true, queued: 0, sent: 0, failed: 0, eligible: 0 };
   }
 
-  const now = Date.now();
-  const sevenDaysAgoDate = new Date(now - 7 * 24 * 60 * 60 * 1000);
-  const thirtyDaysAgoDate = new Date(now - 30 * 24 * 60 * 60 * 1000);
-
-  // Un compte peut avoir plusieurs profils (foyer). On ne veut envoyer
-  // qu'UN SEUL email par compte : on récupère tous les profils liés à
-  // un compte, on ne garde que le plus récemment actif par user_id, et
-  // c'est SEULEMENT ce profil représentatif qui détermine l'éligibilité
-  // (et qui sera marqué comme relancé, pour tout le compte).
+  // Un compte peut avoir plusieurs profils (foyer) : on n'envoie qu'UN SEUL
+  // email par compte, dès qu'au moins un de ses profils a accepté les emails.
+  // Le prénom affiché est celui du profil opt-in le plus récemment actif.
   const allRes = await fetch(
-    SUPABASE_URL + "/rest/v1/profiles?user_id=not.is.null&select=user_id,name,news_opt_in,reminder1_sent_at,reminder2_sent_at,last_seen_at",
+    SUPABASE_URL + "/rest/v1/profiles?user_id=not.is.null&news_opt_in=is.true&select=user_id,name,last_seen_at",
     { headers: sbHeaders }
   );
   if (!allRes.ok) throw new Error("Lecture des profils impossible (" + allRes.status + ")");
   const all = await allRes.json();
 
   const byAccount = {};
+  const seenTime = (p) => (p.last_seen_at ? new Date(p.last_seen_at).getTime() : 0);
   for (const p of Array.isArray(all) ? all : []) {
-    if (!p.last_seen_at) continue;
     const existing = byAccount[p.user_id];
-    if (!existing || new Date(p.last_seen_at) > new Date(existing.last_seen_at)) {
-      byAccount[p.user_id] = p;
-    }
+    if (!existing || seenTime(p) > seenTime(existing)) byAccount[p.user_id] = p;
   }
+  const recipients = Object.values(byAccount);
 
-  const profiles1 = [];
-  const profiles2 = [];
-  for (const userId in byAccount) {
-    const p = byAccount[userId];
-    if (!p.news_opt_in) continue;
-    const lastSeen = new Date(p.last_seen_at);
-    if (!p.reminder1_sent_at && lastSeen < sevenDaysAgoDate) {
-      profiles1.push(p);
-    } else if (p.reminder1_sent_at && !p.reminder2_sent_at && lastSeen < thirtyDaysAgoDate) {
-      profiles2.push(p);
-    }
-  }
-
-  const result = { queueEmpty: false, queued: queue.length, sent: 0, failed: 0, eligible1: profiles1.length, eligible2: profiles2.length, skipped: false };
+  const result = { queueEmpty: false, queued: queue.length, sent: 0, failed: 0, eligible: recipients.length };
   if (dryRun) return result;
-  if (skipWhenNoRecipients && profiles1.length + profiles2.length === 0) {
-    result.skipped = true;
-    return result;
-  }
 
   const rowsHtml = queue.map(buildRowHtml).join("");
   const subject = queue.length === 1 ? "1 actu qui peut changer ton classement" : queue.length + " actus qui peuvent changer ton classement";
 
-  async function sendToProfile(p, patchBody) {
+  for (const p of recipients) {
     const email = await getUserEmail(sbHeaders, p.user_id);
-    if (!email) { result.failed++; return; }
-
+    if (!email) { result.failed++; continue; }
     const html = buildEmailHtml(p.name || "toi", rowsHtml, queue.length);
     const ok = await sendBrevoEmail(brevoKey, email, subject, html);
-    if (!ok) { result.failed++; return; }
-    result.sent++;
-
-    await fetch(SUPABASE_URL + "/rest/v1/profiles?user_id=eq." + p.user_id, {
-      method: "PATCH",
-      headers: Object.assign({}, sbHeaders, { Prefer: "return=minimal" }),
-      body: JSON.stringify(patchBody)
-    });
-  }
-
-  for (const p of profiles1) {
-    await sendToProfile(p, { reminder1_sent_at: new Date().toISOString() });
-  }
-  for (const p of profiles2) {
-    await sendToProfile(p, { reminder2_sent_at: new Date().toISOString(), news_opt_in: false });
+    if (ok) result.sent++; else result.failed++;
   }
 
   await sendBrevoEmail(
