@@ -3913,7 +3913,7 @@ function renderProfiles(){
         '</label>' +
         '<button class="btn btn-accent" id="confirm-new-profile" disabled>Commencer</button>' +
       '</div>' +
-      '<button class="link-btn" id="btn-existing-account">Tu as déjà un profil ? Connecte-toi</button>' +
+      (isLoggedIn() ? '' : '<button class="link-btn" id="btn-existing-account">Tu as déjà un profil ? Connecte-toi</button>') +
     '</div>' +
     '<section class="landing-section"><h2>Sept familles de sujets</h2>' +
       '<div class="sub">Les questions couvrent l\'ensemble de ces thèmes, sans se limiter aux gros titres du moment.</div>' +
@@ -3956,7 +3956,8 @@ function renderProfiles(){
     document.getElementById("new-profile-form").classList.add("open");
     document.getElementById("new-profile-name").focus();
   };
-  document.getElementById("btn-existing-account").onclick = function(){
+  var existingAccountBtn = document.getElementById("btn-existing-account");
+  if(existingAccountBtn) existingAccountBtn.onclick = function(){
     state.screen = "account";
     render();
   };
