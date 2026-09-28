@@ -3783,7 +3783,7 @@ function axisGridHtml(){
     var m = CATEGORY_META[cat] || {ic:"•", d:"", c:"--accent"};
     var n = getTopics().filter(function(t){ return t.cat === cat; }).length;
     return '<a class="axis-card theme-tile" href="/sujets/#theme-' + escapeHtml(m.slug || "") + '" style="--th:' + (m.pop || "var(--accent)") + '">' +
-      (m.slug ? '<img class="tile-prop" src="assets/props/' + m.slug + '.webp" width="44" height="44" alt="" loading="lazy" />' : '') +
+      (m.slug ? '<img class="tile-prop" src="assets/props/' + m.slug + '.webp" width="44" height="44" alt="Illustration du thème ' + escapeHtml(cat) + '" loading="lazy" />' : '') +
       '<div class="t">' + escapeHtml(cat) + '</div>' +
       '<div class="d">' + escapeHtml(m.d) + '</div>' +
       '<div class="tile-n">' + n + ' sujet' + (n > 1 ? 's' : '') + ' ›</div></a>';
@@ -3795,7 +3795,8 @@ function exploreCardsHtml(){
   var stack = cands.slice(0, 5).map(function(c, i){
     return '<span class="ex-av" style="background:' + c.color + ';z-index:' + (5 - i) + '">' + escapeHtml(initials(c.name)) + '</span>';
   }).join("");
-  var props = ["economie", "ecologie", "europe", "securite"].map(function(s){ return '<img src="assets/props/' + s + '.webp" width="34" height="34" alt="" loading="lazy" />'; }).join("");
+  var propAlt = { economie: "économie", ecologie: "écologie", europe: "Europe", securite: "sécurité" };
+  var props = ["economie", "ecologie", "europe", "securite"].map(function(s){ return '<img src="assets/props/' + s + '.webp" width="34" height="34" alt="Illustration du thème ' + propAlt[s] + '" loading="lazy" />'; }).join("");
   var duo = cands.slice(0, 2);
   return '<a class="explore-card" href="/candidats/" style="--th:#3A86FF"><div class="ex-art">' + stack + '</div><div class="t">Tous les candidats</div><div class="d">' + cands.length + ' fiches, avec leurs positions sourcées sujet par sujet.</div></a>' +
     '<a class="explore-card" href="/sujets/" style="--th:#06D6A0"><div class="ex-art ex-props">' + props + '</div><div class="t">Les ' + getTopics().length + ' sujets</div><div class="d">Qui est pour, qui est contre, et les sujets qui divisent le plus.</div></a>' +
@@ -3805,7 +3806,7 @@ function howItWorksHtml(){
   var arts = ["protection-sociale-n1", "economie-n2", "ecologie-n3"];
   return HOW_IT_WORKS.map(function(s, i){
     return '<div class="step-item"><div class="step-num">' + (i+1) + '</div>' +
-      (arts[i] ? '<img class="step-art" src="assets/characters/' + arts[i] + '.webp" width="54" height="92" alt="" loading="lazy" />' : '') +
+      (arts[i] ? '<img class="step-art" src="assets/characters/' + arts[i] + '.webp" width="54" height="92" alt="Mascotte Votona, étape ' + (i+1) + '" loading="lazy" />' : '') +
       '<div><div class="t">' + escapeHtml(s.t) + '</div><div class="d">' + escapeHtml(s.d) + '</div></div></div>';
   }).join("");
 }
@@ -3886,10 +3887,10 @@ function renderProfiles(){
       '<h1>Vot<span class="hl">on</span><span class="hl spin-a-bob"><span class="spin-a"><span class="spin-a-face spin-a-front">a</span><span class="spin-a-face spin-a-back">a</span></span></span></h1>' +
       '<p class="hero-tagline">Donne le ton à ton vote.</p>' +
       '<p class="intro-copy">Réponds aux prises de position des candidats déclarés à la présidentielle 2027, à ton rythme. Chaque profil garde ses propres réponses et ses propres résultats, sur cet ordinateur.</p>' +
-      '<div class="hero-crew" aria-hidden="true">' +
-        '<img class="hc1" src="assets/characters/economie-n3.webp" width="339" height="577" alt="" />' +
-        '<img class="hc2" src="assets/characters/ecologie-n3.webp" width="339" height="577" alt="" />' +
-        '<img class="hc3" src="assets/characters/securite-n3.webp" width="339" height="577" alt="" />' +
+      '<div class="hero-crew">' +
+        '<img class="hc1" src="assets/characters/economie-n3.webp" width="339" height="577" alt="Mascotte Votona habillée pour le thème économie" />' +
+        '<img class="hc2" src="assets/characters/ecologie-n3.webp" width="339" height="577" alt="Mascotte Votona habillée pour le thème écologie" />' +
+        '<img class="hc3" src="assets/characters/securite-n3.webp" width="339" height="577" alt="Mascotte Votona habillée pour le thème sécurité" />' +
       '</div>' +
     '</div>' +
     '<div class="trust-row">' +
@@ -3937,7 +3938,7 @@ function renderProfiles(){
       '<button class="btn btn-ghost btn-block" id="btn-open-faq">Consulter la FAQ complète</button></section>' +
     '<section class="landing-section landing-narrow final-cta"><h2>Prêt à te lancer ?</h2>' +
       '<div class="sub">Quelques minutes suffisent pour découvrir tes affinités avec les candidats déclarés.</div>' +
-      '<img class="final-mascot" src="assets/ui/logo-head.webp" width="96" height="81" alt="" loading="lazy" />' +
+      '<img class="final-mascot" src="assets/ui/logo-head.webp" width="96" height="81" alt="Mascotte Votona" loading="lazy" />' +
       '<button class="btn btn-accent btn-block" id="btn-final-cta">' + (ids.length ? "Choisir mon profil" : "Créer mon profil") + '</button></section>';
 
   document.getElementById("app").innerHTML = html;
@@ -4259,7 +4260,7 @@ function divisiveTopicsHtml(profile){
       var meta = CATEGORY_META[r.t.cat] || {};
       var mine = profile && profile.answers && profile.answers[r.t.id];
       return '<a class="tp-row" href="' + topicPageHref(r.t.id) + '" style="--th:' + (meta.pop || "var(--accent)") + '">' +
-        (meta.slug ? '<img src="assets/props/' + meta.slug + '.webp" width="34" height="34" alt="" loading="lazy" />' : '') +
+        (meta.slug ? '<img src="assets/props/' + meta.slug + '.webp" width="34" height="34" alt="Illustration du thème ' + escapeHtml(r.t.cat) + '" loading="lazy" />' : '') +
         '<span class="tp-body"><span class="tp-title">' + escapeHtml(r.t.statement) + '</span>' +
         '<span class="tp-bar"><i style="flex:' + r.pour + ';background:var(--good)"></i><i style="flex:' + r.contre + ';background:var(--bad)"></i></span>' +
         '<span class="tp-meta"><b style="color:var(--good)">' + r.pour + ' pour</b> · <b style="color:var(--bad)">' + r.contre + ' contre</b>' +
