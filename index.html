@@ -2514,7 +2514,8 @@ function getPollRankChange(id, candidates){
    Laisser SPONSORS = [] pour ne rien afficher.
    ============================================================ */
 var SPONSORS = [
-  {id:"exemple", label:"Publicité", name:"Emplacement disponible", tagline:"Touche des primo-votants engagés sur toute la campagne 2027.", url:"", active:true}
+  // Encart « Emplacement disponible » masqué en attendant la validation AdSense (repasser active:true pour le réafficher).
+  {id:"exemple", label:"Publicité", name:"Emplacement disponible", tagline:"Touche des primo-votants engagés sur toute la campagne 2027.", url:"", active:false}
 ];
 
 /* ============================================================
@@ -5373,6 +5374,8 @@ function wireSignupCta(){
 function fillSponsorEl(el){
   if(!el) return;
   var s = SPONSORS.filter(function(x){ return x.active; })[0];
+  // Sans encart actif, l'emplacement est masqué (pas de marge vide).
+  el.style.display = s ? "" : "none";
   if(!s){ el.innerHTML = ""; return; }
   if(s.url){
     var inner =
