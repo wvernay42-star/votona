@@ -2451,6 +2451,30 @@ var CANDIDATES = [
 // ==POLL_DATA_START==
 var CANDIDATE_POLL_PCT = {
   bardella: 34.0,
+  lepen: 35.0,
+  melenchon: 17.0,
+  philippe: 13.0,
+  glucksmann: 10.0,
+  attal: 5.0,
+  retailleau: 7.0,
+  zemmour: 5.0,
+  faure: 4.5,
+  ruffin: 3.9,
+  tondelier: 3.0,
+  roussel: 2.0,
+  lisnard: 2.0,
+  "dupont-aignan": 2.0,
+  bouamrane: 1.0,
+  arthaud: 1.0,
+  royal: 3.0
+};
+var CANDIDATE_POLL_UPDATED_AT = "2026-09-29";
+// Relevé PRÉCÉDENT (tel qu'il était avant la dernière mise à jour) : sert aux
+// flèches de tendance du tableau de bord (places gagnées/perdues). À chaque
+// mise à jour des sondages, recopier ici l'ancien CANDIDATE_POLL_PCT et
+// l'ancienne CANDIDATE_POLL_UPDATED_AT AVANT d'écrire les nouvelles valeurs.
+var CANDIDATE_POLL_PREV = {
+  bardella: 34.0,
   lepen: 31.0,
   melenchon: 19.0,
   philippe: 19.0,
@@ -2468,31 +2492,7 @@ var CANDIDATE_POLL_PCT = {
   arthaud: 0.5,
   royal: 3.0
 };
-var CANDIDATE_POLL_UPDATED_AT = "2026-09-25";
-// Relevé PRÉCÉDENT (tel qu'il était avant la dernière mise à jour) : sert aux
-// flèches de tendance du tableau de bord (places gagnées/perdues). À chaque
-// mise à jour des sondages, recopier ici l'ancien CANDIDATE_POLL_PCT et
-// l'ancienne CANDIDATE_POLL_UPDATED_AT AVANT d'écrire les nouvelles valeurs.
-var CANDIDATE_POLL_PREV = {
-  bardella: 34.0,
-  lepen: 33.0,
-  melenchon: 16.0,
-  philippe: 14.0,
-  glucksmann: 9.0,
-  attal: 8.0,
-  retailleau: 7.0,
-  zemmour: 5.0,
-  faure: 4.5,
-  ruffin: 3.9,
-  tondelier: 3.0,
-  roussel: 2.0,
-  lisnard: 2.0,
-  "dupont-aignan": 2.0,
-  bouamrane: 1.0,
-  arthaud: 1.0,
-  royal: 3.0
-};
-var CANDIDATE_POLL_PREV_AT = "2026-09-22";
+var CANDIDATE_POLL_PREV_AT = "2026-09-25";
 var TOP_CANDIDATES_COUNT = 15;
 function getTopPolledCandidates(candidates, limit){
   limit = limit || TOP_CANDIDATES_COUNT;
