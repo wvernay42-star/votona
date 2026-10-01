@@ -1041,7 +1041,7 @@ function methodePageHtml(candidates, topics, categories, faqItems) {
   const faq = allFaq.map(([q, a]) => `<details><summary>${escapeHtml(q)}</summary><p>${escapeHtml(a)}</p></details>`).join("");
   const title = "FAQ et méthode du test Votona : questions fréquentes, sources, calcul du classement | Votona";
   const description = "Les réponses aux questions fréquentes sur Votona, le test de la présidentielle 2027 : fonctionnement, calcul du classement, sources des positions des candidats, neutralité, données personnelles.";
-  const toc = [["faq", "Questions fréquentes"], ["sources", "Les positions"], ["calcul", "Le calcul"], ["sujets", "Les sujets"], ["candidats", "Les candidats"], ["neutralite", "Neutralité"], ["donnees", "Tes données"], ["erreur", "Signaler une erreur"]]
+  const toc = [["sources", "Les positions"], ["calcul", "Le calcul"], ["sujets", "Les sujets"], ["candidats", "Les candidats"], ["neutralite", "Neutralité"], ["donnees", "Tes données"], ["erreur", "Signaler une erreur"], ["faq", "Questions fréquentes"]]
     .map(([id, label]) => `<a href="#${id}">${label}</a>`).join("");
 
   return `<!DOCTYPE html>
@@ -1109,17 +1109,12 @@ ${HEADER}
   <section class="hero">
     <img src="/assets/ui/methode.webp" width="104" height="104" alt="Illustration : bloc-notes coché et loupe" />
     <div>
-      <h1>Questions fréquentes et méthode</h1>
-      <p>Comment fonctionne le test, d'où viennent les positions des candidats, comment ton classement est calculé et comment Votona reste neutre : toutes les réponses, sans zone d'ombre.</p>
+      <h1>Méthode et questions fréquentes</h1>
+      <p>D'où viennent les positions des candidats, comment ton classement est calculé, comment Votona reste neutre, puis les réponses aux questions les plus posées : tout est expliqué ici, sans zone d'ombre.</p>
     </div>
   </section>
   <nav class="toc" aria-label="Sommaire">${toc}</nav>
 
-  <h2 id="faq">Questions fréquentes</h2>
-  ${faq}
-  <div class="card contact"><div><b>Toujours une question ?</b><br />Écris-nous, on répond en général sous 24 h.</div><a class="btn btn-accent" href="/?screen=contact">Nous écrire</a></div>
-
-  <h2 class="part">La méthode en détail</h2>
 
   <h2 id="sources"><span class="n">1</span>D'où viennent les positions des candidats ?</h2>
   <p>Chaque position est établie à partir de sources publiques : <b>déclarations</b> (interviews, discours, réseaux sociaux officiels), <b>votes</b> au Parlement et <b>programmes</b>. Elle est résumée en trois choix possibles, <b>d'accord</b>, <b>pas d'accord</b> ou <b>neutre</b>, accompagnés d'une phrase qui précise la nuance, visible sur la fiche de chaque candidat.</p>
@@ -1166,6 +1161,10 @@ ${HEADER}
   <h2>Prêt à te lancer ?</h2>
   <p>Quelques minutes suffisent pour découvrir de quels candidats tu es le plus proche.</p>
   <div class="btn-row"><a class="btn btn-accent" href="/">${BTN_MASCOT}Faire le test gratuitement</a></div>
+
+  <h2 id="faq" class="part">Questions fréquentes</h2>
+  ${faq}
+  <div class="card contact"><div><b>Toujours une question ?</b><br />Écris-nous, on répond en général sous 24 h.</div><a class="btn btn-accent" href="/?screen=contact">Nous écrire</a></div>
 
   ${SITE_FOOTER}
 </main>
