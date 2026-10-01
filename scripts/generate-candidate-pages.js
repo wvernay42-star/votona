@@ -81,13 +81,22 @@ function extractDataBlock(html) {
   return html.slice(start, iconPathsEnd + 3);
 }
 
+// FAQ de l'app (FAQ_ITEMS d'index.html) : affichée sur la page « FAQ et méthode ».
+function loadFaqItems(html) {
+  const start = html.indexOf("var FAQ_ITEMS = [");
+  const end = start === -1 ? -1 : html.indexOf("\n];", start);
+  if (start === -1 || end === -1) throw new Error("FAQ_ITEMS introuvable dans index.html");
+  // eslint-disable-next-line no-new-func
+  return new Function(html.slice(start, end + 3) + "\nreturn FAQ_ITEMS;")();
+}
+
 function loadData() {
   const html = fs.readFileSync(SITE_HTML_PATH, "utf8");
   const block = extractDataBlock(html);
   const sandbox = {};
   // eslint-disable-next-line no-new-func
   const fn = new Function(block + "\nreturn { CATEGORIES, TOPICS, CANDIDATES, CATEGORY_META, CATEGORY_ICON_PATHS, CAMPAIGN_LOG, buildCampaignJournal };");
-  return fn.call(sandbox);
+  return Object.assign(fn.call(sandbox), { FAQ_ITEMS: loadFaqItems(html) });
 }
 
 function escapeHtml(s) {
@@ -102,7 +111,7 @@ const STANCE_ICON = { pour: "✓", contre: "✕", neutre: "–" };
 // En-tête commun aux pages statiques : même bandeau que l'accueil de l'appli
 // (mascotte + « Votona » + « PRÉSIDENTIELLE 2027 », clic = retour à l'accueil),
 // avec les boutons Mon compte / FAQ. Liens absolus : valables à toute profondeur.
-const HEADER = '<header class="topbar"><a class="brand" href="/" title="Accueil Votona"><span class="mark"><img src="/assets/ui/logo-head.webp" alt="" width="40" height="32" /></span><span class="name">Votona</span><span class="year">PRÉSIDENTIELLE 2027</span></a><div class="topbar-actions"><a class="icon-btn" href="/?screen=account" title="Mon compte"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></a><a class="icon-btn" href="/?screen=faq" title="Questions fréquentes"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 1 1 3.9 2.4c-1 .5-1.7 1.1-1.7 2.4"/><line x1="12" y1="17.2" x2="12" y2="17.21"/></svg></a></div></header>';
+const HEADER = '<header class="topbar"><a class="brand" href="/" title="Accueil Votona"><span class="mark"><img src="/assets/ui/logo-head.webp" alt="" width="40" height="32" /></span><span class="name">Votona</span><span class="year">PRÉSIDENTIELLE 2027</span></a><div class="topbar-actions"><a class="icon-btn" href="/?screen=account" title="Mon compte"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></a><a class="icon-btn" href="/methode/#faq" title="FAQ et méthode"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 1 1 3.9 2.4c-1 .5-1.7 1.1-1.7 2.4"/><line x1="12" y1="17.2" x2="12" y2="17.21"/></svg></a></div></header>';
 const HEADER_INDEX = HEADER;
 
 const SHARED_CSS = `
@@ -189,7 +198,7 @@ const SOCIAL = `<div class="social">
 
 // Pied de page identique sur toutes les pages (et sur l'app : footer.appfoot d'index.html).
 const SITE_FOOTER = `<footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.
-    <div class="flinks"><a href="/">votona.fr</a> · <a href="/journal/">Journal de la campagne</a> · <a href="/methode/">Sources et méthode</a> · <a href="/?screen=legal">Mentions légales</a> · <a href="/?screen=privacy">Confidentialité</a> · <a href="/?screen=contact">Contact</a></div>
+    <div class="flinks"><a href="/">votona.fr</a> · <a href="/journal/">Journal de la campagne</a> · <a href="/methode/">FAQ et méthode</a> · <a href="/?screen=legal">Mentions légales</a> · <a href="/?screen=privacy">Confidentialité</a> · <a href="/?screen=contact">Contact</a></div>
     ${SOCIAL}
   </footer>`;
 
@@ -1008,7 +1017,8 @@ ${HEADER}
 `;
 }
 
-// Page « Méthode » (/methode/) : comment les positions sont établies, comment
+// Page « FAQ et méthode » (/methode/) : FAQ complète de l'app (FAQ_ITEMS d'index.html,
+// qui n'a plus d'écran FAQ à elle) puis la méthode : comment les positions sont établies, comment
 // le classement est calculé, neutralité, données, signalement d'erreur. Contenu
 // propre (l'accueil vise « test présidentielle / pour qui voter », cette page
 // la confiance et la transparence) ; FAQ en données structurées FAQPage.
@@ -1021,14 +1031,17 @@ const METHODE_FAQ = [
   ["J'ai repéré une erreur sur une position, que faire ?", "Signale-la depuis le formulaire de contact, idéalement avec un lien vers la source (déclaration, vote, programme). Chaque signalement est vérifié et la position corrigée si besoin."]
 ];
 
-function methodePageHtml(candidates, topics, categories) {
+function methodePageHtml(candidates, topics, categories, faqItems) {
   const canonical = `${SITE_URL}/methode/`;
   const active = candidates.filter((c) => !c.withdrawn);
-  const faqLd = JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": METHODE_FAQ.map(([q, a]) => ({ "@type": "Question", "name": q, "acceptedAnswer": { "@type": "Answer", "text": a } })) });
-  const faq = METHODE_FAQ.map(([q, a]) => `<details><summary>${escapeHtml(q)}</summary><p>${escapeHtml(a)}</p></details>`).join("");
-  const title = "Méthode du test Votona : sources, calcul du classement, neutralité | Votona";
-  const description = "Comment Votona établit les positions des candidats à la présidentielle 2027 et calcule ton classement : sources publiques, mise à jour quotidienne, pondération par importance, neutralité.";
-  const toc = [["sources", "Les positions"], ["calcul", "Le calcul"], ["sujets", "Les sujets"], ["candidats", "Les candidats"], ["neutralite", "Neutralité"], ["donnees", "Tes données"], ["erreur", "Signaler une erreur"]]
+  // FAQ complète : celle de l'app (FAQ_ITEMS) puis les questions propres à la méthode.
+  const seen = new Set();
+  const allFaq = faqItems.map((it) => [it.q, it.a]).concat(METHODE_FAQ).filter(([q]) => !seen.has(q) && seen.add(q));
+  const faqLd = JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": allFaq.map(([q, a]) => ({ "@type": "Question", "name": q, "acceptedAnswer": { "@type": "Answer", "text": a } })) });
+  const faq = allFaq.map(([q, a]) => `<details><summary>${escapeHtml(q)}</summary><p>${escapeHtml(a)}</p></details>`).join("");
+  const title = "FAQ et méthode du test Votona : questions fréquentes, sources, calcul du classement | Votona";
+  const description = "Les réponses aux questions fréquentes sur Votona, le test de la présidentielle 2027 : fonctionnement, calcul du classement, sources des positions des candidats, neutralité, données personnelles.";
+  const toc = [["faq", "Questions fréquentes"], ["sources", "Les positions"], ["calcul", "Le calcul"], ["sujets", "Les sujets"], ["candidats", "Les candidats"], ["neutralite", "Neutralité"], ["donnees", "Tes données"], ["erreur", "Signaler une erreur"]]
     .map(([id, label]) => `<a href="#${id}">${label}</a>`).join("");
 
   return `<!DOCTYPE html>
@@ -1043,14 +1056,14 @@ function methodePageHtml(candidates, topics, categories) {
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="Votona" />
 <meta property="og:url" content="${canonical}" />
-<meta property="og:title" content="La méthode du test Votona" />
+<meta property="og:title" content="FAQ et méthode du test Votona" />
 <meta property="og:description" content="${escapeHtml(description)}" />
 <meta property="og:image" content="${SITE_URL}/assets/ui/og-home.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:locale" content="fr_FR" />
 <meta name="twitter:card" content="summary_large_image" />
-<script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Méthode", url: canonical }])}</script>
+<script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "FAQ et méthode", url: canonical }])}</script>
 <script type="application/ld+json">${faqLd}</script>
 ${HEAD_ICONS}
 <style>${SHARED_CSS}
@@ -1081,6 +1094,10 @@ ${HEAD_ICONS}
   details{ border:1px solid var(--line); border-radius:16px; background:var(--surface); padding:0 16px; margin-top:10px; }
   summary{ cursor:pointer; padding:14px 0; font-weight:700; color:var(--ink); }
   details p{ margin:0 0 14px; }
+  .card.contact{ display:flex; align-items:center; gap:14px; justify-content:space-between; }
+  .card.contact .btn{ width:auto; flex:none; padding:11px 18px; font-size:14px; }
+  @media (max-width:520px){ .card.contact{ flex-direction:column; align-items:stretch; text-align:center; } }
+  h2.part{ font-size:28px; margin-top:54px; padding-top:22px; border-top:2px dashed var(--line); }
   .links{ display:flex; gap:8px; margin-top:16px; }
   .links .btn{ flex:1; padding:12px 14px; font-size:14px; }
   @media (max-width:520px){ .links{ flex-direction:column; } }
@@ -1092,11 +1109,17 @@ ${HEADER}
   <section class="hero">
     <img src="/assets/ui/methode.webp" width="104" height="104" alt="Illustration : bloc-notes coché et loupe" />
     <div>
-      <h1>Notre méthode</h1>
-      <p>D'où viennent les positions des candidats, comment ton classement est calculé et comment Votona reste neutre : tout est expliqué ici, sans zone d'ombre.</p>
+      <h1>Questions fréquentes et méthode</h1>
+      <p>Comment fonctionne le test, d'où viennent les positions des candidats, comment ton classement est calculé et comment Votona reste neutre : toutes les réponses, sans zone d'ombre.</p>
     </div>
   </section>
   <nav class="toc" aria-label="Sommaire">${toc}</nav>
+
+  <h2 id="faq">Questions fréquentes</h2>
+  ${faq}
+  <div class="card contact"><div><b>Toujours une question ?</b><br />Écris-nous, on répond en général sous 24 h.</div><a class="btn btn-accent" href="/?screen=contact">Nous écrire</a></div>
+
+  <h2 class="part">La méthode en détail</h2>
 
   <h2 id="sources"><span class="n">1</span>D'où viennent les positions des candidats ?</h2>
   <p>Chaque position est établie à partir de sources publiques : <b>déclarations</b> (interviews, discours, réseaux sociaux officiels), <b>votes</b> au Parlement et <b>programmes</b>. Elle est résumée en trois choix possibles, <b>d'accord</b>, <b>pas d'accord</b> ou <b>neutre</b>, accompagnés d'une phrase qui précise la nuance, visible sur la fiche de chaque candidat.</p>
@@ -1139,9 +1162,6 @@ ${HEADER}
 
   <h2 id="erreur"><span class="n">7</span>Signaler une erreur</h2>
   <p>Une position te semble inexacte ou dépassée ? Écris-nous depuis le <a href="/?screen=contact">formulaire de contact</a>, idéalement avec un lien vers la source. Chaque signalement est vérifié et la position corrigée si besoin.</p>
-
-  <h2>Questions fréquentes</h2>
-  ${faq}
 
   <h2>Prêt à te lancer ?</h2>
   <p>Quelques minutes suffisent pour découvrir de quels candidats tu es le plus proche.</p>
@@ -1284,7 +1304,7 @@ function sitemapXml(candidates, topics, slugs) {
 ${[
     url(`${SITE_URL}/`, "daily", "1.0"),
     url(`${SITE_URL}/journal/`, "daily", "0.7"),
-    url(`${SITE_URL}/methode/`, "monthly", "0.6"),
+    url(`${SITE_URL}/methode/`, "weekly", "0.7"),
     url(`${SITE_URL}/candidats/`, "weekly", "0.8"),
     ...candidates.filter((c) => hasKnownPositions(c, topics)).map((c) => url(`${SITE_URL}/candidats/${c.id}/`, "weekly", "0.7")),
     url(`${SITE_URL}/comparer/`, "weekly", "0.8"),
@@ -1296,7 +1316,7 @@ ${[
 }
 
 function main() {
-  const { CATEGORIES, TOPICS, CANDIDATES, CATEGORY_META, CATEGORY_ICON_PATHS, CAMPAIGN_LOG, buildCampaignJournal } = loadData();
+  const { CATEGORIES, TOPICS, CANDIDATES, CATEGORY_META, CATEGORY_ICON_PATHS, CAMPAIGN_LOG, buildCampaignJournal, FAQ_ITEMS } = loadData();
   const slugs = topicSlugs(TOPICS);
   Object.keys(CATEGORY_META).forEach((cat) => { THEMES[cat] = { slug: CATEGORY_META[cat].slug, pop: CATEGORY_META[cat].pop }; });
   fs.mkdirSync(OUT_DIR, { recursive: true });
@@ -1326,7 +1346,7 @@ function main() {
   fs.writeFileSync(path.join(ROOT, "journal", "index.html"), "\uFEFF" + journalPageHtml(buildCampaignJournal(CANDIDATES, TOPICS, CAMPAIGN_LOG), CANDIDATES, TOPICS, slugs), "utf8");
 
   fs.mkdirSync(path.join(ROOT, "methode"), { recursive: true });
-  fs.writeFileSync(path.join(ROOT, "methode", "index.html"), "\uFEFF" + methodePageHtml(CANDIDATES, TOPICS, CATEGORIES), "utf8");
+  fs.writeFileSync(path.join(ROOT, "methode", "index.html"), "\uFEFF" + methodePageHtml(CANDIDATES, TOPICS, CATEGORIES, FAQ_ITEMS), "utf8");
 
   fs.writeFileSync(path.join(ROOT, "sitemap.xml"), sitemapXml(CANDIDATES, TOPICS, slugs), "utf8");
 

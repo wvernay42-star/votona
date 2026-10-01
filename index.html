@@ -992,13 +992,13 @@
       <p>Plutôt que de te ranger dans une case, le test compare tes réponses aux positions de candidats de tout l'éventail politique : tu vois de qui tu es le plus proche, et sur quels sujets tu t'en écartes.</p>
       <h3>Combien de temps dure le test ?</h3>
       <p>Quelques minutes pour un premier passage. Tu peux passer un sujet, t'arrêter et reprendre plus tard.</p>
-      <p><a href="/methode/">Notre méthode : sources et calcul du classement</a> · <a href="/candidats/">Voir tous les candidats et leurs positions</a> · <a href="/sujets/">Les candidats sujet par sujet</a> · <a href="/comparer/">Comparer deux candidats</a> · <a href="/?screen=faq">Questions fréquentes</a></p>
+      <p><a href="/methode/">FAQ et méthode : sources et calcul du classement</a> · <a href="/candidats/">Voir tous les candidats et leurs positions</a> · <a href="/sujets/">Les candidats sujet par sujet</a> · <a href="/comparer/">Comparer deux candidats</a></p>
     </section>
   </main>
   <footer class="appfoot">
     <div id="sponsor-slot"></div>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<span id="profile-switch-link"></span>
-    <div class="footer-links"><a href="/">votona.fr</a> · <a href="/journal/">Journal de la campagne</a> · <a href="/methode/">Sources et méthode</a> · <a href="#" id="footer-legal-link">Mentions légales</a> · <a href="#" id="footer-privacy-link">Confidentialité</a> · <a href="#" id="footer-contact-link">Contact</a></div>
+    <div class="footer-links"><a href="/">votona.fr</a> · <a href="/journal/">Journal de la campagne</a> · <a href="/methode/">FAQ et méthode</a> · <a href="#" id="footer-legal-link">Mentions légales</a> · <a href="#" id="footer-privacy-link">Confidentialité</a> · <a href="#" id="footer-contact-link">Contact</a></div>
     <div class="footer-social">
       <a href="https://www.instagram.com/votona2027/" target="_blank" rel="noopener me" aria-label="Votona sur Instagram" title="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
       <a href="https://www.tiktok.com/@votona2027" target="_blank" rel="noopener me" aria-label="Votona sur TikTok" title="TikTok"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.7a5.8 5.8 0 1 0 4.9 5.7V9.1a7.4 7.4 0 0 0 4.3 1.4V7.4a4.3 4.3 0 0 1-3.2-1.6z"/></svg></a>
@@ -2761,6 +2761,9 @@ var HOW_IT_WORKS = [
   {t:"Reviens au fil de la campagne", d:"De nouveaux sujets et candidats s'ajoutent au fil de la campagne ; ton classement se met à jour au fur et à mesure."}
 ];
 
+// Affichée sur la page générée /methode/ (« FAQ et méthode », avec ses données
+// structurées FAQPage) par scripts/generate-candidate-pages.js : l'app n'a plus
+// d'écran FAQ, /?screen=faq y redirige.
 var FAQ_ITEMS = [
   {q:"Pour qui voter à la présidentielle 2027 ?", a:"Votona ne te dit pas pour qui voter : il t'aide à y voir clair. Tu réponds aux grandes questions de la campagne et le test te montre quels candidats déclarés défendent les positions les plus proches des tiennes, sujet par sujet. Le choix final reste le tien."},
   {q:"Comment savoir si je suis plutôt de gauche ou de droite ?", a:"Plutôt que de te ranger dans une case, le test compare tes réponses aux positions de candidats de tout l'éventail politique. Tu vois de qui tu es le plus proche, et sur quels sujets tu t'en écartes : un positionnement souvent plus nuancé qu'un simple gauche-droite."},
@@ -3117,7 +3120,7 @@ function buildRelanceEmailHtml(items, sampleName){
         '</td></tr></table>' +
       '</td></tr>' +
       '<tr><td style="padding:0 32px 28px;border-top:1px solid #ece6d8;">' +
-        '<p style="margin:18px 0 0;font-size:11.5px;line-height:1.6;color:#9a98a6;text-align:center;">Tu reçois cet email car tu as un compte sur Votona. <a href="https://votona.fr/?screen=faq" style="color:#9a98a6;">Aide</a> · <a href="https://votona.fr/?screen=privacy" style="color:#9a98a6;">Confidentialité</a> · <a href="https://votona.fr/?screen=account" style="color:#9a98a6;">Se désinscrire</a></p>' +
+        '<p style="margin:18px 0 0;font-size:11.5px;line-height:1.6;color:#9a98a6;text-align:center;">Tu reçois cet email car tu as un compte sur Votona. <a href="https://votona.fr/methode/#faq" style="color:#9a98a6;">Aide</a> · <a href="https://votona.fr/?screen=privacy" style="color:#9a98a6;">Confidentialité</a> · <a href="https://votona.fr/?screen=account" style="color:#9a98a6;">Se désinscrire</a></p>' +
       '</td></tr>' +
     '</table></td></tr></table></body></html>';
 }
@@ -3331,7 +3334,10 @@ var state = {
 var requestedScreen = new URLSearchParams(location.search).get("screen");
 if((requestedScreen === "dashboard" || requestedScreen === "results") && state.activeProfileId && loadProfiles()[state.activeProfileId]){
   state.screen = requestedScreen;
-} else if(requestedScreen === "faq" || requestedScreen === "account" || requestedScreen === "legal" || requestedScreen === "privacy" || requestedScreen === "contact"){
+} else if(requestedScreen === "faq"){
+  // L'ancien écran FAQ vit désormais sur la page « FAQ et méthode ».
+  location.replace("/methode/#faq");
+} else if(requestedScreen === "account" || requestedScreen === "legal" || requestedScreen === "privacy" || requestedScreen === "contact"){
   state.screen = requestedScreen;
 }
 
@@ -3809,11 +3815,10 @@ function hexToRgb(hex){
    RENDER — TOPBAR
    ============================================================ */
 function goToFaq(){
-  state.screen = "faq";
-  render();
+  location.href = "/methode/#faq";
 }
 
-var TOPBAR_HUB_SCREENS = ["profiles", "dashboard", "faq", "account"];
+var TOPBAR_HUB_SCREENS = ["profiles", "dashboard", "account"];
 function screenBackTarget(){
   if(state.screen === "kitShare") return "kit";
   return activeProfile() ? "dashboard" : "profiles";
@@ -3841,7 +3846,7 @@ function renderTopbar(){
   var el = document.getElementById("topbar-actions");
   var html = "";
   html += '<button class="icon-btn" id="btn-account" title="' + (isLoggedIn() ? "Mon compte" : "Se connecter") + '">' + topbarIconSvg("user") + '</button>';
-  html += '<button class="icon-btn" id="btn-faq" title="Questions fréquentes">' + topbarIconSvg("faq") + '</button>';
+  html += '<button class="icon-btn" id="btn-faq" title="FAQ et méthode">' + topbarIconSvg("faq") + '</button>';
   if(ADMIN_MODE){ html += '<button class="icon-btn" id="btn-admin" title="Gérer candidats et sujets">' + topbarIconSvg("admin") + '</button>'; }
   el.innerHTML = html;
   document.getElementById("btn-account").onclick = function(){ state.screen = "account"; render(); };
@@ -3906,40 +3911,6 @@ function howItWorksHtml(){
       (arts[i] ? '<img class="step-art" src="assets/characters/' + arts[i] + '.webp" width="54" height="92" alt="Mascotte Votona, étape ' + (i+1) + '" loading="lazy" />' : '') +
       '<div><div class="t">' + escapeHtml(s.t) + '</div><div class="d">' + escapeHtml(s.d) + '</div></div></div>';
   }).join("");
-}
-function faqHtml(){
-  return '<div class="faq-list">' + FAQ_ITEMS.map(function(item, i){
-    return '<div class="faq-card faq-item" data-faq="' + i + '">' +
-      '<div class="faq-q">' +
-        '<div class="faq-q-ic">' + topbarIconSvg("faq", 15) + '</div>' +
-        '<div class="faq-q-text">' + escapeHtml(item.q) + '</div>' +
-        '<svg class="faq-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>' +
-      '</div>' +
-      '<div class="faq-a">' + escapeHtml(item.a) + '</div>' +
-    '</div>';
-  }).join("") + '</div>';
-}
-
-/* Données structurées SEO (schema.org), générées depuis les mêmes
-   sources que le contenu affiché pour rester en phase avec la FAQ. */
-function injectStructuredData(){
-  var faqPage = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": FAQ_ITEMS.map(function(item){
-      return {
-        "@type": "Question",
-        "name": item.q,
-        "acceptedAnswer": { "@type": "Answer", "text": item.a }
-      };
-    })
-  };
-  [faqPage].forEach(function(data){
-    var tag = document.createElement("script");
-    tag.type = "application/ld+json";
-    tag.textContent = JSON.stringify(data);
-    document.head.appendChild(tag);
-  });
 }
 function wireFaqToggles(){
   document.querySelectorAll("[data-faq]").forEach(function(el){
@@ -4027,14 +3998,14 @@ function renderProfiles(){
         '<h3>Les grands thèmes de la campagne</h3>' +
         '<p>Les lignes de fracture ne suivent plus toujours le clivage gauche-droite classique : le nucléaire et les pesticides recomposent le débat écologique, le soutien à l\'Ukraine et l\'avenir du projet européen divisent jusqu\'au sein des mêmes familles politiques, et des sujets de société comme la fin de vie ou l\'encadrement des écrans s\'invitent au premier plan. Votona structure ses questions autour de sept grandes familles de sujets — économie et travail, protection sociale, sécurité et immigration, écologie, Europe et institutions, société, défense et numérique — pour couvrir l\'ensemble des enjeux du débat plutôt que les seuls titres du moment.</p>' +
         '<h3>Un test politique pour savoir pour qui voter</h3>' +
-        '<p>Votona ne te dit pas pour qui voter : ce test politique gratuit t\'aide à y voir clair. Tu réponds aux grandes questions de la campagne, tu indiques ce qui compte le plus pour toi, et tu découvres quels candidats déclarés défendent les positions les plus proches des tiennes. <a href="/methode/">Découvrir notre méthode</a>.</p>' +
+        '<p>Votona ne te dit pas pour qui voter : ce test politique gratuit t\'aide à y voir clair. Tu réponds aux grandes questions de la campagne, tu indiques ce qui compte le plus pour toi, et tu découvres quels candidats déclarés défendent les positions les plus proches des tiennes. <a href="/methode/">Découvrir notre méthode et la FAQ</a>.</p>' +
         '<h3>Pourquoi comparer les candidats sujet par sujet ?</h3>' +
         '<p>Les étiquettes partisanes et les sondages d\'intentions de vote donnent une photographie du rapport de force, mais ils ne disent rien de ce qui compte vraiment pour chaque électeur. Comparer ses propres positions à celles des candidats, sujet par sujet et en pondérant ce qui importe le plus, permet de dépasser les postures et de construire un choix argumenté plutôt qu\'un réflexe d\'appartenance.</p>' +
         '<p>Plutôt que de se limiter à une dizaine de candidats jugés « sérieux », Votona intègre chaque candidature officiellement déclarée, avec ses positions sourcées sur chaque sujet — retraits de la course inclus, pour garder une vision complète de la campagne au fil du temps.</p>' +
       '</div></section>' +
     '<section class="landing-section landing-narrow"><h2>Une question ?</h2>' +
       '<div class="sub">Fonctionnement du classement, données, candidats retirés : tout est expliqué dans la FAQ.</div>' +
-      '<button class="btn btn-ghost btn-block" id="btn-open-faq">Consulter la FAQ complète</button></section>' +
+      '<a class="btn btn-ghost btn-block" href="/methode/#faq">Consulter la FAQ et la méthode</a></section>' +
     '<section class="landing-section landing-narrow final-cta"><h2>Prêt à te lancer ?</h2>' +
       '<div class="sub">Quelques minutes suffisent pour découvrir tes affinités avec les candidats déclarés.</div>' +
       '<img class="final-mascot" src="assets/ui/logo-head.webp" width="96" height="81" alt="Mascotte Votona" loading="lazy" />' +
@@ -4081,7 +4052,6 @@ function renderProfiles(){
     render();
     if(isLoggedIn()){ pushProfileToCloud(id, newProfile).catch(function(){}); }
   };
-  document.getElementById("btn-open-faq").onclick = goToFaq;
   var finalCta = document.getElementById("btn-final-cta");
   if(finalCta) finalCta.onclick = function(){
     window.scrollTo(0,0);
@@ -5134,31 +5104,6 @@ function renderContact(){
 /* ============================================================
    SCREEN — FAQ
    ============================================================ */
-function renderFaq(){
-  var contactHtml = '<div class="faq-contact-card">' +
-    '<div class="faq-contact-mascot">' + mascotSvg("#7C3AED", 44) + '</div>' +
-    '<div class="faq-contact-text"><div class="faq-contact-title">Toujours bloqué ?</div><div class="faq-contact-sub">On répond en général sous 24h.</div></div>' +
-    '<button class="btn btn-accent btn-sm" id="faq-contact-btn">Nous écrire</button>' +
-  '</div>';
-  var html = '<span class="eyebrow">Questions fréquentes</span>' +
-    '<h1>Tout comprendre sur Votona</h1>' +
-    '<p class="intro-copy">Fonctionnement du classement, données, candidats, mises à jour : les réponses aux questions les plus posées.</p>' +
-    faqHtml();
-  document.getElementById("app").innerHTML = html;
-  // Attaché à <body> (comme la barre Résultats) : dans #app, position:fixed
-  // serait relative à un ancêtre animé et ne resterait pas en bas d'écran.
-  var dock = document.getElementById("faq-contact-dock");
-  if(!dock){
-    dock = document.createElement("div");
-    dock.id = "faq-contact-dock";
-    dock.className = "faq-contact-dock";
-    document.body.appendChild(dock);
-  }
-  dock.innerHTML = contactHtml;
-  wireFaqToggles();
-  document.getElementById("faq-contact-btn").onclick = function(){ state.screen = "contact"; render(); };
-}
-
 /* ============================================================
    SCREEN — COMPTE
    ============================================================ */
@@ -5644,15 +5589,12 @@ function render(){
   renderTopbar();
   var existingActionBar = document.getElementById("results-action-bar");
   if(existingActionBar && state.screen !== "results" && state.screen !== "dashboard") existingActionBar.remove();
-  var existingFaqDock = document.getElementById("faq-contact-dock");
-  if(existingFaqDock && state.screen !== "faq") existingFaqDock.remove();
   if(state.screen === "profiles") renderProfiles();
   else if(state.screen === "dashboard") renderDashboard();
   else if(state.screen === "vote") renderVote();
   else if(state.screen === "results") renderResults();
   else if(state.screen === "kit") renderKit();
   else if(state.screen === "kitShare") renderKitShare();
-  else if(state.screen === "faq") renderFaq();
   else if(state.screen === "account") renderAccount();
   else if(state.screen === "admin") renderAdmin();
   else if(state.screen === "legal") renderLegal();
@@ -5682,7 +5624,6 @@ if(sb){
   });
   fetchCloudOverrides();
 }
-injectStructuredData();
 render();
 })();
 </script>
