@@ -32,7 +32,7 @@ def url_for(path):
     """Fichier du dépôt -> URL publique, ou None si ce n'est pas une page."""
     if path == "index.html":
         return SITE + "/"
-    if path in ("comparer/index.html", "test-politique-2027/index.html"):
+    if path in ("comparer/index.html", "methode/index.html"):
         return SITE + "/" + path[: -len("index.html")]
     m = re.fullmatch(r"(candidats|sujets)/(?:([a-z0-9-]+)/)?index\.html", path)
     if m:

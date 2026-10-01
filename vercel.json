@@ -1,0 +1,6 @@
+{
+  "redirects": [
+    { "source": "/test-politique-2027", "destination": "/", "permanent": true },
+    { "source": "/test-politique-2027/", "destination": "/", "permanent": true }
+  ]
+}

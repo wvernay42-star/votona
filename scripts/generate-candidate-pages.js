@@ -5,8 +5,7 @@
 //   - candidats/<id>/index.html : une page par candidat + candidats/index.html ;
 //   - sujets/<slug>/index.html : une page par sujet (« que proposent les
 //     candidats ? ») + sujets/index.html ;
-//   - comparer/index.html (comparateur) et test-politique-2027/index.html
-//     (page d'atterrissage « test politique ») ;
+//   - comparer/index.html (comparateur) et methode/index.html (page Méthode) ;
 //   - sitemap.xml, entièrement réécrit.
 // À relancer après chaque évolution des candidats/sujets.
 //
@@ -102,7 +101,7 @@ const STANCE_ICON = { pour: "✓", contre: "✕", neutre: "–" };
 // En-tête commun aux pages statiques : même bandeau que l'accueil de l'appli
 // (mascotte + « Votona » + « PRÉSIDENTIELLE 2027 », clic = retour à l'accueil),
 // avec les boutons Mon compte / FAQ. Liens absolus : valables à toute profondeur.
-const HEADER = '<header class="topbar"><a class="brand" href="/" title="Accueil Votona"><span class="mark"><img src="/assets/ui/logo-head.webp" alt="" width="40" height="32" /></span><span class="name">Votona</span><span class="year">PRÉSIDENTIELLE 2027</span></a><div class="topbar-actions"><a class="icon-btn" href="/?screen=account" title="Mon compte"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></a><a class="icon-btn" href="/?screen=faq" title="Questions fréquentes"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 1 1 3.9 2.4c-1 .5-1.7 1.1-1.7 2.4"/><line x1="12" y1="17.2" x2="12" y2="17.21"/></svg></a></div></header>';
+const HEADER = '<header class="topbar"><a class="brand" href="/" title="Accueil Votona"><span class="mark"><img src="/assets/ui/logo-head.webp" alt="" width="40" height="32" /></span><span class="name">Votona</span><span class="year">PRÉSIDENTIELLE 2027</span></a><div class="topbar-actions"><a class="nav-pill" href="/methode/">Méthode</a><a class="icon-btn" href="/?screen=account" title="Mon compte"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></a><a class="icon-btn" href="/?screen=faq" title="Questions fréquentes"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 1 1 3.9 2.4c-1 .5-1.7 1.1-1.7 2.4"/><line x1="12" y1="17.2" x2="12" y2="17.21"/></svg></a></div></header>';
 const HEADER_INDEX = HEADER;
 
 const SHARED_CSS = `
@@ -137,6 +136,8 @@ const SHARED_CSS = `
   .topbar-actions{ display:flex; align-items:center; gap:6px; }
   .icon-btn{ width:34px; height:34px; border-radius:50%; border:1px solid var(--masthead-line); background:transparent; color:var(--masthead-ink); display:flex; align-items:center; justify-content:center; text-decoration:none; }
   .icon-btn:hover{ color:var(--accent); border-color:var(--accent); }
+  .nav-pill{ height:34px; display:flex; align-items:center; padding:0 13px; border-radius:99px; border:1px solid var(--masthead-line); color:var(--masthead-ink); font-size:13px; font-weight:700; text-decoration:none; margin-right:2px; }
+  .nav-pill:hover, .nav-pill.on{ color:var(--accent); border-color:var(--accent); }
   .prop{ object-fit:contain; flex:none; }
   .theme-h{ display:flex; align-items:center; gap:10px; font-family:'Baloo 2',sans-serif; font-size:19px; margin:30px 0 4px; padding-bottom:6px; color:var(--ink); border-bottom:3px solid var(--th, var(--accent)); }
   .av-sm{ display:inline-flex; align-items:center; justify-content:center; flex:none; width:34px; height:34px; border-radius:50%; color:#fff; font:800 12.5px 'Work Sans',Arial,sans-serif; }
@@ -441,7 +442,7 @@ ${HEADER}
   ${positionsHtml}
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques — ni exhaustives ni officielles.<br />
-    <a href="../../">votona.fr</a>
+    <a href="/">votona.fr</a> · <a href="/methode/">Méthode</a>
     ${SOCIAL}
   </footer>
 </main>
@@ -538,7 +539,7 @@ ${HEADER_INDEX}
       });
     })();
   </script>
-  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a>
+  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a> · <a href="/methode/">Méthode</a>
     ${SOCIAL}
   </footer>
 </main>
@@ -673,7 +674,7 @@ ${HEADER}
   <a class="btn btn-ghost btn-row all" href="/sujets/">${ICON_GRID}Voir les ${topics.length} sujets de la présidentielle 2027</a>
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
-    <a href="/">votona.fr</a>
+    <a href="/">votona.fr</a> · <a href="/methode/">Méthode</a>
     ${SOCIAL}
   </footer>
 </main>
@@ -784,7 +785,7 @@ ${HEADER_INDEX}
       });
     })();
   </script>
-  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a>
+  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a> · <a href="/methode/">Méthode</a>
     ${SOCIAL}
   </footer>
 </main>
@@ -906,7 +907,7 @@ ${HEADER}
   <a class="btn btn-accent cta" style="margin-top:30px;" href="/">${BTN_MASCOT}Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
-    <a href="/">votona.fr</a>
+    <a href="/">votona.fr</a> · <a href="/methode/">Méthode</a>
     ${SOCIAL}
   </footer>
 </main>
@@ -1023,36 +1024,28 @@ ${HEADER}
 `;
 }
 
-// Page d'atterrissage « test politique » (/test-politique-2027/) : vise les
-// recherches « test politique 2027 », « pour qui voter », « quel candidat me
-// correspond »… Présente le test (méthode, neutralité, thèmes, candidats) et
-// renvoie vers l'app. FAQ en données structurées FAQPage (propre à cette page :
-// l'accueil a la sienne, celle de l'écran FAQ de l'app).
-const TEST_FAQ = [
-  ["Pour qui voter à la présidentielle 2027 ?", "Votona ne te dit pas pour qui voter : il t'aide à y voir clair. Tu réponds aux grandes questions de la campagne (retraites, immigration, écologie, Europe…) et le test te montre quels candidats déclarés défendent les positions les plus proches des tiennes. Le choix final reste le tien."],
-  ["Ce test politique est-il neutre ?", "Oui. Les positions des candidats sont décrites sans jugement, établies à partir de déclarations, votes ou programmes publics, et vérifiées chaque jour. Aucun candidat n'est mis en avant : le classement dépend uniquement de tes réponses."],
-  ["Comment savoir si je suis plutôt de gauche ou de droite ?", "Plutôt que de te ranger dans une case, le test compare tes réponses sujet par sujet aux positions de candidats de tout l'éventail politique. Tu vois de qui tu es le plus proche, et sur quels sujets tu t'en écartes : un positionnement souvent plus nuancé qu'un simple gauche-droite."],
-  ["Combien de temps dure le test ?", "Quelques minutes pour un premier passage. Tu peux passer un sujet, t'arrêter et reprendre plus tard : ta progression est gardée."],
-  ["Faut-il s'inscrire ?", "Non. Le test est gratuit et sans inscription. Tes réponses restent sur ton appareil ; un compte, facultatif, sert seulement à les retrouver sur un autre appareil."],
-  ["Le test est-il mis à jour pendant la campagne ?", "Oui. Chaque nouvelle candidature officielle est ajoutée, de nouveaux sujets apparaissent avec l'actualité, et les positions des candidats sont revues quotidiennement."]
+// Page « Méthode » (/methode/) : comment les positions sont établies, comment
+// le classement est calculé, neutralité, données, signalement d'erreur. Contenu
+// propre (l'accueil vise « test présidentielle / pour qui voter », cette page
+// la confiance et la transparence) ; FAQ en données structurées FAQPage.
+// Le calcul décrit ici est celui de matchScore()/computeResults() d'index.html :
+// si l'un change, mettre ce texte à jour.
+const METHODE_FAQ = [
+  ["Que se passe-t-il quand la position d'un candidat n'est pas connue ?", "Elle est affichée « non précisée » et compte comme neutre dans le calcul : un demi-point, quelle que soit ta réponse. Elle ne te rapproche ni ne t'éloigne fortement de ce candidat."],
+  ["Les sondages influencent-ils mon classement ?", "Non. Les sondages affichés dans ton tableau de bord sont une information à part : ton classement dépend uniquement de tes réponses et des positions des candidats."],
+  ["Votona est-il lié à un parti ou à un candidat ?", "Non. Votona est un projet personnel et indépendant, sans lien avec aucun parti ni aucun candidat. Le site n'affiche jamais de publicité politique."],
+  ["J'ai repéré une erreur sur une position, que faire ?", "Signale-la depuis le formulaire de contact, idéalement avec un lien vers la source (déclaration, vote, programme). Chaque signalement est vérifié et la position corrigée si besoin."]
 ];
 
-function testPageHtml(candidates, topics, categories, categoryMeta) {
-  const canonical = `${SITE_URL}/test-politique-2027/`;
-  const active = byLastName(candidates.filter((c) => !c.withdrawn));
-  const listed = active.filter((c) => hasKnownPositions(c, topics));
-  const crew = ["Économie & travail", "Écologie", "Sécurité & immigration"].map((cat, i) => charSrc(cat) ? `<img class="crew c${i + 1}" src="${charSrc(cat)}" width="339" height="577" alt="" />` : "").join("");
-  const themes = categories.map((cat) => {
-    const n = topics.filter((t) => t.cat === cat).length;
-    const slug = categoryMeta[cat] && categoryMeta[cat].slug;
-    return `<a class="tile" style="--th:${themeColor(cat)}" href="/sujets/${slug ? "#theme-" + slug : ""}">${propImg(cat, 40)}<span><b>${escapeHtml(cat)}</b><small>${n} sujet${n > 1 ? "s" : ""}</small></span></a>`;
-  }).join("");
-  const cands = listed.map((c) => `<a href="/candidats/${c.id}/">${escapeHtml(c.name)}</a>`).join(", ");
-  const faqLd = JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": TEST_FAQ.map(([q, a]) => ({ "@type": "Question", "name": q, "acceptedAnswer": { "@type": "Answer", "text": a } })) });
-  const faq = TEST_FAQ.map(([q, a]) => `<details><summary>${escapeHtml(q)}</summary><p>${escapeHtml(a)}</p></details>`).join("");
-  const cta = `<a class="btn btn-accent" href="/">${BTN_MASCOT}Faire le test gratuitement</a>`;
-  const title = "Test politique 2027 : pour qui voter ? Quel candidat te correspond | Votona";
-  const description = `Pour qui voter en 2027 ? Fais le test politique gratuit de Votona : ${topics.length} questions sur les grands sujets, comparées aux positions de ${active.length} candidats déclarés à la présidentielle. Neutre, sourcé, sans inscription.`;
+function methodePageHtml(candidates, topics, categories) {
+  const canonical = `${SITE_URL}/methode/`;
+  const active = candidates.filter((c) => !c.withdrawn);
+  const faqLd = JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": METHODE_FAQ.map(([q, a]) => ({ "@type": "Question", "name": q, "acceptedAnswer": { "@type": "Answer", "text": a } })) });
+  const faq = METHODE_FAQ.map(([q, a]) => `<details><summary>${escapeHtml(q)}</summary><p>${escapeHtml(a)}</p></details>`).join("");
+  const title = "Méthode du test Votona : sources, calcul du classement, neutralité | Votona";
+  const description = "Comment Votona établit les positions des candidats à la présidentielle 2027 et calcule ton classement : sources publiques, mise à jour quotidienne, pondération par importance, neutralité.";
+  const toc = [["sources", "Les positions"], ["calcul", "Le calcul"], ["sujets", "Les sujets"], ["candidats", "Les candidats"], ["neutralite", "Neutralité"], ["donnees", "Tes données"], ["erreur", "Signaler une erreur"]]
+    .map(([id, label]) => `<a href="#${id}">${label}</a>`).join("");
 
   return `<!DOCTYPE html>
 <html lang="fr">
@@ -1063,44 +1056,44 @@ function testPageHtml(candidates, topics, categories, categoryMeta) {
 <meta name="description" content="${escapeHtml(description)}" />
 <link rel="canonical" href="${canonical}" />
 <meta name="robots" content="index, follow" />
-<meta property="og:type" content="website" />
+<meta property="og:type" content="article" />
 <meta property="og:site_name" content="Votona" />
 <meta property="og:url" content="${canonical}" />
-<meta property="og:title" content="Test politique 2027 : quel candidat te correspond ?" />
+<meta property="og:title" content="La méthode du test Votona" />
 <meta property="og:description" content="${escapeHtml(description)}" />
 <meta property="og:image" content="${SITE_URL}/assets/ui/og-home.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:locale" content="fr_FR" />
 <meta name="twitter:card" content="summary_large_image" />
-<script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Test politique 2027", url: canonical }])}</script>
+<script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Méthode", url: canonical }])}</script>
 <script type="application/ld+json">${faqLd}</script>
 ${HEAD_ICONS}
 <style>${SHARED_CSS}
-  main{ max-width:880px; margin:0 auto; padding:32px var(--gutter) 64px; line-height:1.6; }
-  .hero{ position:relative; overflow:hidden; margin-top:6px; padding:28px 300px 28px 28px; border-radius:26px; background:linear-gradient(135deg, color-mix(in srgb, #7C3AED 16%, var(--surface)), var(--surface) 70%); border:1px solid color-mix(in srgb, #7C3AED 24%, var(--surface)); }
-  .hero h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,38px); line-height:1.12; margin:0 0 10px; }
+  main{ max-width:880px; margin:0 auto; padding:32px var(--gutter) 64px; line-height:1.65; }
+  .hero{ display:flex; align-items:center; gap:22px; padding:26px 28px; border-radius:26px; background:linear-gradient(135deg, color-mix(in srgb, #7C3AED 16%, var(--surface)), var(--surface) 70%); border:1px solid color-mix(in srgb, #7C3AED 24%, var(--surface)); }
+  .hero img{ width:92px; height:auto; flex:none; filter:drop-shadow(0 6px 12px rgba(0,0,0,.18)); }
+  .hero h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,36px); line-height:1.12; margin:0 0 8px; }
   .hero p{ color:var(--ink-soft); margin:0; }
-  .stats{ display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0; }
-  .stats span{ padding:5px 12px; border-radius:99px; background:var(--surface); font-size:13px; font-weight:700; color:var(--ink-soft); }
-  .stats b{ color:var(--accent); }
-  .crew{ position:absolute; bottom:-30px; height:200px; width:auto; filter:drop-shadow(0 8px 14px rgba(0,0,0,.18)); }
-  .c1{ right:170px; height:170px; transform:rotate(-6deg); } .c2{ right:88px; height:205px; z-index:1; } .c3{ right:10px; height:175px; transform:rotate(6deg); }
-  @media (max-width:680px){ .hero{ padding:22px 20px 170px; } .c1{ right:auto; left:calc(50% - 150px); height:140px; } .c2{ right:auto; left:calc(50% - 60px); height:170px; } .c3{ right:auto; left:calc(50% + 40px); height:140px; } }
-  .cta{ margin:20px auto 0; }
-  h2{ font-family:'Baloo 2',sans-serif; font-size:24px; line-height:1.2; margin:40px 0 10px; }
-  p{ color:var(--ink-soft); }
-  .steps{ list-style:none; padding:0; margin:14px 0 0; display:grid; gap:10px; counter-reset:s; }
-  .steps li{ counter-increment:s; display:flex; gap:14px; align-items:flex-start; padding:14px 16px; border-radius:18px; background:var(--surface); border:1px solid var(--line); color:var(--ink-soft); }
-  .steps li::before{ content:counter(s); flex:none; width:30px; height:30px; border-radius:50%; background:var(--accent); color:var(--accent-ink); display:flex; align-items:center; justify-content:center; font-weight:800; }
-  .steps b{ color:var(--ink); }
-  .tiles{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; margin-top:14px; }
-  .tile{ display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:18px; text-decoration:none; color:var(--ink); background:linear-gradient(150deg, color-mix(in srgb, var(--th) 16%, var(--surface)), var(--surface) 75%); border:1px solid color-mix(in srgb, var(--th) 28%, var(--line)); transition:transform .15s, border-color .15s; }
-  .tile:hover{ transform:translateY(-2px); border-color:var(--th); }
-  .tile span{ display:flex; flex-direction:column; line-height:1.3; }
-  .tile small{ color:var(--ink-faint); font-weight:700; font-size:12px; }
-  .cands a{ color:var(--ink); font-weight:600; }
-  .cands a:hover{ color:var(--accent); }
+  @media (max-width:560px){ .hero{ flex-direction:column; text-align:center; } .hero img{ width:76px; } }
+  .toc{ display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 0; }
+  .toc a{ padding:6px 13px; border-radius:99px; border:1px solid var(--line); background:var(--surface); color:var(--ink-soft); font-size:13px; font-weight:700; text-decoration:none; }
+  .toc a:hover{ color:var(--accent); border-color:var(--accent); }
+  h2{ font-family:'Baloo 2',sans-serif; font-size:24px; line-height:1.2; margin:42px 0 10px; scroll-margin-top:16px; display:flex; align-items:center; gap:10px; }
+  h2 .n{ flex:none; width:32px; height:32px; border-radius:50%; background:var(--accent); color:var(--accent-ink); font:800 15px 'Work Sans',Arial,sans-serif; display:flex; align-items:center; justify-content:center; }
+  p, li{ color:var(--ink-soft); }
+  b, strong{ color:var(--ink); }
+  main a:not(.btn):not(.toc a){ color:var(--accent); font-weight:600; }
+  ul.rules{ padding-left:20px; margin:10px 0; }
+  ul.rules li{ margin:4px 0; }
+  .card{ padding:16px 18px; border-radius:18px; background:var(--surface); border:1px solid var(--line); margin-top:14px; }
+  .card h3{ margin:0 0 8px; font-size:15.5px; color:var(--ink); }
+  table{ width:100%; border-collapse:collapse; font-size:14px; }
+  th, td{ text-align:left; padding:8px 6px; border-bottom:1px solid var(--line); color:var(--ink-soft); }
+  th{ color:var(--ink); font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; }
+  td.num, th.num{ text-align:right; white-space:nowrap; }
+  tfoot td{ font-weight:800; color:var(--ink); border-bottom:none; }
+  .ok{ color:var(--good); font-weight:700; } .ko{ color:var(--bad); font-weight:700; } .mid{ color:var(--ink-faint); font-weight:700; }
   details{ border:1px solid var(--line); border-radius:16px; background:var(--surface); padding:0 16px; margin-top:10px; }
   summary{ cursor:pointer; padding:14px 0; font-weight:700; color:var(--ink); }
   details p{ margin:0 0 14px; }
@@ -1110,42 +1103,67 @@ ${HEAD_ICONS}
 </style>
 </head>
 <body>
-${HEADER}
+${HEADER.replace('<a class="nav-pill" href="/methode/"', '<a class="nav-pill on" aria-current="page" href="/methode/"')}
 <main>
   <section class="hero">
-    <h1>Test politique 2027 : quel candidat te correspond ?</h1>
-    <p>Pour qui voter à la présidentielle 2027 ? Réponds aux grandes questions de la campagne et compare tes positions à celles des candidats déclarés, sujet par sujet. Gratuit, neutre et sans inscription.</p>
-    <div class="stats"><span><b>${topics.length}</b> questions</span><span><b>${active.length}</b> candidats en course</span><span><b>${categories.length}</b> thèmes</span></div>
-    ${crew}
+    <img src="/assets/ui/logo-head.webp" width="92" height="78" alt="Mascotte Votona" />
+    <div>
+      <h1>Notre méthode</h1>
+      <p>D'où viennent les positions des candidats, comment ton classement est calculé et comment Votona reste neutre : tout est expliqué ici, sans zone d'ombre.</p>
+    </div>
   </section>
-  <div class="btn-row cta">${cta}</div>
+  <nav class="toc" aria-label="Sommaire">${toc}</nav>
 
-  <h2>Comment fonctionne le test ?</h2>
-  <ol class="steps">
-    <li><span><b>Réponds aux questions.</b> Pour chaque proposition (retraites, immigration, nucléaire, Europe…), dis si tu es d'accord, pas d'accord ou neutre. Tu peux passer un sujet.</span></li>
-    <li><span><b>Indique ce qui compte pour toi.</b> Donne plus de poids aux sujets qui te tiennent à cœur : ils pèseront davantage dans ton résultat.</span></li>
-    <li><span><b>Découvre ton classement.</b> Le test compare tes réponses aux positions de chaque candidat et calcule ta proximité avec chacun, avec le détail sujet par sujet.</span></li>
-  </ol>
+  <h2 id="sources"><span class="n">1</span>D'où viennent les positions des candidats ?</h2>
+  <p>Chaque position est établie à partir de sources publiques : <b>déclarations</b> (interviews, discours, réseaux sociaux officiels), <b>votes</b> au Parlement et <b>programmes</b>. Elle est résumée en trois choix possibles, <b>d'accord</b>, <b>pas d'accord</b> ou <b>neutre</b>, accompagnés d'une phrase qui précise la nuance, visible sur la fiche de chaque candidat.</p>
+  <p>Une <b>veille quotidienne</b>, assistée par des outils d'intelligence artificielle, repère dans l'actualité de la campagne les nouvelles déclarations, candidatures et retraits. Une information n'est intégrée que si elle s'appuie sur une source fiable et datée. Quand un candidat ne s'est pas exprimé sur un sujet, sa position est affichée « non précisée » plutôt que devinée.</p>
 
-  <h2>Un test politique neutre et sourcé</h2>
-  <p>Les positions des candidats sont établies à partir de leurs déclarations, de leurs votes et de leurs programmes publics, puis vérifiées chaque jour. Elles sont présentées de façon descriptive, sans jugement, et aucun candidat n'est mis en avant : ton classement dépend uniquement de tes réponses. Votona ne te dit pas pour qui voter, il t'aide à y voir clair.</p>
+  <h2 id="calcul"><span class="n">2</span>Comment ton classement est calculé</h2>
+  <p>Pour chaque sujet, tu donnes ta position puis son importance pour toi : <b>peu important</b> (poids 1), <b>important</b> (poids 2) ou <b>très important</b> (poids 3). Ta position est ensuite comparée à celle de chaque candidat :</p>
+  <ul class="rules">
+    <li><span class="ok">1 point</span> si vous avez la même position ;</li>
+    <li><span class="mid">½ point</span> si l'un de vous deux est neutre (ou si la position du candidat n'est pas précisée) ;</li>
+    <li><span class="ko">0 point</span> si vos positions sont opposées.</li>
+  </ul>
+  <p>Ton affinité avec un candidat est la <b>moyenne de ces points, pondérée par l'importance</b> que tu as donnée à chaque sujet, exprimée en pourcentage. Les sujets que tu passes ne comptent pas, et les candidats retirés de la course sortent du classement.</p>
+  <div class="card">
+    <h3>Exemple avec trois sujets</h3>
+    <table>
+      <thead><tr><th>Sujet</th><th>Accord</th><th class="num">Poids</th><th class="num">Points</th></tr></thead>
+      <tbody>
+        <tr><td>Sujet A, très important</td><td class="ok">même position</td><td class="num">3</td><td class="num">3 × 1 = 3</td></tr>
+        <tr><td>Sujet B, peu important</td><td class="ko">opposés</td><td class="num">1</td><td class="num">1 × 0 = 0</td></tr>
+        <tr><td>Sujet C, important</td><td class="mid">candidat neutre</td><td class="num">2</td><td class="num">2 × ½ = 1</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="2">Affinité : 4 points sur 6</td><td class="num"></td><td class="num">67 %</td></tr></tfoot>
+    </table>
+  </div>
 
-  <h2>Les thèmes du test</h2>
-  <p>Les questions couvrent l'ensemble de la campagne, pas seulement les gros titres du moment.</p>
-  <div class="tiles">${themes}</div>
+  <h2 id="sujets"><span class="n">3</span>Comment les sujets sont choisis</h2>
+  <p>Le test compte aujourd'hui <b>${topics.length} sujets</b> répartis en <b>${categories.length} thèmes</b> (économie, protection sociale, sécurité, écologie, Europe, société, défense et numérique). Chaque sujet est formulé comme une proposition concrète, à laquelle on peut être favorable ou opposé, et accompagné d'un court contexte neutre. De nouveaux sujets sont ajoutés quand un débat structurant émerge dans la campagne.</p>
+  <p><a href="/sujets/">Voir tous les sujets et la position de chaque candidat</a></p>
 
-  <h2>Les candidats comparés</h2>
-  <p class="cands">Toutes les candidatures officiellement déclarées sont intégrées, sans tri par notoriété : ${cands}.</p>
+  <h2 id="candidats"><span class="n">4</span>Quels candidats sont comparés ?</h2>
+  <p><b>Toutes les candidatures officiellement déclarées</b> sont intégrées dès leur annonce, sans tri par notoriété ni par score dans les sondages : <b>${active.length} candidats</b> sont en course aujourd'hui. Un candidat qui se retire est marqué comme tel et sort du classement, mais ses positions restent consultables. Dans les listes, les candidats sont classés par ordre alphabétique.</p>
   <div class="links"><a class="btn btn-ghost" href="/candidats/">${ICON_GRID}Toutes les fiches candidats</a><a class="btn btn-ghost" href="/comparer/">${ICON_VS}Comparer deux candidats</a></div>
+
+  <h2 id="neutralite"><span class="n">5</span>Neutralité et indépendance</h2>
+  <p>Votona est un <b>projet personnel et indépendant</b>, sans lien avec aucun parti ni aucun candidat. Les positions sont décrites sans jugement, aucun candidat n'est mis en avant, et ton classement dépend uniquement de tes réponses. Les sondages affichés dans le tableau de bord sont une information à part : <b>ils n'entrent pas dans le calcul</b>. Le site n'affiche jamais de publicité politique.</p>
+
+  <h2 id="donnees"><span class="n">6</span>Tes données</h2>
+  <p>Le test se fait <b>sans inscription</b> : tes réponses restent dans ton navigateur, sur ton appareil. Un compte, facultatif, sert uniquement à les retrouver sur un autre appareil, et tu peux tout supprimer à tout moment. <a href="/?screen=privacy">Politique de confidentialité</a></p>
+
+  <h2 id="erreur"><span class="n">7</span>Signaler une erreur</h2>
+  <p>Une position te semble inexacte ou dépassée ? Écris-nous depuis le <a href="/?screen=contact">formulaire de contact</a>, idéalement avec un lien vers la source. Chaque signalement est vérifié et la position corrigée si besoin.</p>
 
   <h2>Questions fréquentes</h2>
   ${faq}
 
   <h2>Prêt à te lancer ?</h2>
   <p>Quelques minutes suffisent pour découvrir de quels candidats tu es le plus proche.</p>
-  <div class="btn-row">${cta}</div>
+  <div class="btn-row"><a class="btn btn-accent" href="/">${BTN_MASCOT}Faire le test gratuitement</a></div>
 
-  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a>
+  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a> · <a href="/methode/">Méthode</a>
     ${SOCIAL}
   </footer>
 </main>
@@ -1160,7 +1178,7 @@ function sitemapXml(candidates, topics, slugs) {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${[
     url(`${SITE_URL}/`, "daily", "1.0"),
-    url(`${SITE_URL}/test-politique-2027/`, "weekly", "0.9"),
+    url(`${SITE_URL}/methode/`, "monthly", "0.6"),
     url(`${SITE_URL}/candidats/`, "weekly", "0.8"),
     ...candidates.filter((c) => hasKnownPositions(c, topics)).map((c) => url(`${SITE_URL}/candidats/${c.id}/`, "weekly", "0.7")),
     url(`${SITE_URL}/comparer/`, "weekly", "0.8"),
@@ -1198,12 +1216,12 @@ function main() {
   fs.mkdirSync(path.join(ROOT, "comparer"), { recursive: true });
   fs.writeFileSync(path.join(ROOT, "comparer", "index.html"), "\uFEFF" + compareHtml(CANDIDATES, TOPICS, CATEGORY_META, CATEGORY_ICON_PATHS, slugs), "utf8");
 
-  fs.mkdirSync(path.join(ROOT, "test-politique-2027"), { recursive: true });
-  fs.writeFileSync(path.join(ROOT, "test-politique-2027", "index.html"), "\uFEFF" + testPageHtml(CANDIDATES, TOPICS, CATEGORIES, CATEGORY_META), "utf8");
+  fs.mkdirSync(path.join(ROOT, "methode"), { recursive: true });
+  fs.writeFileSync(path.join(ROOT, "methode", "index.html"), "\uFEFF" + methodePageHtml(CANDIDATES, TOPICS, CATEGORIES), "utf8");
 
   fs.writeFileSync(path.join(ROOT, "sitemap.xml"), sitemapXml(CANDIDATES, TOPICS, slugs), "utf8");
 
-  console.log(`Généré : ${CANDIDATES.length} pages candidats + ${TOPICS.length} pages sujets + 2 index + comparateur + page test politique + sitemap.xml`);
+  console.log(`Généré : ${CANDIDATES.length} pages candidats + ${TOPICS.length} pages sujets + 2 index + comparateur + page Méthode + sitemap.xml`);
 }
 
 if (require.main === module) main();

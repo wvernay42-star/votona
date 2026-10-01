@@ -1,0 +1,180 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Méthode du test Votona : sources, calcul du classement, neutralité | Votona</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Comment Votona établit les positions des candidats à la présidentielle 2027 et calcule ton classement : sources publiques, mise à jour quotidienne, pondération par importance, neutralité." />
+<link rel="canonical" href="https://votona.fr/methode/" />
+<meta name="robots" content="index, follow" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Votona" />
+<meta property="og:url" content="https://votona.fr/methode/" />
+<meta property="og:title" content="La méthode du test Votona" />
+<meta property="og:description" content="Comment Votona établit les positions des candidats à la présidentielle 2027 et calcule ton classement : sources publiques, mise à jour quotidienne, pondération par importance, neutralité." />
+<meta property="og:image" content="https://votona.fr/assets/ui/og-home.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Votona","item":"https://votona.fr/"},{"@type":"ListItem","position":2,"name":"Méthode","item":"https://votona.fr/methode/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Que se passe-t-il quand la position d'un candidat n'est pas connue ?","acceptedAnswer":{"@type":"Answer","text":"Elle est affichée « non précisée » et compte comme neutre dans le calcul : un demi-point, quelle que soit ta réponse. Elle ne te rapproche ni ne t'éloigne fortement de ce candidat."}},{"@type":"Question","name":"Les sondages influencent-ils mon classement ?","acceptedAnswer":{"@type":"Answer","text":"Non. Les sondages affichés dans ton tableau de bord sont une information à part : ton classement dépend uniquement de tes réponses et des positions des candidats."}},{"@type":"Question","name":"Votona est-il lié à un parti ou à un candidat ?","acceptedAnswer":{"@type":"Answer","text":"Non. Votona est un projet personnel et indépendant, sans lien avec aucun parti ni aucun candidat. Le site n'affiche jamais de publicité politique."}},{"@type":"Question","name":"J'ai repéré une erreur sur une position, que faire ?","acceptedAnswer":{"@type":"Answer","text":"Signale-la depuis le formulaire de contact, idéalement avec un lien vers la source (déclaration, vote, programme). Chaque signalement est vérifié et la position corrigée si besoin."}}]}</script>
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/ui/favicon-48.png?v=2" />
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/ui/favicon-192.png?v=2" />
+<link rel="icon" href="/favicon.ico?v=2" sizes="32x32 48x48" />
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/ui/apple-touch-icon.png?v=2" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{ color-scheme:light dark; --gutter:clamp(20px,4vw,40px); --bg:#fbfaf7; --surface:#ffffff; --ink:#191d2b; --ink-soft:#4d5468; --ink-faint:#8790a3; --line:#e4dfd0; --accent:#7C3AED; --accent-ink:#ffffff; --good:#2c9354; --bad:#d1453a; --neutral-bar:#b8b3a6; --none-bar:#ebe7de; --masthead-bg:#F6F2FE; --masthead-ink:#191d2b; --masthead-line:rgba(25,29,43,.14); }
+  /* Mode sombre : même palette que l'app (index.html), qui suit le réglage de l'appareil. */
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#14171c; --surface:#1c2028; --ink:#f1ede4; --ink-soft:#aab0c0; --ink-faint:#727890; --line:#2d323f; --accent:#A78BFA; --accent-ink:#1c1230; --good:#7ad693; --bad:#ff6b57; --neutral-bar:#6b6557; --none-bar:#2a2e38; }
+    .p-pour{ background:color-mix(in srgb, var(--good) 18%, transparent) !important; color:var(--good) !important; }
+    .p-contre{ background:color-mix(in srgb, var(--bad) 18%, transparent) !important; color:var(--bad) !important; }
+    .p-neutre{ background:var(--line) !important; color:var(--ink-soft) !important; }
+    img.prop, .theme-h img, .crew, .hero-char{ filter:drop-shadow(0 4px 10px rgba(0,0,0,.45)); }
+  }
+  .social{ display:flex; justify-content:center; gap:10px; margin-top:14px; }
+  .social a{ display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; border:1px solid var(--line); color:var(--ink-soft); text-decoration:none; transition:color .15s, border-color .15s; }
+  .social a:hover{ color:var(--accent); border-color:var(--accent); }
+  .gfoot{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; line-height:1.6; }
+  .gfoot a{ color:inherit; }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Work Sans',Arial,sans-serif; }
+  header.topbar{ display:flex; align-items:center; justify-content:space-between; max-width:1180px; margin:0 auto; padding:16px clamp(20px,4vw,40px); border-bottom:3px solid var(--accent); background:var(--masthead-bg); }
+  .brand{ display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--masthead-ink); min-width:0; }
+  .brand .mark{ width:40px; height:32px; flex:none; transition:transform .45s cubic-bezier(.34,1.56,.64,1); }
+  .brand:hover .mark{ transform:rotate(-8deg) scale(1.08); }
+  .brand .mark img{ display:block; width:100%; height:100%; object-fit:contain; }
+  .brand .name{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:18px; letter-spacing:.2px; white-space:nowrap; transition:color .15s ease; }
+  .brand:hover .name{ color:var(--accent); }
+  .brand .year{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:11px; color:var(--accent); letter-spacing:.06em; white-space:nowrap; }
+  @media (max-width:420px){ .brand .year{ display:none; } }
+  .crumb{ display:inline-flex; align-items:center; gap:4px; font-size:13.5px; font-weight:600; color:var(--ink-soft); text-decoration:none; }
+  .crumb:hover{ color:var(--accent); }
+  .crumbs{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .topbar-actions{ display:flex; align-items:center; gap:6px; }
+  .icon-btn{ width:34px; height:34px; border-radius:50%; border:1px solid var(--masthead-line); background:transparent; color:var(--masthead-ink); display:flex; align-items:center; justify-content:center; text-decoration:none; }
+  .icon-btn:hover{ color:var(--accent); border-color:var(--accent); }
+  .nav-pill{ height:34px; display:flex; align-items:center; padding:0 13px; border-radius:99px; border:1px solid var(--masthead-line); color:var(--masthead-ink); font-size:13px; font-weight:700; text-decoration:none; margin-right:2px; }
+  .nav-pill:hover, .nav-pill.on{ color:var(--accent); border-color:var(--accent); }
+  .prop{ object-fit:contain; flex:none; }
+  .theme-h{ display:flex; align-items:center; gap:10px; font-family:'Baloo 2',sans-serif; font-size:19px; margin:30px 0 4px; padding-bottom:6px; color:var(--ink); border-bottom:3px solid var(--th, var(--accent)); }
+  .av-sm{ display:inline-flex; align-items:center; justify-content:center; flex:none; width:34px; height:34px; border-radius:50%; color:#fff; font:800 12.5px 'Work Sans',Arial,sans-serif; }
+  /* Boutons : mêmes valeurs que .btn / .btn-accent / .btn-ghost d'index.html. */
+  .btn{ display:flex; align-items:center; justify-content:center; gap:8px; box-sizing:border-box; width:100%; border-radius:18px; padding:14px 22px; font-family:'Work Sans',Arial,sans-serif; font-size:15px; font-weight:800; line-height:1.25; text-align:center; text-decoration:none; cursor:pointer; transition:transform .1s ease, background .15s ease, color .15s ease, border-color .15s ease; }
+  .btn:active{ transform:translateY(2px); }
+  .btn-accent{ background:var(--accent); color:var(--accent-ink); border-bottom:4px solid color-mix(in srgb, var(--accent) 70%, black); animation:softPulse 2.6s ease-in-out infinite; }
+  .btn-accent:hover{ background:color-mix(in srgb, var(--accent) 90%, black); color:var(--accent-ink); }
+  .btn-accent:active{ border-bottom-width:1px; }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid color-mix(in srgb, var(--accent) 20%, var(--line)); }
+  .btn-ghost:hover{ color:var(--accent); border-color:var(--accent); }
+  .btn-row{ max-width:420px; margin-left:auto; margin-right:auto; }
+  .btn-ic{ width:19px; height:19px; flex:none; }
+  .btn-mascot{ width:34px; height:auto; flex:none; margin:-8px 2px -8px -4px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.25)); transition:transform .35s cubic-bezier(.34,1.56,.64,1); }
+  .btn:hover .btn-mascot{ transform:rotate(-10deg) scale(1.1); }
+  @keyframes softPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 35%, transparent); } 50%{ box-shadow:0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); } }
+  @media (prefers-reduced-motion: reduce){ .btn-accent{ animation:none; } }
+  main{ max-width:880px; margin:0 auto; padding:32px var(--gutter) 64px; line-height:1.65; }
+  .hero{ display:flex; align-items:center; gap:22px; padding:26px 28px; border-radius:26px; background:linear-gradient(135deg, color-mix(in srgb, #7C3AED 16%, var(--surface)), var(--surface) 70%); border:1px solid color-mix(in srgb, #7C3AED 24%, var(--surface)); }
+  .hero img{ width:92px; height:auto; flex:none; filter:drop-shadow(0 6px 12px rgba(0,0,0,.18)); }
+  .hero h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,36px); line-height:1.12; margin:0 0 8px; }
+  .hero p{ color:var(--ink-soft); margin:0; }
+  @media (max-width:560px){ .hero{ flex-direction:column; text-align:center; } .hero img{ width:76px; } }
+  .toc{ display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 0; }
+  .toc a{ padding:6px 13px; border-radius:99px; border:1px solid var(--line); background:var(--surface); color:var(--ink-soft); font-size:13px; font-weight:700; text-decoration:none; }
+  .toc a:hover{ color:var(--accent); border-color:var(--accent); }
+  h2{ font-family:'Baloo 2',sans-serif; font-size:24px; line-height:1.2; margin:42px 0 10px; scroll-margin-top:16px; display:flex; align-items:center; gap:10px; }
+  h2 .n{ flex:none; width:32px; height:32px; border-radius:50%; background:var(--accent); color:var(--accent-ink); font:800 15px 'Work Sans',Arial,sans-serif; display:flex; align-items:center; justify-content:center; }
+  p, li{ color:var(--ink-soft); }
+  b, strong{ color:var(--ink); }
+  main a:not(.btn):not(.toc a){ color:var(--accent); font-weight:600; }
+  ul.rules{ padding-left:20px; margin:10px 0; }
+  ul.rules li{ margin:4px 0; }
+  .card{ padding:16px 18px; border-radius:18px; background:var(--surface); border:1px solid var(--line); margin-top:14px; }
+  .card h3{ margin:0 0 8px; font-size:15.5px; color:var(--ink); }
+  table{ width:100%; border-collapse:collapse; font-size:14px; }
+  th, td{ text-align:left; padding:8px 6px; border-bottom:1px solid var(--line); color:var(--ink-soft); }
+  th{ color:var(--ink); font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; }
+  td.num, th.num{ text-align:right; white-space:nowrap; }
+  tfoot td{ font-weight:800; color:var(--ink); border-bottom:none; }
+  .ok{ color:var(--good); font-weight:700; } .ko{ color:var(--bad); font-weight:700; } .mid{ color:var(--ink-faint); font-weight:700; }
+  details{ border:1px solid var(--line); border-radius:16px; background:var(--surface); padding:0 16px; margin-top:10px; }
+  summary{ cursor:pointer; padding:14px 0; font-weight:700; color:var(--ink); }
+  details p{ margin:0 0 14px; }
+  .links{ display:flex; gap:8px; margin-top:16px; }
+  .links .btn{ flex:1; padding:12px 14px; font-size:14px; }
+  @media (max-width:520px){ .links{ flex-direction:column; } }
+</style>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/" title="Accueil Votona"><span class="mark"><img src="/assets/ui/logo-head.webp" alt="" width="40" height="32" /></span><span class="name">Votona</span><span class="year">PRÉSIDENTIELLE 2027</span></a><div class="topbar-actions"><a class="nav-pill on" aria-current="page" href="/methode/">Méthode</a><a class="icon-btn" href="/?screen=account" title="Mon compte"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></a><a class="icon-btn" href="/?screen=faq" title="Questions fréquentes"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 1 1 3.9 2.4c-1 .5-1.7 1.1-1.7 2.4"/><line x1="12" y1="17.2" x2="12" y2="17.21"/></svg></a></div></header>
+<main>
+  <section class="hero">
+    <img src="/assets/ui/logo-head.webp" width="92" height="78" alt="Mascotte Votona" />
+    <div>
+      <h1>Notre méthode</h1>
+      <p>D'où viennent les positions des candidats, comment ton classement est calculé et comment Votona reste neutre : tout est expliqué ici, sans zone d'ombre.</p>
+    </div>
+  </section>
+  <nav class="toc" aria-label="Sommaire"><a href="#sources">Les positions</a><a href="#calcul">Le calcul</a><a href="#sujets">Les sujets</a><a href="#candidats">Les candidats</a><a href="#neutralite">Neutralité</a><a href="#donnees">Tes données</a><a href="#erreur">Signaler une erreur</a></nav>
+
+  <h2 id="sources"><span class="n">1</span>D'où viennent les positions des candidats ?</h2>
+  <p>Chaque position est établie à partir de sources publiques : <b>déclarations</b> (interviews, discours, réseaux sociaux officiels), <b>votes</b> au Parlement et <b>programmes</b>. Elle est résumée en trois choix possibles, <b>d'accord</b>, <b>pas d'accord</b> ou <b>neutre</b>, accompagnés d'une phrase qui précise la nuance, visible sur la fiche de chaque candidat.</p>
+  <p>Une <b>veille quotidienne</b>, assistée par des outils d'intelligence artificielle, repère dans l'actualité de la campagne les nouvelles déclarations, candidatures et retraits. Une information n'est intégrée que si elle s'appuie sur une source fiable et datée. Quand un candidat ne s'est pas exprimé sur un sujet, sa position est affichée « non précisée » plutôt que devinée.</p>
+
+  <h2 id="calcul"><span class="n">2</span>Comment ton classement est calculé</h2>
+  <p>Pour chaque sujet, tu donnes ta position puis son importance pour toi : <b>peu important</b> (poids 1), <b>important</b> (poids 2) ou <b>très important</b> (poids 3). Ta position est ensuite comparée à celle de chaque candidat :</p>
+  <ul class="rules">
+    <li><span class="ok">1 point</span> si vous avez la même position ;</li>
+    <li><span class="mid">½ point</span> si l'un de vous deux est neutre (ou si la position du candidat n'est pas précisée) ;</li>
+    <li><span class="ko">0 point</span> si vos positions sont opposées.</li>
+  </ul>
+  <p>Ton affinité avec un candidat est la <b>moyenne de ces points, pondérée par l'importance</b> que tu as donnée à chaque sujet, exprimée en pourcentage. Les sujets que tu passes ne comptent pas, et les candidats retirés de la course sortent du classement.</p>
+  <div class="card">
+    <h3>Exemple avec trois sujets</h3>
+    <table>
+      <thead><tr><th>Sujet</th><th>Accord</th><th class="num">Poids</th><th class="num">Points</th></tr></thead>
+      <tbody>
+        <tr><td>Sujet A, très important</td><td class="ok">même position</td><td class="num">3</td><td class="num">3 × 1 = 3</td></tr>
+        <tr><td>Sujet B, peu important</td><td class="ko">opposés</td><td class="num">1</td><td class="num">1 × 0 = 0</td></tr>
+        <tr><td>Sujet C, important</td><td class="mid">candidat neutre</td><td class="num">2</td><td class="num">2 × ½ = 1</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="2">Affinité : 4 points sur 6</td><td class="num"></td><td class="num">67 %</td></tr></tfoot>
+    </table>
+  </div>
+
+  <h2 id="sujets"><span class="n">3</span>Comment les sujets sont choisis</h2>
+  <p>Le test compte aujourd'hui <b>35 sujets</b> répartis en <b>7 thèmes</b> (économie, protection sociale, sécurité, écologie, Europe, société, défense et numérique). Chaque sujet est formulé comme une proposition concrète, à laquelle on peut être favorable ou opposé, et accompagné d'un court contexte neutre. De nouveaux sujets sont ajoutés quand un débat structurant émerge dans la campagne.</p>
+  <p><a href="/sujets/">Voir tous les sujets et la position de chaque candidat</a></p>
+
+  <h2 id="candidats"><span class="n">4</span>Quels candidats sont comparés ?</h2>
+  <p><b>Toutes les candidatures officiellement déclarées</b> sont intégrées dès leur annonce, sans tri par notoriété ni par score dans les sondages : <b>35 candidats</b> sont en course aujourd'hui. Un candidat qui se retire est marqué comme tel et sort du classement, mais ses positions restent consultables. Dans les listes, les candidats sont classés par ordre alphabétique.</p>
+  <div class="links"><a class="btn btn-ghost" href="/candidats/"><svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Toutes les fiches candidats</a><a class="btn btn-ghost" href="/comparer/"><svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M2 20c0-3 2.2-5 5-5s5 2 5 5"/><path d="M12 20c0-3 2.2-5 5-5s5 2 5 5"/></svg>Comparer deux candidats</a></div>
+
+  <h2 id="neutralite"><span class="n">5</span>Neutralité et indépendance</h2>
+  <p>Votona est un <b>projet personnel et indépendant</b>, sans lien avec aucun parti ni aucun candidat. Les positions sont décrites sans jugement, aucun candidat n'est mis en avant, et ton classement dépend uniquement de tes réponses. Les sondages affichés dans le tableau de bord sont une information à part : <b>ils n'entrent pas dans le calcul</b>. Le site n'affiche jamais de publicité politique.</p>
+
+  <h2 id="donnees"><span class="n">6</span>Tes données</h2>
+  <p>Le test se fait <b>sans inscription</b> : tes réponses restent dans ton navigateur, sur ton appareil. Un compte, facultatif, sert uniquement à les retrouver sur un autre appareil, et tu peux tout supprimer à tout moment. <a href="/?screen=privacy">Politique de confidentialité</a></p>
+
+  <h2 id="erreur"><span class="n">7</span>Signaler une erreur</h2>
+  <p>Une position te semble inexacte ou dépassée ? Écris-nous depuis le <a href="/?screen=contact">formulaire de contact</a>, idéalement avec un lien vers la source. Chaque signalement est vérifié et la position corrigée si besoin.</p>
+
+  <h2>Questions fréquentes</h2>
+  <details><summary>Que se passe-t-il quand la position d&#39;un candidat n&#39;est pas connue ?</summary><p>Elle est affichée « non précisée » et compte comme neutre dans le calcul : un demi-point, quelle que soit ta réponse. Elle ne te rapproche ni ne t&#39;éloigne fortement de ce candidat.</p></details><details><summary>Les sondages influencent-ils mon classement ?</summary><p>Non. Les sondages affichés dans ton tableau de bord sont une information à part : ton classement dépend uniquement de tes réponses et des positions des candidats.</p></details><details><summary>Votona est-il lié à un parti ou à un candidat ?</summary><p>Non. Votona est un projet personnel et indépendant, sans lien avec aucun parti ni aucun candidat. Le site n&#39;affiche jamais de publicité politique.</p></details><details><summary>J&#39;ai repéré une erreur sur une position, que faire ?</summary><p>Signale-la depuis le formulaire de contact, idéalement avec un lien vers la source (déclaration, vote, programme). Chaque signalement est vérifié et la position corrigée si besoin.</p></details>
+
+  <h2>Prêt à te lancer ?</h2>
+  <p>Quelques minutes suffisent pour découvrir de quels candidats tu es le plus proche.</p>
+  <div class="btn-row"><a class="btn btn-accent" href="/"><img class="btn-mascot" src="/assets/ui/logo-head.webp" width="34" height="29" alt="" />Faire le test gratuitement</a></div>
+
+  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a> · <a href="/methode/">Méthode</a>
+    <div class="social">
+    <a href="https://www.instagram.com/votona2027/" target="_blank" rel="noopener me" aria-label="Votona sur Instagram" title="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+    <a href="https://www.tiktok.com/@votona2027" target="_blank" rel="noopener me" aria-label="Votona sur TikTok" title="TikTok"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.7a5.8 5.8 0 1 0 4.9 5.7V9.1a7.4 7.4 0 0 0 4.3 1.4V7.4a4.3 4.3 0 0 1-3.2-1.6z"/></svg></a>
+    <a href="https://x.com/votona2027" target="_blank" rel="noopener me" aria-label="Votona sur X" title="X"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.7L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.2-8.3L2 3h6.4l4.4 5.8L17.8 3zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5z"/></svg></a>
+  </div>
+  </footer>
+</main>
+</body>
+</html>
