@@ -1094,9 +1094,16 @@ ${HEAD_ICONS}
   details{ border:1px solid var(--line); border-radius:16px; background:var(--surface); padding:0 16px; margin-top:10px; }
   summary{ cursor:pointer; padding:14px 0; font-weight:700; color:var(--ink); }
   details p{ margin:0 0 14px; }
-  .card.contact{ display:flex; align-items:center; gap:14px; justify-content:space-between; }
-  .card.contact .btn{ width:auto; flex:none; padding:11px 18px; font-size:14px; }
-  @media (max-width:520px){ .card.contact{ flex-direction:column; align-items:stretch; text-align:center; } }
+  /* Bandeau « Toujours une question ? » figé en bas d'écran (comme l'ancien écran FAQ de l'app). */
+  main{ padding-bottom:130px; }
+  .contact-dock{ position:fixed; left:0; right:0; bottom:0; z-index:30; max-width:880px; margin:0 auto; padding:10px var(--gutter) calc(10px + env(safe-area-inset-bottom)); background:color-mix(in srgb, var(--bg) 62%, transparent); -webkit-backdrop-filter:blur(14px) saturate(1.4); backdrop-filter:blur(14px) saturate(1.4); border-top:1px solid var(--line); }
+  .contact-card{ display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:18px; background:color-mix(in srgb, var(--accent) 12%, transparent); }
+  .contact-card img{ width:44px; height:auto; flex:none; }
+  .contact-card .ct{ flex-grow:1; min-width:0; }
+  .contact-card .t{ font-family:'Baloo 2',sans-serif; font-size:15px; font-weight:700; color:var(--ink); line-height:1.2; }
+  .contact-card .s{ font-size:12.5px; color:var(--ink-faint); margin-top:2px; line-height:1.3; }
+  .contact-card .btn{ width:auto; flex:none; white-space:nowrap; padding:11px 18px; font-size:14px; animation:none; }
+  @media (max-width:480px){ .contact-card{ gap:10px; padding:10px 12px; } .contact-card img{ width:34px; } .contact-card .t{ font-size:14px; } .contact-card .btn{ padding:10px 14px; } }
   h2.part{ font-size:28px; margin-top:54px; padding-top:22px; border-top:2px dashed var(--line); }
   .links{ display:flex; gap:8px; margin-top:16px; }
   .links .btn{ flex:1; padding:12px 14px; font-size:14px; }
@@ -1164,10 +1171,10 @@ ${HEADER}
 
   <h2 id="faq" class="part">Questions fréquentes</h2>
   ${faq}
-  <div class="card contact"><div><b>Toujours une question ?</b><br />Écris-nous, on répond en général sous 24 h.</div><a class="btn btn-accent" href="/?screen=contact">Nous écrire</a></div>
 
   ${SITE_FOOTER}
 </main>
+<div class="contact-dock"><div class="contact-card"><img src="/assets/ui/logo-head.webp" width="44" height="37" alt="" /><div class="ct"><div class="t">Toujours une question ?</div><div class="s">On répond en général sous 24 h.</div></div><a class="btn btn-accent" href="/?screen=contact">Nous écrire</a></div></div>
 </body>
 </html>
 `;
