@@ -563,6 +563,22 @@
   .level-next-text{ font-size:12px; color:var(--ink-soft); line-height:1.4; }
   .level-next-text b{ color:var(--ink); }
 
+  .moved-card{ background:var(--bg-raised); border:1px solid color-mix(in srgb, var(--accent) 35%, var(--line)); border-radius:18px; padding:16px; margin-bottom:16px; }
+  .moved-eyebrow{ font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; color:var(--accent); font-weight:700; text-transform:uppercase; }
+  .moved-card h2{ font-family:var(--display); font-size:19px; margin:4px 0 2px; }
+  .moved-sub{ font-size:12px; color:var(--ink-faint); }
+  .moved-list{ display:flex; flex-direction:column; gap:7px; margin-top:12px; }
+  .moved-row{ display:flex; align-items:center; gap:8px; font-size:13.5px; }
+  .moved-rank{ width:16px; color:var(--ink-faint); font-size:11.5px; flex:none; }
+  .moved-dot{ width:9px; height:9px; border-radius:50%; flex:none; }
+  .moved-name{ flex-grow:1; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .moved-delta{ font-family:var(--mono); font-size:11px; font-weight:700; flex:none; }
+  .moved-delta.up{ color:var(--good); } .moved-delta.down{ color:var(--bad); } .moved-delta.new{ color:var(--accent); }
+  .moved-pct{ font-weight:700; color:var(--ink-soft); flex:none; font-size:12.5px; }
+  .moved-events{ margin:12px 0 0; padding:10px 0 0; border-top:1px solid var(--line); list-style:none; display:flex; flex-direction:column; gap:6px; font-size:13px; color:var(--ink-soft); line-height:1.45; }
+  .moved-events b{ color:var(--ink); }
+  .moved-actions{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .moved-actions .btn{ flex:1; min-width:140px; }
   .provisional-card{ background:var(--bg-raised); border:1px dashed color-mix(in srgb, var(--accent) 45%, var(--line)); border-radius:16px; padding:14px; margin-top:14px; }
   .provisional-eyebrow{ font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; color:var(--accent); font-weight:700; }
   .provisional-sub{ font-size:11px; color:var(--ink-faint); margin-top:2px; }
@@ -982,7 +998,7 @@
   <footer class="appfoot">
     <div id="sponsor-slot"></div>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<span id="profile-switch-link"></span>
-    <div class="footer-links"><a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a> · <a href="#" id="footer-legal-link">Mentions légales</a> · <a href="#" id="footer-privacy-link">Confidentialité</a> · <a href="#" id="footer-contact-link">Contact</a></div>
+    <div class="footer-links"><a href="/">votona.fr</a> · <a href="/journal/">Journal de la campagne</a> · <a href="/methode/">Sources et méthode</a> · <a href="#" id="footer-legal-link">Mentions légales</a> · <a href="#" id="footer-privacy-link">Confidentialité</a> · <a href="#" id="footer-contact-link">Contact</a></div>
     <div class="footer-social">
       <a href="https://www.instagram.com/votona2027/" target="_blank" rel="noopener me" aria-label="Votona sur Instagram" title="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
       <a href="https://www.tiktok.com/@votona2027" target="_blank" rel="noopener me" aria-label="Votona sur TikTok" title="TikTok"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.7a5.8 5.8 0 1 0 4.9 5.7V9.1a7.4 7.4 0 0 0 4.3 1.4V7.4a4.3 4.3 0 0 1-3.2-1.6z"/></svg></a>
@@ -2530,6 +2546,47 @@ function getPollRankChange(id, candidates){
 // ==POLL_DATA_END==
 
 /* ============================================================
+   JOURNAL DE LA CAMPAGNE — ce qui a changé dans Votona, affiché sur
+   la page générée /journal/ et dans la carte « Ton classement a
+   bougé » du tableau de bord.
+   Les ajouts de candidats et de sujets s'en déduisent tout seuls
+   (leur addedDate) : CAMPAIGN_LOG ne contient que le reste, ajouté
+   par la veille quotidienne à chaque changement :
+     - position précisée ou modifiée : type "position", cand + topic ;
+     - retrait de candidature : type "retrait", cand ;
+     - sondages mis à jour : type "sondage".
+   Format : {date:"AAAA-MM-JJ", type:"...", cand:"id", topic:"tXX",
+   text:"phrase courte, neutre et factuelle"} (cand/topic si utiles).
+   Ordre libre (trié à l'affichage). Ne jamais supprimer une entrée.
+   ============================================================ */
+// ==CAMPAIGN_LOG_START==
+var CAMPAIGN_LOG = [
+  {date:"2026-09-22", type:"sondage", text:"Sondages mis à jour : Marine Le Pen 33 %, Édouard Philippe 14 %, Gabriel Attal 8 %, Bruno Retailleau 7 % (Harris Interactive pour M6-RTL, 8-10 septembre). Olivier Faure, David Lisnard, Karim Bouamrane, Ségolène Royal, François Ruffin et Nathalie Arthaud entrent dans le classement des sondages."},
+  {date:"2026-09-25", type:"sondage", text:"Intentions de vote mises à jour à partir des derniers sondages publiés."},
+  {date:"2026-09-29", type:"sondage", text:"Sondages mis à jour : Marine Le Pen 35 %, Jean-Luc Mélenchon 17 %, Édouard Philippe 13 %, Gabriel Attal 5 % (Toluna Harris Interactive, 22-24 septembre)."},
+  {date:"2026-09-30", type:"position", cand:"philippe", topic:"t1", text:"Édouard Philippe propose un relèvement de l'âge légal de départ à la retraite à 65 ans, avec 45 annuités de cotisation et un volet de capitalisation (vidéo du 29 septembre)."}
+];
+// ==CAMPAIGN_LOG_END==
+// Journal complet, du plus récent au plus ancien : CAMPAIGN_LOG + ajouts de
+// candidats et de sujets déduits de leur addedDate (sauf ceux présents dès le
+// lancement, JOURNAL_SINCE). Utilisé par l'app ET par
+// scripts/generate-candidate-pages.js (page /journal/) : une seule source.
+var JOURNAL_SINCE = "2026-06-01";
+var JOURNAL_ORDER = {retrait:0, candidat:1, position:2, sujet:3, sondage:4};
+function buildCampaignJournal(candidates, topics, log){
+  var out = (log || []).slice();
+  candidates.forEach(function(c){
+    if(c.addedDate && c.addedDate > JOURNAL_SINCE) out.push({date:c.addedDate, type:"candidat", cand:c.id});
+  });
+  topics.forEach(function(t){
+    if(t.addedDate && t.addedDate > JOURNAL_SINCE) out.push({date:t.addedDate, type:"sujet", topic:t.id});
+  });
+  return out.sort(function(a, b){
+    return b.date.localeCompare(a.date) || (JOURNAL_ORDER[a.type] - JOURNAL_ORDER[b.type]);
+  });
+}
+
+/* ============================================================
    SPONSORS — encart publicitaire statique, géré MANUELLEMENT
    par l'auteur du site. La veille automatique quotidienne ne
    touche jamais à ce bloc.
@@ -3153,7 +3210,11 @@ async function syncAfterLogin(){
     var localExtraIds = Object.keys(localExtra);
     for(var j=0;j<localExtraIds.length;j++){
       var lid = localExtraIds[j];
-      if(finalProfiles[lid]) continue;
+      if(finalProfiles[lid]){
+        // La photo du classement (« Ton classement a bougé ») reste propre à l'appareil.
+        if(localExtra[lid].rankSnap) finalProfiles[lid].rankSnap = localExtra[lid].rankSnap;
+        continue;
+      }
       var lp = localExtra[lid];
       var lCloudId = isValidUUID(lid) ? lid : newProfileId();
       oldToNew[lid] = lCloudId;
@@ -4039,6 +4100,72 @@ function goToDashboardAndCheckNew(){
 /* ============================================================
    SCREEN — DASHBOARD
    ============================================================ */
+/* « Ton classement a bougé » : on garde pour chaque profil une photo de son
+   classement (profile.rankSnap : date, rangs, signature des réponses). Si les
+   réponses n'ont pas changé depuis et que le classement a bougé, c'est la
+   campagne qui l'a fait bouger (position précisée, nouveau candidat, retrait,
+   sondages qui changent les 15 candidats affichés) : on le montre, avec les
+   entrées du journal depuis cette date. Si les réponses ont changé, la photo
+   est simplement mise à jour, sans rien afficher. */
+function answersSignature(profile){
+  var a = profile.answers || {};
+  return Object.keys(a).sort().map(function(k){ return k + ":" + a[k].stance + ":" + a[k].importance; }).join("|");
+}
+function saveRankSnapshot(results, sig){
+  var ranks = {};
+  results.forEach(function(r, i){ ranks[r.candidate.id] = {r:i+1, p:r.pct}; });
+  updateProfileById(state.activeProfileId, function(p){
+    p.rankSnap = {at:new Date().toISOString(), sig:sig, ranks:ranks};
+  }, false);
+}
+function rankingMovedHtml(profile, results){
+  if(!results.length) return "";
+  var sig = answersSignature(profile);
+  var snap = profile.rankSnap;
+  if(!snap || snap.sig !== sig || !snap.ranks){ saveRankSnapshot(results, sig); return ""; }
+  var TOP = 5;
+  var rows = results.slice(0, TOP).map(function(r, i){
+    var before = snap.ranks[r.candidate.id];
+    return {r:r, rank:i+1, delta: before ? before.r - (i+1) : null, isNew: !before, pctDelta: before ? r.pct - before.p : 0};
+  });
+  var moved = rows.some(function(x){ return x.isNew || x.delta !== 0; });
+  var sinceDay = String(snap.at).slice(0, 10);
+  var cById = {}; getCandidates().forEach(function(c){ cById[c.id] = c; });
+  var tById = {}; getTopics().forEach(function(t){ tById[t.id] = t; });
+  var events = buildCampaignJournal(getCandidates(), getTopics(), CAMPAIGN_LOG).filter(function(e){
+    return e.date > sinceDay && (e.type === "position" || e.type === "retrait" || e.type === "candidat");
+  });
+  if(!moved && !events.length){ saveRankSnapshot(results, sig); return ""; }
+  var d = new Date(snap.at);
+  var sinceLabel = isNaN(d.getTime()) ? "" : d.toLocaleDateString("fr-FR", {day:"numeric", month:"long"});
+  var rowsHtml = moved ? '<div class="moved-list">' + rows.map(function(x){
+    var deltaHtml = x.isNew ? '<span class="moved-delta new">nouveau</span>'
+      : x.delta > 0 ? '<span class="moved-delta up">▲ ' + x.delta + '</span>'
+      : x.delta < 0 ? '<span class="moved-delta down">▼ ' + Math.abs(x.delta) + '</span>'
+      : '<span class="moved-delta">=</span>';
+    return '<div class="moved-row"><span class="moved-rank mono">' + x.rank + '</span>' +
+      '<span class="moved-dot" style="background:' + x.r.candidate.color + '"></span>' +
+      '<span class="moved-name">' + escapeHtml(x.r.candidate.name) + '</span>' + deltaHtml +
+      '<span class="moved-pct mono">' + x.r.pct + '%</span></div>';
+  }).join("") + '</div>' : '';
+  var eventText = function(e){
+    var c = e.cand && cById[e.cand];
+    if(e.type === "candidat") return c ? '<b>' + escapeHtml(c.name) + '</b> rejoint le comparateur.' : '';
+    if(e.type === "retrait") return escapeHtml(e.text || ((c ? c.name : "Un candidat") + " se retire."));
+    return escapeHtml(e.text || "");
+  };
+  var shown = events.slice(0, 3).map(eventText).filter(Boolean);
+  var eventsHtml = shown.length ? '<ul class="moved-events">' + shown.map(function(t){ return '<li>' + t + '</li>'; }).join("") +
+    (events.length > 3 ? '<li>… et ' + (events.length - 3) + ' autre' + (events.length - 3 > 1 ? 's' : '') + ' changement' + (events.length - 3 > 1 ? 's' : '') + '.</li>' : '') + '</ul>' : '';
+  return '<section class="moved-card" aria-labelledby="moved-title">' +
+    '<div class="moved-eyebrow">Depuis ta dernière visite' + (sinceLabel ? ' (' + escapeHtml(sinceLabel) + ')' : '') + '</div>' +
+    '<h2 id="moved-title">' + (moved ? 'Ton classement a bougé' : 'Du nouveau dans la campagne') + '</h2>' +
+    '<div class="moved-sub">' + (moved ? 'Avec les mêmes réponses, la campagne a changé ton top ' + TOP + '.' : 'Ton top ' + TOP + ' ne change pas, mais la campagne avance.') + '</div>' +
+    rowsHtml + eventsHtml +
+    '<div class="moved-actions"><a class="btn btn-ghost btn-sm" href="/journal/">Voir le journal de la campagne</a><button class="btn btn-accent btn-sm" id="moved-ok">Compris</button></div>' +
+  '</section>';
+}
+
 function renderDashboard(){
   var profile = activeProfile();
   if(!profile){ state.screen = "profiles"; render(); return; }
@@ -4076,6 +4203,7 @@ function renderDashboard(){
   // Affinités : mêmes candidats que la page Résultats (les 15 en tête des sondages).
   var affinityIds = topPolledCandidates.map(function(c){ return c.id; });
   var affinityResults = answered > 0 ? computeResults(profile).filter(function(r){ return r.pct !== null && affinityIds.indexOf(r.candidate.id) !== -1; }) : [];
+  var movedHtml = rankingMovedHtml(profile, affinityResults);
   var POLL_VISIBLE = 5;
   var maxPoll = topPolledCandidates.length ? CANDIDATE_POLL_PCT[topPolledCandidates[0].id] : 1;
   var shortDate = function(iso){ var d = String(iso || "").split("-"); return d.length === 3 ? d[2] + "/" + d[1] : String(iso || ""); };
@@ -4157,6 +4285,7 @@ function renderDashboard(){
 
   var html = '<div class="dash-head"><div id="sponsor-slot-dash" style="margin-bottom:16px;"></div>' +
     bannerHtml +
+    movedHtml +
     badgeHtml +
     levelProgressHtml +
     provisionalHtml +
@@ -4211,6 +4340,11 @@ function renderDashboard(){
     document.getElementById("candidate-empty").style.display = visibleCount === 0 ? "" : "none";
   };
 
+  var movedOk = document.getElementById("moved-ok");
+  if(movedOk) movedOk.onclick = function(){
+    saveRankSnapshot(affinityResults, answersSignature(profile));
+    render();
+  };
   var dismiss = document.getElementById("dismiss-banner");
   if(dismiss) dismiss.onclick = function(){
     updateActiveProfile(function(p){

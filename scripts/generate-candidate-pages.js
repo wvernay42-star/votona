@@ -5,7 +5,8 @@
 //   - candidats/<id>/index.html : une page par candidat + candidats/index.html ;
 //   - sujets/<slug>/index.html : une page par sujet (« que proposent les
 //     candidats ? ») + sujets/index.html ;
-//   - comparer/index.html (comparateur) et methode/index.html (page Méthode) ;
+//   - comparer/index.html (comparateur), methode/index.html (page Méthode) et
+//     journal/index.html (journal de la campagne) ;
 //   - sitemap.xml, entièrement réécrit.
 // À relancer après chaque évolution des candidats/sujets.
 //
@@ -85,7 +86,7 @@ function loadData() {
   const block = extractDataBlock(html);
   const sandbox = {};
   // eslint-disable-next-line no-new-func
-  const fn = new Function(block + "\nreturn { CATEGORIES, TOPICS, CANDIDATES, CATEGORY_META, CATEGORY_ICON_PATHS };");
+  const fn = new Function(block + "\nreturn { CATEGORIES, TOPICS, CANDIDATES, CATEGORY_META, CATEGORY_ICON_PATHS, CAMPAIGN_LOG, buildCampaignJournal };");
   return fn.call(sandbox);
 }
 
@@ -188,7 +189,7 @@ const SOCIAL = `<div class="social">
 
 // Pied de page identique sur toutes les pages (et sur l'app : footer.appfoot d'index.html).
 const SITE_FOOTER = `<footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.
-    <div class="flinks"><a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a> · <a href="/?screen=legal">Mentions légales</a> · <a href="/?screen=privacy">Confidentialité</a> · <a href="/?screen=contact">Contact</a></div>
+    <div class="flinks"><a href="/">votona.fr</a> · <a href="/journal/">Journal de la campagne</a> · <a href="/methode/">Sources et méthode</a> · <a href="/?screen=legal">Mentions légales</a> · <a href="/?screen=privacy">Confidentialité</a> · <a href="/?screen=contact">Contact</a></div>
     ${SOCIAL}
   </footer>`;
 
@@ -1153,12 +1154,136 @@ ${HEADER}
 `;
 }
 
+// Journal de la campagne (/journal/) : tout ce qui a changé dans Votona, du
+// plus récent au plus ancien (buildCampaignJournal() d'index.html : ajouts de
+// candidats et de sujets + CAMPAIGN_LOG tenu par la veille quotidienne).
+const JOURNAL_TYPES = {
+  candidat: { label: "Candidature", plural: "Candidatures", color: "#3A86FF" },
+  retrait: { label: "Retrait", plural: "Retraits", color: "#d1453a" },
+  position: { label: "Position", plural: "Positions", color: "#7C3AED" },
+  sujet: { label: "Nouveau sujet", plural: "Sujets", color: "#06A77D" },
+  sondage: { label: "Sondages", plural: "Sondages", color: "#E09F00" }
+};
+const MONTHS_FR = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+function frDate(iso) { const [y, m, d] = iso.split("-").map(Number); return `${d === 1 ? "1er" : d} ${MONTHS_FR[m - 1]} ${y}`; }
+
+function journalPageHtml(journal, candidates, topics, slugs) {
+  const canonical = `${SITE_URL}/journal/`;
+  const cById = {}; candidates.forEach((c) => { cById[c.id] = c; });
+  const tById = {}; topics.forEach((t) => { tById[t.id] = t; });
+  const candLink = (id) => cById[id] ? `<a href="/candidats/${id}/">${escapeHtml(cById[id].name)}</a>` : "";
+  const topicLink = (id) => tById[id] ? `<a href="/sujets/${slugs[id]}/">${escapeHtml(tById[id].statement)}</a>` : "";
+  const entryHtml = (e) => {
+    let body = "";
+    if (e.type === "candidat") body = `${candLink(e.cand)}${cById[e.cand] ? ` <span class="muted">(${escapeHtml(cById[e.cand].party)})</span>` : ""} rejoint le comparateur.`;
+    else if (e.type === "sujet") body = `Nouvelle question : ${topicLink(e.topic)}.`;
+    else body = escapeHtml(e.text || "");
+    const links = [];
+    if (e.type !== "candidat" && e.cand && cById[e.cand]) links.push(`<a href="/candidats/${e.cand}/">Fiche de ${escapeHtml(cById[e.cand].name)}</a>`);
+    if (e.type !== "sujet" && e.topic && tById[e.topic]) links.push(`<a href="/sujets/${slugs[e.topic]}/">Le sujet</a>`);
+    const t = JOURNAL_TYPES[e.type] || { label: "Mise à jour", color: "#7C3AED" };
+    return `<li data-type="${escapeHtml(e.type)}" style="--tc:${t.color}"><span class="tag">${t.label}</span><div class="txt">${body}${links.length ? `<div class="more">${links.join(" · ")}</div>` : ""}</div></li>`;
+  };
+  const byDate = [];
+  journal.forEach((e) => { const last = byDate[byDate.length - 1]; if (last && last.date === e.date) last.items.push(e); else byDate.push({ date: e.date, items: [e] }); });
+  const days = byDate.map((g) => `<section class="day" data-types="${[...new Set(g.items.map((e) => e.type))].join(" ")}"><h2><time datetime="${g.date}">${frDate(g.date)}</time></h2><ul>${g.items.map(entryHtml).join("")}</ul></section>`).join("\n  ");
+  const counts = {}; journal.forEach((e) => { counts[e.type] = (counts[e.type] || 0) + 1; });
+  const chips = `<button class="chip on" data-f="">Tout · ${journal.length}</button>` + Object.keys(JOURNAL_TYPES).filter((k) => counts[k]).map((k) => `<button class="chip" data-f="${k}" style="--tc:${JOURNAL_TYPES[k].color}">${JOURNAL_TYPES[k].plural} · ${counts[k]}</button>`).join("");
+  const last = journal.length ? frDate(journal[0].date) : "";
+  const title = "Journal de la campagne présidentielle 2027 : candidatures, positions, sondages | Votona";
+  const description = `Toutes les évolutions de la campagne présidentielle 2027 suivies par Votona : nouvelles candidatures, retraits, positions précisées, nouveaux sujets et sondages.${last ? " Dernière mise à jour le " + last + "." : ""}`;
+
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>${escapeHtml(title)}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="${escapeHtml(description)}" />
+<link rel="canonical" href="${canonical}" />
+<meta name="robots" content="index, follow" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Votona" />
+<meta property="og:url" content="${canonical}" />
+<meta property="og:title" content="Journal de la campagne présidentielle 2027" />
+<meta property="og:description" content="${escapeHtml(description)}" />
+<meta property="og:image" content="${SITE_URL}/assets/ui/og-home.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Journal de la campagne", url: canonical }])}</script>
+${HEAD_ICONS}
+<style>${SHARED_CSS}
+  main{ max-width:880px; margin:0 auto; padding:32px var(--gutter) 64px; line-height:1.6; }
+  .hero{ display:flex; align-items:center; gap:22px; padding:26px 28px; border-radius:26px; background:linear-gradient(135deg, color-mix(in srgb, #7C3AED 16%, var(--surface)), var(--surface) 70%); border:1px solid color-mix(in srgb, #7C3AED 24%, var(--surface)); }
+  .hero img{ width:92px; height:auto; flex:none; filter:drop-shadow(0 6px 12px rgba(0,0,0,.18)); }
+  .hero h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,36px); line-height:1.12; margin:0 0 8px; }
+  .hero p{ color:var(--ink-soft); margin:0; }
+  .hero .upd{ margin-top:10px; font-size:13px; font-weight:700; color:var(--accent); }
+  @media (max-width:560px){ .hero{ flex-direction:column; text-align:center; } .hero img{ width:76px; } }
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; margin:20px 0 4px; }
+  .chip{ padding:6px 13px; border-radius:99px; border:1px solid var(--line); background:var(--surface); color:var(--ink-soft); font:700 13px 'Work Sans',Arial,sans-serif; cursor:pointer; }
+  .chip:hover{ border-color:var(--tc, var(--accent)); color:var(--ink); }
+  .chip.on{ background:var(--accent); border-color:var(--accent); color:var(--accent-ink); }
+  .day h2{ font-family:'Baloo 2',sans-serif; font-size:19px; margin:30px 0 10px; color:var(--ink); }
+  .day ul{ list-style:none; padding:0; margin:0; display:grid; gap:8px; }
+  .day li{ display:flex; gap:12px; align-items:flex-start; padding:12px 14px; border-radius:16px; background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--tc); }
+  .day li[hidden], .day[hidden]{ display:none; }
+  .tag{ flex:none; margin-top:2px; padding:2px 9px; border-radius:99px; font-size:11px; font-weight:800; letter-spacing:.02em; color:var(--tc); background:color-mix(in srgb, var(--tc) 14%, transparent); white-space:nowrap; }
+  @media (prefers-color-scheme: dark){ .tag{ color:color-mix(in srgb, var(--tc) 55%, white); background:color-mix(in srgb, var(--tc) 22%, transparent); } }
+  .txt{ color:var(--ink-soft); font-size:14.5px; min-width:0; }
+  .txt a{ color:var(--ink); font-weight:700; }
+  .txt a:hover{ color:var(--accent); }
+  .muted{ color:var(--ink-faint); }
+  .more{ margin-top:4px; font-size:12.5px; }
+  .more a{ color:var(--accent); font-weight:600; }
+  @media (max-width:520px){ .day li{ flex-direction:column; gap:6px; } }
+  .cta{ margin-top:36px; }
+</style>
+</head>
+<body>
+${HEADER}
+<main>
+  <section class="hero">
+    <img src="/assets/ui/logo-head.webp" width="92" height="78" alt="Mascotte Votona" />
+    <div>
+      <h1>Journal de la campagne</h1>
+      <p>Tout ce qui a changé dans Votona au fil de la présidentielle 2027 : nouvelles candidatures, retraits, positions précisées, nouveaux sujets et sondages. Chaque changement peut faire bouger ton classement.</p>
+      ${last ? `<div class="upd">Dernière mise à jour : ${last}</div>` : ""}
+    </div>
+  </section>
+  <div class="chips" role="group" aria-label="Filtrer par type">${chips}</div>
+  ${days}
+  <div class="btn-row cta"><a class="btn btn-accent" href="/">${BTN_MASCOT}Faire le test ou voir mon classement</a></div>
+  <script>
+    (function(){
+      var chips = document.querySelectorAll(".chip");
+      chips.forEach(function(ch){ ch.addEventListener("click", function(){
+        var f = ch.getAttribute("data-f");
+        chips.forEach(function(c){ c.classList.toggle("on", c === ch); });
+        document.querySelectorAll(".day").forEach(function(day){
+          var any = false;
+          day.querySelectorAll("li").forEach(function(li){ var ok = !f || li.getAttribute("data-type") === f; li.hidden = !ok; if(ok) any = true; });
+          day.hidden = !any;
+        });
+      }); });
+    })();
+  </script>
+  ${SITE_FOOTER}
+</main>
+</body>
+</html>
+`;
+}
+
 function sitemapXml(candidates, topics, slugs) {
   const url = (loc, freq, prio) => `  <url>\n    <loc>${loc}</loc>\n    <changefreq>${freq}</changefreq>\n    <priority>${prio}</priority>\n  </url>`;
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${[
     url(`${SITE_URL}/`, "daily", "1.0"),
+    url(`${SITE_URL}/journal/`, "daily", "0.7"),
     url(`${SITE_URL}/methode/`, "monthly", "0.6"),
     url(`${SITE_URL}/candidats/`, "weekly", "0.8"),
     ...candidates.filter((c) => hasKnownPositions(c, topics)).map((c) => url(`${SITE_URL}/candidats/${c.id}/`, "weekly", "0.7")),
@@ -1171,7 +1296,7 @@ ${[
 }
 
 function main() {
-  const { CATEGORIES, TOPICS, CANDIDATES, CATEGORY_META, CATEGORY_ICON_PATHS } = loadData();
+  const { CATEGORIES, TOPICS, CANDIDATES, CATEGORY_META, CATEGORY_ICON_PATHS, CAMPAIGN_LOG, buildCampaignJournal } = loadData();
   const slugs = topicSlugs(TOPICS);
   Object.keys(CATEGORY_META).forEach((cat) => { THEMES[cat] = { slug: CATEGORY_META[cat].slug, pop: CATEGORY_META[cat].pop }; });
   fs.mkdirSync(OUT_DIR, { recursive: true });
@@ -1197,12 +1322,15 @@ function main() {
   fs.mkdirSync(path.join(ROOT, "comparer"), { recursive: true });
   fs.writeFileSync(path.join(ROOT, "comparer", "index.html"), "\uFEFF" + compareHtml(CANDIDATES, TOPICS, CATEGORY_META, CATEGORY_ICON_PATHS, slugs), "utf8");
 
+  fs.mkdirSync(path.join(ROOT, "journal"), { recursive: true });
+  fs.writeFileSync(path.join(ROOT, "journal", "index.html"), "\uFEFF" + journalPageHtml(buildCampaignJournal(CANDIDATES, TOPICS, CAMPAIGN_LOG), CANDIDATES, TOPICS, slugs), "utf8");
+
   fs.mkdirSync(path.join(ROOT, "methode"), { recursive: true });
   fs.writeFileSync(path.join(ROOT, "methode", "index.html"), "\uFEFF" + methodePageHtml(CANDIDATES, TOPICS, CATEGORIES), "utf8");
 
   fs.writeFileSync(path.join(ROOT, "sitemap.xml"), sitemapXml(CANDIDATES, TOPICS, slugs), "utf8");
 
-  console.log(`Généré : ${CANDIDATES.length} pages candidats + ${TOPICS.length} pages sujets + 2 index + comparateur + page Méthode + sitemap.xml`);
+  console.log(`Généré : ${CANDIDATES.length} pages candidats + ${TOPICS.length} pages sujets + 2 index + comparateur + page Méthode + journal + sitemap.xml`);
 }
 
 if (require.main === module) main();
