@@ -1056,10 +1056,10 @@ ${HEAD_ICONS}
 <style>${SHARED_CSS}
   main{ max-width:880px; margin:0 auto; padding:32px var(--gutter) 64px; line-height:1.65; }
   .hero{ display:flex; align-items:center; gap:22px; padding:26px 28px; border-radius:26px; background:linear-gradient(135deg, color-mix(in srgb, #7C3AED 16%, var(--surface)), var(--surface) 70%); border:1px solid color-mix(in srgb, #7C3AED 24%, var(--surface)); }
-  .hero img{ width:92px; height:auto; flex:none; filter:drop-shadow(0 6px 12px rgba(0,0,0,.18)); }
+  .hero img{ width:104px; height:auto; flex:none; filter:drop-shadow(0 6px 12px rgba(0,0,0,.18)); }
   .hero h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,36px); line-height:1.12; margin:0 0 8px; }
   .hero p{ color:var(--ink-soft); margin:0; }
-  @media (max-width:560px){ .hero{ flex-direction:column; text-align:center; } .hero img{ width:76px; } }
+  @media (max-width:560px){ .hero{ flex-direction:column; text-align:center; } .hero img{ width:88px; } }
   .toc{ display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 0; }
   .toc a{ padding:6px 13px; border-radius:99px; border:1px solid var(--line); background:var(--surface); color:var(--ink-soft); font-size:13px; font-weight:700; text-decoration:none; }
   .toc a:hover{ color:var(--accent); border-color:var(--accent); }
@@ -1090,7 +1090,7 @@ ${HEAD_ICONS}
 ${HEADER}
 <main>
   <section class="hero">
-    <img src="/assets/ui/logo-head.webp" width="92" height="78" alt="Mascotte Votona" />
+    <img src="/assets/ui/methode.webp" width="104" height="104" alt="Illustration : bloc-notes coché et loupe" />
     <div>
       <h1>Notre méthode</h1>
       <p>D'où viennent les positions des candidats, comment ton classement est calculé et comment Votona reste neutre : tout est expliqué ici, sans zone d'ombre.</p>
@@ -1217,11 +1217,11 @@ ${HEAD_ICONS}
 <style>${SHARED_CSS}
   main{ max-width:880px; margin:0 auto; padding:32px var(--gutter) 64px; line-height:1.6; }
   .hero{ display:flex; align-items:center; gap:22px; padding:26px 28px; border-radius:26px; background:linear-gradient(135deg, color-mix(in srgb, #7C3AED 16%, var(--surface)), var(--surface) 70%); border:1px solid color-mix(in srgb, #7C3AED 24%, var(--surface)); }
-  .hero img{ width:92px; height:auto; flex:none; filter:drop-shadow(0 6px 12px rgba(0,0,0,.18)); }
+  .hero img{ width:104px; height:auto; flex:none; filter:drop-shadow(0 6px 12px rgba(0,0,0,.18)); }
   .hero h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,36px); line-height:1.12; margin:0 0 8px; }
   .hero p{ color:var(--ink-soft); margin:0; }
   .hero .upd{ margin-top:10px; font-size:13px; font-weight:700; color:var(--accent); }
-  @media (max-width:560px){ .hero{ flex-direction:column; text-align:center; } .hero img{ width:76px; } }
+  @media (max-width:560px){ .hero{ flex-direction:column; text-align:center; } .hero img{ width:88px; } }
   .chips{ display:flex; flex-wrap:wrap; gap:8px; margin:20px 0 4px; }
   .chip{ padding:6px 13px; border-radius:99px; border:1px solid var(--line); background:var(--surface); color:var(--ink-soft); font:700 13px 'Work Sans',Arial,sans-serif; cursor:pointer; }
   .chip:hover{ border-color:var(--tc, var(--accent)); color:var(--ink); }
@@ -1246,7 +1246,7 @@ ${HEAD_ICONS}
 ${HEADER}
 <main>
   <section class="hero">
-    <img src="/assets/ui/logo-head.webp" width="92" height="78" alt="Mascotte Votona" />
+    <img src="/assets/ui/journal.webp" width="104" height="104" alt="Illustration : journal" />
     <div>
       <h1>Journal de la campagne</h1>
       <p>Tout ce qui a changé dans Votona au fil de la présidentielle 2027 : nouvelles candidatures, retraits, positions précisées, nouveaux sujets et sondages. Chaque changement peut faire bouger ton classement.</p>
