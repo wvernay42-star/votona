@@ -5,7 +5,9 @@
 //   - candidats/<id>/index.html : une page par candidat + candidats/index.html ;
 //   - sujets/<slug>/index.html : une page par sujet (« que proposent les
 //     candidats ? ») + sujets/index.html ;
-//   - sitemap.xml, entièrement réécrit (accueil, candidats, sujets).
+//   - comparer/index.html (comparateur) et test-politique-2027/index.html
+//     (page d'atterrissage « test politique ») ;
+//   - sitemap.xml, entièrement réécrit.
 // À relancer après chaque évolution des candidats/sujets.
 //
 // Usage : node scripts/generate-candidate-pages.js
@@ -104,7 +106,7 @@ const HEADER = '<header class="topbar"><a class="brand" href="/" title="Accueil 
 const HEADER_INDEX = HEADER;
 
 const SHARED_CSS = `
-  :root{ color-scheme:light dark; --gutter:clamp(20px,4vw,40px); --bg:#fbfaf7; --surface:#ffffff; --ink:#191d2b; --ink-soft:#4d5468; --ink-faint:#8790a3; --line:#e4dfd0; --accent:#7C3AED; --accent-ink:#ffffff; --good:var(--good); --bad:var(--bad); --neutral-bar:var(--neutral-bar); --none-bar:var(--none-bar); --masthead-bg:#F6F2FE; --masthead-ink:#191d2b; --masthead-line:rgba(25,29,43,.14); }
+  :root{ color-scheme:light dark; --gutter:clamp(20px,4vw,40px); --bg:#fbfaf7; --surface:#ffffff; --ink:#191d2b; --ink-soft:#4d5468; --ink-faint:#8790a3; --line:#e4dfd0; --accent:#7C3AED; --accent-ink:#ffffff; --good:#2c9354; --bad:#d1453a; --neutral-bar:#b8b3a6; --none-bar:#ebe7de; --masthead-bg:#F6F2FE; --masthead-ink:#191d2b; --masthead-line:rgba(25,29,43,.14); }
   /* Mode sombre : même palette que l'app (index.html), qui suit le réglage de l'appareil. */
   @media (prefers-color-scheme: dark){
     :root{ --bg:#14171c; --surface:#1c2028; --ink:#f1ede4; --ink-soft:#aab0c0; --ink-faint:#727890; --line:#2d323f; --accent:#A78BFA; --accent-ink:#1c1230; --good:#7ad693; --bad:#ff6b57; --neutral-bar:#6b6557; --none-bar:#2a2e38; }
@@ -1021,12 +1023,144 @@ ${HEADER}
 `;
 }
 
+// Page d'atterrissage « test politique » (/test-politique-2027/) : vise les
+// recherches « test politique 2027 », « pour qui voter », « quel candidat me
+// correspond »… Présente le test (méthode, neutralité, thèmes, candidats) et
+// renvoie vers l'app. FAQ en données structurées FAQPage (propre à cette page :
+// l'accueil a la sienne, celle de l'écran FAQ de l'app).
+const TEST_FAQ = [
+  ["Pour qui voter à la présidentielle 2027 ?", "Votona ne te dit pas pour qui voter : il t'aide à y voir clair. Tu réponds aux grandes questions de la campagne (retraites, immigration, écologie, Europe…) et le test te montre quels candidats déclarés défendent les positions les plus proches des tiennes. Le choix final reste le tien."],
+  ["Ce test politique est-il neutre ?", "Oui. Les positions des candidats sont décrites sans jugement, établies à partir de déclarations, votes ou programmes publics, et vérifiées chaque jour. Aucun candidat n'est mis en avant : le classement dépend uniquement de tes réponses."],
+  ["Comment savoir si je suis plutôt de gauche ou de droite ?", "Plutôt que de te ranger dans une case, le test compare tes réponses sujet par sujet aux positions de candidats de tout l'éventail politique. Tu vois de qui tu es le plus proche, et sur quels sujets tu t'en écartes : un positionnement souvent plus nuancé qu'un simple gauche-droite."],
+  ["Combien de temps dure le test ?", "Quelques minutes pour un premier passage. Tu peux passer un sujet, t'arrêter et reprendre plus tard : ta progression est gardée."],
+  ["Faut-il s'inscrire ?", "Non. Le test est gratuit et sans inscription. Tes réponses restent sur ton appareil ; un compte, facultatif, sert seulement à les retrouver sur un autre appareil."],
+  ["Le test est-il mis à jour pendant la campagne ?", "Oui. Chaque nouvelle candidature officielle est ajoutée, de nouveaux sujets apparaissent avec l'actualité, et les positions des candidats sont revues quotidiennement."]
+];
+
+function testPageHtml(candidates, topics, categories, categoryMeta) {
+  const canonical = `${SITE_URL}/test-politique-2027/`;
+  const active = byLastName(candidates.filter((c) => !c.withdrawn));
+  const listed = active.filter((c) => hasKnownPositions(c, topics));
+  const crew = ["Économie & travail", "Écologie", "Sécurité & immigration"].map((cat, i) => charSrc(cat) ? `<img class="crew c${i + 1}" src="${charSrc(cat)}" width="339" height="577" alt="" />` : "").join("");
+  const themes = categories.map((cat) => {
+    const n = topics.filter((t) => t.cat === cat).length;
+    const slug = categoryMeta[cat] && categoryMeta[cat].slug;
+    return `<a class="tile" style="--th:${themeColor(cat)}" href="/sujets/${slug ? "#theme-" + slug : ""}">${propImg(cat, 40)}<span><b>${escapeHtml(cat)}</b><small>${n} sujet${n > 1 ? "s" : ""}</small></span></a>`;
+  }).join("");
+  const cands = listed.map((c) => `<a href="/candidats/${c.id}/">${escapeHtml(c.name)}</a>`).join(", ");
+  const faqLd = JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": TEST_FAQ.map(([q, a]) => ({ "@type": "Question", "name": q, "acceptedAnswer": { "@type": "Answer", "text": a } })) });
+  const faq = TEST_FAQ.map(([q, a]) => `<details><summary>${escapeHtml(q)}</summary><p>${escapeHtml(a)}</p></details>`).join("");
+  const cta = `<a class="btn btn-accent" href="/">${BTN_MASCOT}Faire le test gratuitement</a>`;
+  const title = "Test politique 2027 : pour qui voter ? Quel candidat te correspond | Votona";
+  const description = `Pour qui voter en 2027 ? Fais le test politique gratuit de Votona : ${topics.length} questions sur les grands sujets, comparées aux positions de ${active.length} candidats déclarés à la présidentielle. Neutre, sourcé, sans inscription.`;
+
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>${escapeHtml(title)}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="${escapeHtml(description)}" />
+<link rel="canonical" href="${canonical}" />
+<meta name="robots" content="index, follow" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Votona" />
+<meta property="og:url" content="${canonical}" />
+<meta property="og:title" content="Test politique 2027 : quel candidat te correspond ?" />
+<meta property="og:description" content="${escapeHtml(description)}" />
+<meta property="og:image" content="${SITE_URL}/assets/ui/og-home.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
+<script type="application/ld+json">${breadcrumbLd([{ name: "Votona", url: SITE_URL + "/" }, { name: "Test politique 2027", url: canonical }])}</script>
+<script type="application/ld+json">${faqLd}</script>
+${HEAD_ICONS}
+<style>${SHARED_CSS}
+  main{ max-width:880px; margin:0 auto; padding:32px var(--gutter) 64px; line-height:1.6; }
+  .hero{ position:relative; overflow:hidden; margin-top:6px; padding:28px 300px 28px 28px; border-radius:26px; background:linear-gradient(135deg, color-mix(in srgb, #7C3AED 16%, var(--surface)), var(--surface) 70%); border:1px solid color-mix(in srgb, #7C3AED 24%, var(--surface)); }
+  .hero h1{ font-family:'Baloo 2',sans-serif; font-size:clamp(26px,4vw,38px); line-height:1.12; margin:0 0 10px; }
+  .hero p{ color:var(--ink-soft); margin:0; }
+  .stats{ display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0; }
+  .stats span{ padding:5px 12px; border-radius:99px; background:var(--surface); font-size:13px; font-weight:700; color:var(--ink-soft); }
+  .stats b{ color:var(--accent); }
+  .crew{ position:absolute; bottom:-30px; height:200px; width:auto; filter:drop-shadow(0 8px 14px rgba(0,0,0,.18)); }
+  .c1{ right:170px; height:170px; transform:rotate(-6deg); } .c2{ right:88px; height:205px; z-index:1; } .c3{ right:10px; height:175px; transform:rotate(6deg); }
+  @media (max-width:680px){ .hero{ padding:22px 20px 170px; } .c1{ right:auto; left:calc(50% - 150px); height:140px; } .c2{ right:auto; left:calc(50% - 60px); height:170px; } .c3{ right:auto; left:calc(50% + 40px); height:140px; } }
+  .cta{ margin:20px auto 0; }
+  h2{ font-family:'Baloo 2',sans-serif; font-size:24px; line-height:1.2; margin:40px 0 10px; }
+  p{ color:var(--ink-soft); }
+  .steps{ list-style:none; padding:0; margin:14px 0 0; display:grid; gap:10px; counter-reset:s; }
+  .steps li{ counter-increment:s; display:flex; gap:14px; align-items:flex-start; padding:14px 16px; border-radius:18px; background:var(--surface); border:1px solid var(--line); color:var(--ink-soft); }
+  .steps li::before{ content:counter(s); flex:none; width:30px; height:30px; border-radius:50%; background:var(--accent); color:var(--accent-ink); display:flex; align-items:center; justify-content:center; font-weight:800; }
+  .steps b{ color:var(--ink); }
+  .tiles{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; margin-top:14px; }
+  .tile{ display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:18px; text-decoration:none; color:var(--ink); background:linear-gradient(150deg, color-mix(in srgb, var(--th) 16%, var(--surface)), var(--surface) 75%); border:1px solid color-mix(in srgb, var(--th) 28%, var(--line)); transition:transform .15s, border-color .15s; }
+  .tile:hover{ transform:translateY(-2px); border-color:var(--th); }
+  .tile span{ display:flex; flex-direction:column; line-height:1.3; }
+  .tile small{ color:var(--ink-faint); font-weight:700; font-size:12px; }
+  .cands a{ color:var(--ink); font-weight:600; }
+  .cands a:hover{ color:var(--accent); }
+  details{ border:1px solid var(--line); border-radius:16px; background:var(--surface); padding:0 16px; margin-top:10px; }
+  summary{ cursor:pointer; padding:14px 0; font-weight:700; color:var(--ink); }
+  details p{ margin:0 0 14px; }
+  .links{ display:flex; gap:8px; margin-top:16px; }
+  .links .btn{ flex:1; padding:12px 14px; font-size:14px; }
+  @media (max-width:520px){ .links{ flex-direction:column; } }
+</style>
+</head>
+<body>
+${HEADER}
+<main>
+  <section class="hero">
+    <h1>Test politique 2027 : quel candidat te correspond ?</h1>
+    <p>Pour qui voter à la présidentielle 2027 ? Réponds aux grandes questions de la campagne et compare tes positions à celles des candidats déclarés, sujet par sujet. Gratuit, neutre et sans inscription.</p>
+    <div class="stats"><span><b>${topics.length}</b> questions</span><span><b>${active.length}</b> candidats en course</span><span><b>${categories.length}</b> thèmes</span></div>
+    ${crew}
+  </section>
+  <div class="btn-row cta">${cta}</div>
+
+  <h2>Comment fonctionne le test ?</h2>
+  <ol class="steps">
+    <li><span><b>Réponds aux questions.</b> Pour chaque proposition (retraites, immigration, nucléaire, Europe…), dis si tu es d'accord, pas d'accord ou neutre. Tu peux passer un sujet.</span></li>
+    <li><span><b>Indique ce qui compte pour toi.</b> Donne plus de poids aux sujets qui te tiennent à cœur : ils pèseront davantage dans ton résultat.</span></li>
+    <li><span><b>Découvre ton classement.</b> Le test compare tes réponses aux positions de chaque candidat et calcule ta proximité avec chacun, avec le détail sujet par sujet.</span></li>
+  </ol>
+
+  <h2>Un test politique neutre et sourcé</h2>
+  <p>Les positions des candidats sont établies à partir de leurs déclarations, de leurs votes et de leurs programmes publics, puis vérifiées chaque jour. Elles sont présentées de façon descriptive, sans jugement, et aucun candidat n'est mis en avant : ton classement dépend uniquement de tes réponses. Votona ne te dit pas pour qui voter, il t'aide à y voir clair.</p>
+
+  <h2>Les thèmes du test</h2>
+  <p>Les questions couvrent l'ensemble de la campagne, pas seulement les gros titres du moment.</p>
+  <div class="tiles">${themes}</div>
+
+  <h2>Les candidats comparés</h2>
+  <p class="cands">Toutes les candidatures officiellement déclarées sont intégrées, sans tri par notoriété : ${cands}.</p>
+  <div class="links"><a class="btn btn-ghost" href="/candidats/">${ICON_GRID}Toutes les fiches candidats</a><a class="btn btn-ghost" href="/comparer/">${ICON_VS}Comparer deux candidats</a></div>
+
+  <h2>Questions fréquentes</h2>
+  ${faq}
+
+  <h2>Prêt à te lancer ?</h2>
+  <p>Quelques minutes suffisent pour découvrir de quels candidats tu es le plus proche.</p>
+  <div class="btn-row">${cta}</div>
+
+  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a>
+    ${SOCIAL}
+  </footer>
+</main>
+</body>
+</html>
+`;
+}
+
 function sitemapXml(candidates, topics, slugs) {
   const url = (loc, freq, prio) => `  <url>\n    <loc>${loc}</loc>\n    <changefreq>${freq}</changefreq>\n    <priority>${prio}</priority>\n  </url>`;
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${[
     url(`${SITE_URL}/`, "daily", "1.0"),
+    url(`${SITE_URL}/test-politique-2027/`, "weekly", "0.9"),
     url(`${SITE_URL}/candidats/`, "weekly", "0.8"),
     ...candidates.filter((c) => hasKnownPositions(c, topics)).map((c) => url(`${SITE_URL}/candidats/${c.id}/`, "weekly", "0.7")),
     url(`${SITE_URL}/comparer/`, "weekly", "0.8"),
@@ -1064,9 +1198,12 @@ function main() {
   fs.mkdirSync(path.join(ROOT, "comparer"), { recursive: true });
   fs.writeFileSync(path.join(ROOT, "comparer", "index.html"), "\uFEFF" + compareHtml(CANDIDATES, TOPICS, CATEGORY_META, CATEGORY_ICON_PATHS, slugs), "utf8");
 
+  fs.mkdirSync(path.join(ROOT, "test-politique-2027"), { recursive: true });
+  fs.writeFileSync(path.join(ROOT, "test-politique-2027", "index.html"), "\uFEFF" + testPageHtml(CANDIDATES, TOPICS, CATEGORIES, CATEGORY_META), "utf8");
+
   fs.writeFileSync(path.join(ROOT, "sitemap.xml"), sitemapXml(CANDIDATES, TOPICS, slugs), "utf8");
 
-  console.log(`Généré : ${CANDIDATES.length} pages candidats + ${TOPICS.length} pages sujets + 2 index + comparateur + sitemap.xml`);
+  console.log(`Généré : ${CANDIDATES.length} pages candidats + ${TOPICS.length} pages sujets + 2 index + comparateur + page test politique + sitemap.xml`);
 }
 
 if (require.main === module) main();
