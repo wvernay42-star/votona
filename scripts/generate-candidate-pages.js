@@ -115,10 +115,11 @@ const SHARED_CSS = `
     img.prop, .theme-h img, .crew, .hero-char{ filter:drop-shadow(0 4px 10px rgba(0,0,0,.45)); }
   }
   .social{ display:flex; justify-content:center; gap:10px; margin-top:14px; }
-  .social a{ display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; border:1px solid var(--line); color:var(--ink-soft); text-decoration:none; transition:color .15s, border-color .15s; }
-  .social a:hover{ color:var(--accent); border-color:var(--accent); }
+  /* Pied de page commun à toutes les pages (mêmes valeurs que footer.appfoot d'index.html). */
   .gfoot{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; line-height:1.6; }
-  .gfoot a{ color:inherit; }
+  .gfoot .flinks a{ color:var(--accent); font-weight:600; }
+  .gfoot .social a{ display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; border:1px solid var(--line); color:var(--accent); text-decoration:none; transition:border-color .15s; }
+  .gfoot .social a:hover{ border-color:var(--accent); }
   *{box-sizing:border-box;}
   body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Work Sans',Arial,sans-serif; }
   header.topbar{ display:flex; align-items:center; justify-content:space-between; max-width:1180px; margin:0 auto; padding:16px clamp(20px,4vw,40px); border-bottom:3px solid var(--accent); background:var(--masthead-bg); }
@@ -184,6 +185,12 @@ const SOCIAL = `<div class="social">
     <a href="https://www.tiktok.com/@votona2027" target="_blank" rel="noopener me" aria-label="Votona sur TikTok" title="TikTok"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.7a5.8 5.8 0 1 0 4.9 5.7V9.1a7.4 7.4 0 0 0 4.3 1.4V7.4a4.3 4.3 0 0 1-3.2-1.6z"/></svg></a>
     <a href="https://x.com/votona2027" target="_blank" rel="noopener me" aria-label="Votona sur X" title="X"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.7L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.2-8.3L2 3h6.4l4.4 5.8L17.8 3zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5z"/></svg></a>
   </div>`;
+
+// Pied de page identique sur toutes les pages (et sur l'app : footer.appfoot d'index.html).
+const SITE_FOOTER = `<footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.
+    <div class="flinks"><a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a> · <a href="/?screen=legal">Mentions légales</a> · <a href="/?screen=privacy">Confidentialité</a> · <a href="/?screen=contact">Contact</a></div>
+    ${SOCIAL}
+  </footer>`;
 
 // Nom court d'un thème, pour les pastilles du sommaire.
 function shortCat(cat) {
@@ -415,8 +422,6 @@ ${HEAD_ICONS}
   .empty-note p{ margin:0 0 10px; } .empty-note p:last-child{ margin:0; }
   .empty-note strong{ color:var(--ink); }
   .empty-note a{ color:var(--accent); font-weight:600; }
-  footer{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; }
-  footer a{ color:inherit; }
 </style>
 </head>
 <body>
@@ -438,11 +443,7 @@ ${HEADER}
   ${indexable ? `<a class="btn btn-ghost cmp" href="/comparer/?a=${encodeURIComponent(cand.id)}">${ICON_VS}Comparer avec un autre candidat</a>` : ""}
   ${glance}
   ${positionsHtml}
-  <footer>
-    Positions simplifiées à titre indicatif, établies à partir des déclarations publiques — ni exhaustives ni officielles.<br />
-    <a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a>
-    ${SOCIAL}
-  </footer>
+  ${SITE_FOOTER}
 </main>
 </body>
 </html>
@@ -537,9 +538,7 @@ ${HEADER_INDEX}
       });
     })();
   </script>
-  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a>
-    ${SOCIAL}
-  </footer>
+  ${SITE_FOOTER}
 </main>
 </body>
 </html>
@@ -649,8 +648,6 @@ ${HEAD_ICONS}
   .r-arrow{ position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:22px; color:var(--ink-faint); }
   ul.related a:hover .r-arrow{ color:var(--accent); }
   .all{ margin-top:26px; }
-  footer{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; }
-  footer a{ color:inherit; }
 </style>
 </head>
 <body>
@@ -670,11 +667,7 @@ ${HEADER}
   ${unknown}
   ${siblingsHtml}
   <a class="btn btn-ghost btn-row all" href="/sujets/">${ICON_GRID}Voir les ${topics.length} sujets de la présidentielle 2027</a>
-  <footer>
-    Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
-    <a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a>
-    ${SOCIAL}
-  </footer>
+  ${SITE_FOOTER}
 </main>
 </body>
 </html>
@@ -783,9 +776,7 @@ ${HEADER_INDEX}
       });
     })();
   </script>
-  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a>
-    ${SOCIAL}
-  </footer>
+  ${SITE_FOOTER}
 </main>
 </body>
 </html>
@@ -881,8 +872,6 @@ ${HEAD_ICONS}
   .why a{ color:var(--accent); font-weight:600; font-size:13px; }
   #none{ display:none; color:var(--ink-faint); font-size:14px; padding:16px 0; }
   .legend{ font-size:12.5px; color:var(--ink-faint); margin:18px 0 0; line-height:1.6; }
-  footer{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; }
-  footer a{ color:inherit; }
 </style>
 </head>
 <body>
@@ -903,11 +892,7 @@ ${HEADER}
   <div id="result"></div>
   <noscript><p class="hint">Active JavaScript pour comparer deux candidats, ou consulte leurs fiches : ${noscript}</p></noscript>
   <a class="btn btn-accent cta" style="margin-top:30px;" href="/">${BTN_MASCOT}Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>
-  <footer>
-    Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
-    <a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a>
-    ${SOCIAL}
-  </footer>
+  ${SITE_FOOTER}
 </main>
 <script>
 (function(){
@@ -1081,7 +1066,7 @@ ${HEAD_ICONS}
   h2 .n{ flex:none; width:32px; height:32px; border-radius:50%; background:var(--accent); color:var(--accent-ink); font:800 15px 'Work Sans',Arial,sans-serif; display:flex; align-items:center; justify-content:center; }
   p, li{ color:var(--ink-soft); }
   b, strong{ color:var(--ink); }
-  main a:not(.btn):not(.toc a){ color:var(--accent); font-weight:600; }
+  main a:not(.btn):not(.toc a):not(.gfoot a){ color:var(--accent); font-weight:600; }
   ul.rules{ padding-left:20px; margin:10px 0; }
   ul.rules li{ margin:4px 0; }
   .card{ padding:16px 18px; border-radius:18px; background:var(--surface); border:1px solid var(--line); margin-top:14px; }
@@ -1161,9 +1146,7 @@ ${HEADER}
   <p>Quelques minutes suffisent pour découvrir de quels candidats tu es le plus proche.</p>
   <div class="btn-row"><a class="btn btn-accent" href="/">${BTN_MASCOT}Faire le test gratuitement</a></div>
 
-  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a>
-    ${SOCIAL}
-  </footer>
+  ${SITE_FOOTER}
 </main>
 </body>
 </html>

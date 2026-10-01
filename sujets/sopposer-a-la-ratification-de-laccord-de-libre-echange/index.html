@@ -33,10 +33,11 @@
     img.prop, .theme-h img, .crew, .hero-char{ filter:drop-shadow(0 4px 10px rgba(0,0,0,.45)); }
   }
   .social{ display:flex; justify-content:center; gap:10px; margin-top:14px; }
-  .social a{ display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; border:1px solid var(--line); color:var(--ink-soft); text-decoration:none; transition:color .15s, border-color .15s; }
-  .social a:hover{ color:var(--accent); border-color:var(--accent); }
+  /* Pied de page commun à toutes les pages (mêmes valeurs que footer.appfoot d'index.html). */
   .gfoot{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; line-height:1.6; }
-  .gfoot a{ color:inherit; }
+  .gfoot .flinks a{ color:var(--accent); font-weight:600; }
+  .gfoot .social a{ display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; border:1px solid var(--line); color:var(--accent); text-decoration:none; transition:border-color .15s; }
+  .gfoot .social a:hover{ border-color:var(--accent); }
   *{box-sizing:border-box;}
   body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Work Sans',Arial,sans-serif; }
   header.topbar{ display:flex; align-items:center; justify-content:space-between; max-width:1180px; margin:0 auto; padding:16px clamp(20px,4vw,40px); border-bottom:3px solid var(--accent); background:var(--masthead-bg); }
@@ -107,8 +108,6 @@
   .r-arrow{ position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:22px; color:var(--ink-faint); }
   ul.related a:hover .r-arrow{ color:var(--accent); }
   .all{ margin-top:26px; }
-  footer{ margin-top:48px; font-size:12px; color:var(--ink-faint); text-align:center; }
-  footer a{ color:inherit; }
 </style>
 </head>
 <body>
@@ -160,9 +159,8 @@
     <li><a href="/sujets/convoquer-une-assemblee-constituante-pour-instaurer-une-vie/"><span class="r-title">Convoquer une assemblée constituante pour instaurer une VIe République</span><span class="r-meta"><span class="s-pour">2 pour</span> · <span>2 nuancés</span></span><span class="r-arrow" aria-hidden="true">›</span></a></li>
   </ul>
   <a class="btn btn-ghost btn-row all" href="/sujets/"><svg class="btn-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Voir les 35 sujets de la présidentielle 2027</a>
-  <footer>
-    Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
-    <a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a>
+  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.
+    <div class="flinks"><a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a> · <a href="/?screen=legal">Mentions légales</a> · <a href="/?screen=privacy">Confidentialité</a> · <a href="/?screen=contact">Contact</a></div>
     <div class="social">
     <a href="https://www.instagram.com/votona2027/" target="_blank" rel="noopener me" aria-label="Votona sur Instagram" title="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
     <a href="https://www.tiktok.com/@votona2027" target="_blank" rel="noopener me" aria-label="Votona sur TikTok" title="TikTok"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.7a5.8 5.8 0 1 0 4.9 5.7V9.1a7.4 7.4 0 0 0 4.3 1.4V7.4a4.3 4.3 0 0 1-3.2-1.6z"/></svg></a>
