@@ -101,7 +101,7 @@ const STANCE_ICON = { pour: "✓", contre: "✕", neutre: "–" };
 // En-tête commun aux pages statiques : même bandeau que l'accueil de l'appli
 // (mascotte + « Votona » + « PRÉSIDENTIELLE 2027 », clic = retour à l'accueil),
 // avec les boutons Mon compte / FAQ. Liens absolus : valables à toute profondeur.
-const HEADER = '<header class="topbar"><a class="brand" href="/" title="Accueil Votona"><span class="mark"><img src="/assets/ui/logo-head.webp" alt="" width="40" height="32" /></span><span class="name">Votona</span><span class="year">PRÉSIDENTIELLE 2027</span></a><div class="topbar-actions"><a class="nav-pill" href="/methode/">Méthode</a><a class="icon-btn" href="/?screen=account" title="Mon compte"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></a><a class="icon-btn" href="/?screen=faq" title="Questions fréquentes"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 1 1 3.9 2.4c-1 .5-1.7 1.1-1.7 2.4"/><line x1="12" y1="17.2" x2="12" y2="17.21"/></svg></a></div></header>';
+const HEADER = '<header class="topbar"><a class="brand" href="/" title="Accueil Votona"><span class="mark"><img src="/assets/ui/logo-head.webp" alt="" width="40" height="32" /></span><span class="name">Votona</span><span class="year">PRÉSIDENTIELLE 2027</span></a><div class="topbar-actions"><a class="icon-btn" href="/?screen=account" title="Mon compte"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></a><a class="icon-btn" href="/?screen=faq" title="Questions fréquentes"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.7 2.7 0 1 1 3.9 2.4c-1 .5-1.7 1.1-1.7 2.4"/><line x1="12" y1="17.2" x2="12" y2="17.21"/></svg></a></div></header>';
 const HEADER_INDEX = HEADER;
 
 const SHARED_CSS = `
@@ -136,8 +136,6 @@ const SHARED_CSS = `
   .topbar-actions{ display:flex; align-items:center; gap:6px; }
   .icon-btn{ width:34px; height:34px; border-radius:50%; border:1px solid var(--masthead-line); background:transparent; color:var(--masthead-ink); display:flex; align-items:center; justify-content:center; text-decoration:none; }
   .icon-btn:hover{ color:var(--accent); border-color:var(--accent); }
-  .nav-pill{ height:34px; display:flex; align-items:center; padding:0 13px; border-radius:99px; border:1px solid var(--masthead-line); color:var(--masthead-ink); font-size:13px; font-weight:700; text-decoration:none; margin-right:2px; }
-  .nav-pill:hover, .nav-pill.on{ color:var(--accent); border-color:var(--accent); }
   .prop{ object-fit:contain; flex:none; }
   .theme-h{ display:flex; align-items:center; gap:10px; font-family:'Baloo 2',sans-serif; font-size:19px; margin:30px 0 4px; padding-bottom:6px; color:var(--ink); border-bottom:3px solid var(--th, var(--accent)); }
   .av-sm{ display:inline-flex; align-items:center; justify-content:center; flex:none; width:34px; height:34px; border-radius:50%; color:#fff; font:800 12.5px 'Work Sans',Arial,sans-serif; }
@@ -442,7 +440,7 @@ ${HEADER}
   ${positionsHtml}
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques — ni exhaustives ni officielles.<br />
-    <a href="/">votona.fr</a> · <a href="/methode/">Méthode</a>
+    <a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a>
     ${SOCIAL}
   </footer>
 </main>
@@ -539,7 +537,7 @@ ${HEADER_INDEX}
       });
     })();
   </script>
-  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a> · <a href="/methode/">Méthode</a>
+  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a>
     ${SOCIAL}
   </footer>
 </main>
@@ -674,7 +672,7 @@ ${HEADER}
   <a class="btn btn-ghost btn-row all" href="/sujets/">${ICON_GRID}Voir les ${topics.length} sujets de la présidentielle 2027</a>
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
-    <a href="/">votona.fr</a> · <a href="/methode/">Méthode</a>
+    <a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a>
     ${SOCIAL}
   </footer>
 </main>
@@ -785,7 +783,7 @@ ${HEADER_INDEX}
       });
     })();
   </script>
-  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a> · <a href="/methode/">Méthode</a>
+  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a>
     ${SOCIAL}
   </footer>
 </main>
@@ -907,7 +905,7 @@ ${HEADER}
   <a class="btn btn-accent cta" style="margin-top:30px;" href="/">${BTN_MASCOT}Et toi ? Réponds aux questions et découvre quel candidat te correspond</a>
   <footer>
     Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br />
-    <a href="/">votona.fr</a> · <a href="/methode/">Méthode</a>
+    <a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a>
     ${SOCIAL}
   </footer>
 </main>
@@ -1103,7 +1101,7 @@ ${HEAD_ICONS}
 </style>
 </head>
 <body>
-${HEADER.replace('<a class="nav-pill" href="/methode/"', '<a class="nav-pill on" aria-current="page" href="/methode/"')}
+${HEADER}
 <main>
   <section class="hero">
     <img src="/assets/ui/logo-head.webp" width="92" height="78" alt="Mascotte Votona" />
@@ -1163,7 +1161,7 @@ ${HEADER.replace('<a class="nav-pill" href="/methode/"', '<a class="nav-pill on"
   <p>Quelques minutes suffisent pour découvrir de quels candidats tu es le plus proche.</p>
   <div class="btn-row"><a class="btn btn-accent" href="/">${BTN_MASCOT}Faire le test gratuitement</a></div>
 
-  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a> · <a href="/methode/">Méthode</a>
+  <footer class="gfoot">Positions simplifiées à titre indicatif, établies à partir des déclarations publiques, ni exhaustives ni officielles.<br /><a href="/">votona.fr</a> · <a href="/methode/">Sources et méthode</a>
     ${SOCIAL}
   </footer>
 </main>
