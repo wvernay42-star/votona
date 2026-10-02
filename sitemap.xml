@@ -345,4 +345,9 @@
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>https://votona.fr/sujets/engager-une-procedure-de-dissolution-de-la-france-insoumise/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>
